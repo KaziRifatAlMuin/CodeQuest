@@ -13,6 +13,6 @@ class SiteController extends Controller
         return view('About');
     }
     function contact() {
-        return view('Contact');
+        return view('Contact') ;
     }
 }
