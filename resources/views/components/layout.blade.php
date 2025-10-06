@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Practice Page</title>
+    <title>{{ $title ?? 'CodeQuest' }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
@@ -16,29 +16,26 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item {{ request()->is('about') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ url('about') }}">About</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {{ request()->is('contact') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ url('contact') }}">Contact</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {{ request()->is('welcome') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ url('welcome') }}">Welcome</a>
                 </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ url('practice') }}">Practice <span class="sr-only">(current)</span></a>
+                <li class="nav-item {{ request()->is('practice') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ url('practice') }}">Practice</a>
                 </li>
             </ul>
         </div>
     </nav>
+
     <div class="container mt-4">
-        <h1>This is Practice Page</h1>
-        <p>Welcome to the practice section of CodeQuest. Here you can find various coding problems to solve and improve your skills.</p>
-        <a href="{{ url('welcome') }}" class="btn btn-primary mr-2">Welcome</a>
-        <a href="{{ url('about') }}" class="btn btn-secondary mr-2">About</a>
-        <a href="{{ url('contact') }}" class="btn btn-info mr-2">Contact</a>
-        <a href="{{ url('/') }}" class="btn btn-success">Home</a>
+        {{ $slot }}
     </div>
+
     <footer class="bg-light text-center text-lg-start mt-auto">
         <div class="text-center p-3">
             &copy; 2024 CodeQuest. All rights reserved.
