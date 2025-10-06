@@ -171,12 +171,10 @@
         <aside class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="card-title">Next Steps</h6>
-                    <ul class="mb-0 small">
-                        <li>Wire up recommendation algorithm and seed data</li>
-                        <li>Implement problem CRUD and tag management</li>
-                        <li>Integrate editorials and voting</li>
-                    </ul>
+                    <h5 class="card-title">View Website</h5>
+                    <a href="{{ url('/') }}"> Home </a><br>
+                    <a href="{{ url('about') }}"> About </a> <br>
+                    <a href="{{ url('contact') }}"> Contact </a> <br>
                 </div>
             </div>
         </aside>

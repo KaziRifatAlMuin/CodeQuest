@@ -15,4 +15,7 @@ class SiteController extends Controller
     function contact() {
         return view('Contact') ;
     }
+    function welcome() {
+        return view('welcome') ;
+    }
 }

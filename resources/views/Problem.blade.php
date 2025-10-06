@@ -41,7 +41,6 @@
 
       <p class="label">Tag</p>
       <div class="value"><span class="tag">{{ $tag }}</span></div>
-
       <!-- Problem No moved to header; removed duplicate display here -->
     </div>
   </div>
