@@ -29,6 +29,6 @@ Route::group(['prefix' => 'account'], function(){
 Route::get('/single', SingleActionController::class);
 
 Route::get('/practice', function () {
-    return view('practice');
+    return view('Practice');
 });
 
