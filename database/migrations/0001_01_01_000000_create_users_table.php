@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken(); // for "remember me" functionality
-            $table->string('role')->default('user'); // roles: user, admin, moderator
+            $table->rememberToken();
+            $table->string('role')->default('user')->comment('possible values: user, admin, moderator');
             $table->string('cf_handle')->unique();
             $table->integer('cf_max_rating')->default(0);
             $table->integer('solved_problems_count')->default(0);

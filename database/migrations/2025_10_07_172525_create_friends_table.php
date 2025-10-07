@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unique(['user_id', 'friend_id']); // prevent duplicate friendships
             $table->boolean('is_friend')->default(false);
             $table->timestamps();
-
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('friend_id')->references('user_id')->on('users')->onDelete('cascade');
         });

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('stars')->default(0)->comment('number of users who starred this problem');
             $table->float('popularity')->default(0)->comment('popularity = problem stars / maximum stars in one problem');
             $table->timestamps();
-            $table->primary('problem_id');
         });
     }
 
