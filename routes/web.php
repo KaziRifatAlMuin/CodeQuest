@@ -108,3 +108,35 @@ Route::get('/user/{id}', function($id){
     return view('Features.userdetails', ['user' => $persons[$id - 1]]);
 });
 
+Route::get('/problems', function(){
+    $problems = [
+        ['id' => 1, 'title' => 'Two Sum', 'difficulty' => 'Easy', 'rating' => 800, 'solved_count' => 15234, 'link' => 'https://codeforces.com/problemset/problem/71/A'],
+        ['id' => 2, 'title' => 'Watermelon', 'difficulty' => 'Easy', 'rating' => 800, 'solved_count' => 14256, 'link' => 'https://codeforces.com/problemset/problem/4/A'],
+        ['id' => 3, 'title' => 'Team', 'difficulty' => 'Easy', 'rating' => 800, 'solved_count' => 12765, 'link' => 'https://codeforces.com/problemset/problem/231/A'],
+        ['id' => 4, 'title' => 'Beautiful Matrix', 'difficulty' => 'Easy', 'rating' => 800, 'solved_count' => 9543, 'link' => 'https://codeforces.com/problemset/problem/263/A'],
+        ['id' => 5, 'title' => 'String Task', 'difficulty' => 'Medium', 'rating' => 1000, 'solved_count' => 6823, 'link' => 'https://codeforces.com/problemset/problem/118/A'],
+        ['id' => 6, 'title' => 'Interesting Drink', 'difficulty' => 'Medium', 'rating' => 1100, 'solved_count' => 5678, 'link' => 'https://codeforces.com/problemset/problem/706/B'],
+        ['id' => 7, 'title' => 'Taxi', 'difficulty' => 'Medium', 'rating' => 1100, 'solved_count' => 4567, 'link' => 'https://codeforces.com/problemset/problem/158/B'],
+        ['id' => 8, 'title' => 'IQ Test', 'difficulty' => 'Hard', 'rating' => 1300, 'solved_count' => 3456, 'link' => 'https://codeforces.com/problemset/problem/25/A'],
+        ['id' => 9, 'title' => 'Registration System', 'difficulty' => 'Hard', 'rating' => 1300, 'solved_count' => 2345, 'link' => 'https://codeforces.com/problemset/problem/4/C'],
+        ['id' => 10, 'title' => 'Books', 'difficulty' => 'Hard', 'rating' => 1400, 'solved_count' => 1234, 'link' => 'https://codeforces.com/problemset/problem/279/B'],
+    ];
+    return view('Features.problems', ['problems' => $problems]);
+});
+
+Route::get('/tags', function(){
+    $tags = [
+        ['id' => 1, 'name' => 'math', 'problem_count' => 45, 'color' => 'primary'],
+        ['id' => 2, 'name' => 'dp', 'problem_count' => 38, 'color' => 'success'],
+        ['id' => 3, 'name' => 'graphs', 'problem_count' => 32, 'color' => 'info'],
+        ['id' => 4, 'name' => 'trees', 'problem_count' => 28, 'color' => 'warning'],
+        ['id' => 5, 'name' => 'greedy', 'problem_count' => 42, 'color' => 'danger'],
+        ['id' => 6, 'name' => 'binary-search', 'problem_count' => 25, 'color' => 'secondary'],
+        ['id' => 7, 'name' => 'strings', 'problem_count' => 35, 'color' => 'primary'],
+        ['id' => 8, 'name' => 'data-structures', 'problem_count' => 40, 'color' => 'success'],
+        ['id' => 9, 'name' => 'sorting', 'problem_count' => 30, 'color' => 'info'],
+        ['id' => 10, 'name' => 'implementation', 'problem_count' => 50, 'color' => 'warning'],
+    ];
+    return view('Features.tags', ['tags' => $tags]);
+});
+

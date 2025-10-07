@@ -23,11 +23,4 @@
             </ul>
         </div>
     </div>
-
-    <div class="mb-4">
-        <a href="{{ url('welcome') }}" class="btn btn-primary mr-2">Welcome</a>
-        <a href="{{ url('contact') }}" class="btn btn-secondary mr-2">Contact</a>
-        <a href="{{ url('practice') }}" class="btn btn-success mr-2">Practice</a>
-        <a href="{{ url('/') }}" class="btn btn-info">Home</a>
-    </div>
 </x-layout>

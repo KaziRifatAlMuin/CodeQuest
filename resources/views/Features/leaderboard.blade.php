@@ -1,15 +1,13 @@
 <x-layout>
     <x-slot:title>Leaderboard - CodeQuest</x-slot:title>
 
-    <h1 class="display-4">Leaderboard</h1>
-    <p class="lead">Check out the top performers on CodeQuest!</p>
-
-    <div class="mb-4">
-        <a href="{{ url('welcome') }}" class="btn btn-primary mr-2">Welcome</a>
-        <a href="{{ url('about') }}" class="btn btn-secondary mr-2">About</a>
-        <a href="{{ url('contact') }}" class="btn btn-info mr-2">Contact</a>
-        <a href="{{ url('practice') }}" class="btn btn-success mr-2">Practice</a>
-        <a href="{{ url('/') }}" class="btn btn-dark">Home</a>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4">
+                <i class="fas fa-trophy text-warning"></i> Leaderboard
+            </h1>
+            <p class="lead">Check out the top performers on CodeQuest!</p>
+        </div>
     </div>
 
     <div class="card shadow-sm">
