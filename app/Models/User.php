@@ -21,6 +21,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'cf_handle',
+        'cf_max_rating',
+        'solved_problems_count',
+        'average_problem_rating',
+        'profile_picture',
+        'bio',
+        'country',
+        'university',
+        'followers_count',
     ];
 
     /**
