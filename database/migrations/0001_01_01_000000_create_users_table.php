@@ -12,12 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->id('user_id');
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->rememberToken(); // for "remember me" functionality
+            $table->string('role')->default('user'); // roles: user, admin, moderator
+            $table->string('cf_handle')->unique();
+            $table->integer('cf_max_rating')->default(0);
+            $table->integer('solved_problems_count')->default(0);
+            $table->float('average_problem_rating')->default(0);
+            $table->string('profile_picture')->nullable();
+            $table->text('bio', 200)->nullable();
+            $table->string('country')->nullable();
+            $table->string('university')->nullable();
+            $table->integer('followers_count')->default(0);
             $table->timestamps();
         });
 
