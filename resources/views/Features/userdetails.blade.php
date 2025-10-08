@@ -4,7 +4,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h1 class="display-4">
-                <i class="fas fa-user-circle"></i> User Profile
+                <i class="fas fa-user-circle" style="color: var(--info);"></i> User Profile
             </h1>
             <p class="lead">Details for user ID: {{ $user['id'] }}</p>
         </div>
@@ -31,30 +31,10 @@
                         <h3>{{ $user['rating'] }}</h3>
                         @php
                             $r = (int) ($user['rating'] ?? 0);
-                            if ($r >= 2400) {
-                                $label = 'Grandmaster';
-                                $color = 'danger';
-                            } elseif ($r >= 2100) {
-                                $label = 'Master';
-                                $color = 'warning';
-                            } elseif ($r >= 1900) {
-                                $label = 'Candidate Master';
-                                $color = 'purple';
-                            } elseif ($r >= 1600) {
-                                $label = 'Expert';
-                                $color = 'primary';
-                            } elseif ($r >= 1400) {
-                                $label = 'Specialist';
-                                $color = 'info';
-                            } elseif ($r >= 1200) {
-                                $label = 'Pupil';
-                                $color = 'success';
-                            } else {
-                                $label = 'Newbie';
-                                $color = 'secondary';
-                            }
+                            $ratingClass = \App\Helpers\RatingHelper::getRatingClass($r);
+                            $ratingTitle = \App\Helpers\RatingHelper::getRatingTitle($r);
                         @endphp
-                        <span class="badge badge-{{ $color }}">{{ $label }}</span>
+                        <span class="badge {{ $ratingClass }}">{{ $ratingTitle }}</span>
                     </div>
                 </div>
             </div>

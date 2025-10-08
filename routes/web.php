@@ -150,3 +150,8 @@ Route::get('/json_problemtags', [DatabaseController::class, 'showProblemTags']);
 Route::get('/json_userproblems', [DatabaseController::class, 'showUserProblems']);
 Route::get('/json_friends', [DatabaseController::class, 'showFriends']);
 Route::get('/json_editorials', [DatabaseController::class, 'showEditorials']);
+
+// Show problemset view
+Route::get('/problemset', [DatabaseController::class, 'showProblemset']);
+// Show single problem details
+Route::get('/problem_details/{id}', [DatabaseController::class, 'showProblemDetails'])->name('problem.details');

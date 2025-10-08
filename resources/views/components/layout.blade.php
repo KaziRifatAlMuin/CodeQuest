@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $title ?? 'CodeQuest' }}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +22,7 @@
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
+            --purple: #9b59b6;
             --light: #f8f9fa;
             --dark: #1f2937;
             --text: #374151;
@@ -354,7 +356,8 @@
         }
 
         .table tbody tr:hover {
-            background-color: #93e4d3 !important;
+            background-color: rgba(147, 228, 211, 0.3) !important;
+            transform: translateX(2px);
         }
 
         .table tbody tr:hover td {
@@ -366,77 +369,62 @@
             vertical-align: middle;
         }
 
-        /* Badge Styles */
+        /* Badge Styles - Unified modern tag design */
         .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
+            padding: 0.3rem 0.65rem;
+            border-radius: 12px;
             font-weight: 500;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             letter-spacing: 0.3px;
             transition: all 0.2s ease;
-        }
-
-        .badge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .badge-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
 
-        .badge-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        .badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        /* All badge variants use same gradient for consistency */
+        .badge-primary,
+        .badge-success,
+        .badge-warning,
+        .badge-danger,
+        .badge-info,
+        .badge-secondary,
+        .badge-purple {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
 
-        .badge-warning {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-        }
-
-        .badge-secondary {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-        }
-
-        /* Button Styles */
+        /* Button Styles - Modern, classy colors */
         .btn {
             border-radius: 6px;
             padding: 0.5rem 1.2rem;
             font-weight: 500;
             font-size: 0.85rem;
             border: none;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
+        /* Hover: only scale, never change color */
         .btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 12px var(--shadow-hover);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-primary:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .btn-success {
@@ -445,11 +433,16 @@
         }
 
         .btn-success:hover {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
 
         .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
         }
@@ -460,8 +453,8 @@
         }
 
         .btn-danger:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
         }
 
         .btn-info {
@@ -469,16 +462,33 @@
             color: white;
         }
 
+        .btn-info:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
         .btn-outline-primary {
-            border: 1px solid var(--primary);
+            border: 2px solid var(--primary);
             color: var(--primary);
             background: transparent;
         }
 
         .btn-outline-primary:hover {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            background: transparent;
+        }
+
+        .btn-outline-secondary:hover {
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            background: rgba(118, 75, 162, 0.05);
         }
 
         /* Alert Styles */
@@ -510,11 +520,15 @@
             background: linear-gradient(135deg, rgba(102,126,234,0.10) 0%, rgba(118,75,162,0.06) 100%);
         }
 
-        /* Keep warning buttons/badges white text on hover (don't flip to black) */
-        .btn-warning:hover,
-        .badge-warning:hover {
-            color: white !important;
-            box-shadow: 0 4px 12px rgba(213, 153, 0, 0.18);
+        /* Button size variants */
+        .btn-lg {
+            padding: 0.65rem 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.85rem;
+            font-size: 0.8rem;
         }
 
         /* Display Heading */
@@ -545,6 +559,21 @@
             padding: 1.5rem 1rem;
         }
 
+        /* Footer link styling: black, bold, no underline on hover (scoped only to footer) */
+        footer a {
+            color: #000000 !important;
+            font-weight: 700;
+            text-decoration: none !important;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            /* change to blue on hover */
+            color: var(--info) !important;
+            text-decoration: none !important;
+            box-shadow: none;
+        }
+
         /* List Group */
         .list-group-item {
             background: #ffffff;
@@ -558,7 +587,7 @@
         }
 
         .list-group-item:hover {
-            background: #93e4d3;
+            background: rgba(147, 228, 211, 0.3);
             transform: translateX(4px);
             box-shadow: 0 2px 6px var(--shadow);
         }
@@ -663,19 +692,217 @@
             }
         }
         
-        /* Footer link styling: black, bold, no underline on hover (scoped only to footer) */
-        footer a {
-            color: #000000 !important;
-            font-weight: 700;
-            text-decoration: none !important;
+        /* CTA buttons: same width on desktop, full-width on small screens */
+        .cta-btn {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            width: 240px; /* fixed desktop width so CTAs match */
         }
 
-        footer a:hover {
-            /* change to brand primary color on hover, keep no underline */
-            color: var(--primary) !important;
-            text-decoration: none !important;
-            box-shadow: none;
-            transition: color 0.15s ease;
+        @media (max-width: 991px) {
+            .cta-btn {
+                width: 220px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .cta-btn {
+                display: block;
+                width: 100%;
+            }
+        }
+
+        /* Ensure footer is not fixed to viewport */
+        footer {
+            position: static !important;
+            bottom: auto !important;
+            width: 100%;
+        }
+
+        /* ============================================
+           DIFFICULTY COLOR SYSTEM
+           ============================================ */
+        
+        .difficulty-easy {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .difficulty-medium {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .difficulty-hard {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        /* Light background versions for strong tags */
+        .difficulty-bg-easy {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+        }
+
+        .difficulty-bg-medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-weight: 600;
+        }
+
+        .difficulty-bg-hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           RATING-BASED COLOR SYSTEM (Codeforces Style)
+           ============================================ */
+        
+        /* Rating Color Variables */
+        :root {
+            --rating-legendary: #ff0000;      /* 3000+ Legendary Grandmaster (Red) */
+            --rating-grandmaster: #ff3333;    /* 2400-2999 International Grandmaster (Red) */
+            --rating-master: #ff8c00;         /* 2100-2399 Master (Orange) */
+            --rating-candidate: #aa00aa;      /* 1900-2099 Candidate Master (Purple/Violet) */
+            --rating-expert: #0000ff;         /* 1600-1899 Expert (Blue) */
+            --rating-specialist: #03a89e;     /* 1400-1599 Specialist (Cyan) */
+            --rating-pupil: #008000;          /* 1200-1399 Pupil (Green) */
+            --rating-newbie: #808080;         /* 0-1199 Newbie (Gray) */
+        }
+
+        /* Rating Badge Styles */
+        .rating-legendary {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: white;
+        }
+
+        .rating-grandmaster {
+            background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
+            color: white;
+        }
+
+        .rating-master {
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6600 100%);
+            color: white;
+        }
+
+        .rating-candidate {
+            background: linear-gradient(135deg, #aa00aa 0%, #8800aa 100%);
+            color: white;
+        }
+
+        .rating-expert {
+            background: linear-gradient(135deg, #0000ff 0%, #0000cc 100%);
+            color: white;
+        }
+
+        .rating-specialist {
+            background: linear-gradient(135deg, #03a89e 0%, #00897b 100%);
+            color: white;
+        }
+
+        .rating-pupil {
+            background: linear-gradient(135deg, #008000 0%, #006400 100%);
+            color: white;
+        }
+
+        .rating-newbie {
+            background: linear-gradient(135deg, #808080 0%, #696969 100%);
+            color: white;
+        }
+
+        /* Rating Text Colors (for inline use without backgrounds) */
+        .rating-text-legendary { color: #ff0000 !important; font-weight: 600; }
+        .rating-text-grandmaster { color: #ff3333 !important; font-weight: 600; }
+        .rating-text-master { color: #ff8c00 !important; font-weight: 600; }
+        .rating-text-candidate { color: #aa00aa !important; font-weight: 600; }
+        .rating-text-expert { color: #0000ff !important; font-weight: 600; }
+        .rating-text-specialist { color: #03a89e !important; font-weight: 600; }
+        .rating-text-pupil { color: #008000 !important; font-weight: 600; }
+        .rating-text-newbie { color: #808080 !important; font-weight: 600; }
+
+        /* Rating Circle Indicators (for leaderboard/lists) */
+        .rating-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .rating-dot-legendary { background: #ff0000; }
+        .rating-dot-grandmaster { background: #ff3333; }
+        .rating-dot-master { background: #ff8c00; }
+        .rating-dot-candidate { background: #aa00aa; }
+        .rating-dot-expert { background: #0000ff; }
+        .rating-dot-specialist { background: #03a89e; }
+        .rating-dot-pupil { background: #008000; }
+        .rating-dot-newbie { background: #808080; }
+
+        /* Rating Light Background Versions (for strong tags in tables) */
+        .rating-bg-legendary {
+            background: rgba(255, 0, 0, 0.1);
+            color: #cc0000;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-grandmaster {
+            background: rgba(255, 51, 51, 0.1);
+            color: #ff0000;
+            border: 1px solid rgba(255, 51, 51, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-master {
+            background: rgba(255, 140, 0, 0.1);
+            color: #ff6600;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-candidate {
+            background: rgba(170, 0, 170, 0.1);
+            color: #8800aa;
+            border: 1px solid rgba(170, 0, 170, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-expert {
+            background: rgba(0, 0, 255, 0.1);
+            color: #0000cc;
+            border: 1px solid rgba(0, 0, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-specialist {
+            background: rgba(3, 168, 158, 0.1);
+            color: #00897b;
+            border: 1px solid rgba(3, 168, 158, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-pupil {
+            background: rgba(0, 128, 0, 0.1);
+            color: #006400;
+            border: 1px solid rgba(0, 128, 0, 0.3);
+            font-weight: 600;
+        }
+
+        .rating-bg-newbie {
+            background: rgba(128, 128, 128, 0.1);
+            color: #696969;
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            font-weight: 600;
         }
     </style>
 </head>

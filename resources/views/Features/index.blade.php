@@ -4,7 +4,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h1 class="display-4">
-                <i class="fas fa-users text-success"></i> Users Directory
+                <i class="fas fa-users" style="color: var(--success);"></i> Users Directory
             </h1>
             <p class="lead">Browse all registered users and their ratings</p>
         </div>
@@ -27,38 +27,18 @@
                         @foreach ($persons as $user)
                             @php
                                 $r = (int) ($user['rating'] ?? 0);
-                                if ($r >= 2400) {
-                                    $color = 'danger';
-                                    $label = 'Grandmaster';
-                                } elseif ($r >= 2100) {
-                                    $color = 'warning';
-                                    $label = 'Master';
-                                } elseif ($r >= 1900) {
-                                    $color = 'purple';
-                                    $label = 'Candidate Master';
-                                } elseif ($r >= 1600) {
-                                    $color = 'primary';
-                                    $label = 'Expert';
-                                } elseif ($r >= 1400) {
-                                    $color = 'info';
-                                    $label = 'Specialist';
-                                } elseif ($r >= 1200) {
-                                    $color = 'success';
-                                    $label = 'Pupil';
-                                } else {
-                                    $color = 'secondary';
-                                    $label = 'Newbie';
-                                }
+                                $ratingClass = \App\Helpers\RatingHelper::getRatingClass($r);
+                                $ratingTitle = \App\Helpers\RatingHelper::getRatingTitle($r);
                             @endphp
                             <tr>
                                 <td>{{ $user['id'] }}</td>
-                                <td><strong>{{ $user['name'] }}</strong></td>
+                                <td><b>{{ $user['name'] }}</b></td>
                                 <td>
-                                    <span class="badge badge-{{ $color }}">
+                                    <span class="badge {{ $ratingClass }}">
                                         {{ $user['rating'] }}
                                     </span>
                                 </td>
-                                <td>{{ $label }}</td>
+                                <td>{{ $ratingTitle }}</td>
                                 <td>
                                     <a href="/user/{{ $user['id'] }}" class="btn btn-sm btn-primary">
                                         View Profile

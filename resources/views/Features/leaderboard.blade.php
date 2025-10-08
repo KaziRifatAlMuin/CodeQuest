@@ -4,7 +4,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h1 class="display-4">
-                <i class="fas fa-trophy text-warning"></i> Leaderboard
+                <i class="fas fa-trophy" style="color: var(--warning);"></i> Leaderboard
             </h1>
             <p class="lead">Check out the top performers on CodeQuest!</p>
         </div>
@@ -17,39 +17,20 @@
                 @foreach($persons as $index => $person)
                     @php
                         $r = (int) ($person['rating'] ?? 0);
-                        if ($r >= 2400) {
-                            $color = '#ff3b30';
-                            $label = 'Grandmaster+';
-                        } elseif ($r >= 2100) {
-                            $color = '#ff8c00';
-                            $label = 'Master';
-                        } elseif ($r >= 1900) {
-                            $color = '#9b59b6';
-                            $label = 'Candidate Master';
-                        } elseif ($r >= 1600) {
-                            $color = '#3498db';
-                            $label = 'Expert';
-                        } elseif ($r >= 1400) {
-                            $color = '#1abc9c';
-                            $label = 'Specialist';
-                        } elseif ($r >= 1200) {
-                            $color = '#2ecc71';
-                            $label = 'Pupil';
-                        } else {
-                            $color = '#95a5a6';
-                            $label = 'Newbie';
-                        }
+                        $ratingColor = \App\Helpers\RatingHelper::getRatingColor($r);
+                        $ratingTitle = \App\Helpers\RatingHelper::getRatingTitle($r);
+                        $ratingDotClass = \App\Helpers\RatingHelper::getRatingDotClass($r);
                     @endphp
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <span style="width:12px;height:12px;border-radius:50%;background:{{ $color }};display:inline-block;margin-right:12px;"></span>
+                            <span class="rating-dot {{ $ratingDotClass }}"></span>
                             <div>
-                                <strong>{{ $person['name'] }}</strong>
-                                <div class="text-muted small">{{ $label }} · ID: {{ $person['id'] ?? '—' }}</div>
+                                <b>{{ $person['name'] }}</b>
+                                <div class="text-muted small">{{ $ratingTitle }} · ID: {{ $person['id'] ?? '—' }}</div>
                             </div>
                         </div>
-                        <span class="badge badge-pill" style="background:{{ $color }};color:#fff;">
+                        <span class="badge badge-pill" style="background:{{ $ratingColor }};color:#fff;">
                             {{ $person['rating'] }}
                         </span>
                     </li>

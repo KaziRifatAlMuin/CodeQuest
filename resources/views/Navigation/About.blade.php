@@ -1,8 +1,14 @@
 <x-layout>
     <x-slot:title>About - CodeQuest</x-slot:title>
 
-    <h1 class="display-4">About CodeQuest</h1>
-    <p class="lead">Learn more about our mission and what we offer.</p>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4">
+                <i class="fas fa-info-circle" style="color: var(--info);"></i> About CodeQuest
+            </h1>
+            <p class="lead">Learn more about our mission and what we offer.</p>
+        </div>
+    </div>
     
     <div class="card shadow-sm mb-4">
         <div class="card-body">

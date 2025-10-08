@@ -1,8 +1,14 @@
 <x-layout>
     <x-slot:title>Contact - CodeQuest</x-slot:title>
 
-    <h1 class="display-4">Contact Us</h1>
-    <p class="lead">Get in touch with the CodeQuest team.</p>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4">
+                <i class="fas fa-envelope" style="color: var(--success);"></i> Contact Us
+            </h1>
+            <p class="lead">Get in touch with the CodeQuest team.</p>
+        </div>
+    </div>
     
     <div class="card shadow-sm mb-4">
         <div class="card-body">

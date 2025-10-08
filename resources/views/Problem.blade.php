@@ -5,7 +5,7 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="display-4">
-                    <i class="fas fa-code"></i> Problem Details
+                    <i class="fas fa-code" style="color: var(--primary);"></i> Problem Details
                 </h1>
                 <a href="/" class="btn btn-outline-primary">
                     <i class="fas fa-arrow-left"></i> Back
@@ -32,11 +32,11 @@
                 <h4 style="color: var(--dark); font-weight: 600;">{{ $problem }}</h4>
             </div>
 
-            <div>
+                <div>
                 <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">
                     <i class="fas fa-tag"></i> Category
                 </h6>
-                <span class="badge badge-info" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <span class="badge rating-bg-specialist" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
                     {{ $tag }}
                 </span>
             </div>

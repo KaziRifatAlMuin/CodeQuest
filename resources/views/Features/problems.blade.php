@@ -4,7 +4,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h1 class="display-4">
-                <i class="fas fa-code text-primary"></i> Problem Set
+                <i class="fas fa-code" style="color: var(--primary);"></i> Problem Set
             </h1>
             <p class="lead">Practice and improve your competitive programming skills!</p>
         </div>
@@ -27,23 +27,20 @@
                     <tbody>
                         @foreach($problems as $problem)
                             @php
-                                $difficultyClass = match($problem['difficulty']) {
-                                    'Easy' => 'success',
-                                    'Medium' => 'warning',
-                                    'Hard' => 'danger',
-                                    default => 'secondary'
-                                };
+                                $difficultyClass = \App\Helpers\DifficultyHelper::getDifficultyClass($problem['difficulty']);
+                                $rating = (int) ($problem['rating'] ?? 0);
+                                $ratingBgClass = \App\Helpers\RatingHelper::getRatingBgClass($rating);
                             @endphp
                             <tr>
                                 <td>{{ $problem['id'] }}</td>
-                                <td><strong>{{ $problem['title'] }}</strong></td>
+                                <td><b>{{ $problem['title'] }}</b></td>
                                 <td>
-                                    <span class="badge badge-{{ $difficultyClass }}">
+                                    <span class="badge {{ $difficultyClass }}">
                                         {{ $problem['difficulty'] }}
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-info">
+                                    <span class="badge {{ $ratingBgClass }}">
                                         {{ $problem['rating'] }}
                                     </span>
                                 </td>

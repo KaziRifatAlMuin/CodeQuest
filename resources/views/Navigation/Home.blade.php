@@ -1,19 +1,21 @@
 <x-layout>
     <x-slot:title>Home - CodeQuest</x-slot:title>
 
-    <div class="jumbotron text-center">
-        <h1 class="display-3">
-            <i class="fas fa-code"></i> CodeQuest
-        </h1>
-        <p class="lead">Master coding through intelligent practice and community-driven learning</p>
-        <hr class="my-4">
-        <p>Start your journey today and level up your programming skills.</p>
-        <a class="btn btn-primary btn-lg mr-2" href="{{ url('/problems') }}" role="button">
-            <i class="fas fa-play"></i> Get Started
-        </a>
-        <a class="btn btn-success btn-lg" href="{{ url('/leaderboard') }}" role="button">
-            <i class="fas fa-trophy"></i> View Leaderboard
-        </a>
+    <div class="card mb-4" style="background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%); border: none;">
+        <div class="card-body text-center py-5">
+            <h1 class="display-3 mb-3" style="font-weight: 700;">
+                <i class="fas fa-code" style="color: var(--primary);"></i> CodeQuest
+            </h1>
+            <p class="lead mb-4">Master coding through intelligent practice and community-driven learning</p>
+            <hr class="my-4" style="border-color: var(--border); max-width: 600px; margin: 2rem auto;">
+            <p class="mb-4">Start your journey today and level up your programming skills.</p>
+            <a class="btn btn-primary btn-lg mr-2 mb-2 cta-btn" href="{{ url('/problems') }}" role="button">
+                <i class="fas fa-play"></i> Get Started
+            </a>
+            <a class="btn btn-success btn-lg mb-2 cta-btn" href="{{ url('/leaderboard') }}" role="button">
+                <i class="fas fa-trophy"></i> View Leaderboard
+            </a>
+        </div>
     </div>
 
     <div class="row mb-4">

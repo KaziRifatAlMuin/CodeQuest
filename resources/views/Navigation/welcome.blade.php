@@ -1,5 +1,12 @@
 <x-layout>
-    <x-slot:title>Welcome to CodeQuest</x-slot:title>
+    <            <ul class="list-unstyled">
+                <li class="mb-3"><b>🔮 Problem Recommendation</b> – Personalized recommendations based on user ratings and topic preferences.</li>
+                <li class="mb-3"><b>➕ Add New Problems</b> – Users can contribute by adding new problems to the system.</li>
+                <li class="mb-3"><b>✅ Track Solved Problems</b> – Users can mark problems as solved and maintain a history of progress.</li>
+                <li class="mb-3"><b>🎯 Filtering Options</b> – Problems can be filtered by tags or ratings for easy discovery.</li>
+                <li class="mb-3"><b>🏆 Leaderboard & Rating System</b> – Tracks user performance using a hybrid CodeQuest rating.</li>
+                <li class="mb-3"><b>📝 Editorials & Voting</b> – Community-driven editorials with upvotes/downvotes for ranking best solutions.</li>
+            </ul>itle>Welcome to CodeQuest</x-slot:title>
 
     <h1 class="display-4">Welcome to CodeQuest</h1>
     <p class="lead">Your journey to mastering coding starts here.</p>

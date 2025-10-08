@@ -55,4 +55,21 @@ class DatabaseController extends Controller
         $editorials = DB::table('editorials')->get();
         return response()->json($editorials); // Return as JSON
     }
+
+    // Show problems in problemset view
+    public function showProblemset()
+    {
+        $problems = DB::table('problems')->get();
+        return view('Features.problemset', ['problems' => $problems]);
+    }
+
+    // Show single problem details
+    public function showProblemDetails($id)
+    {
+        $problem = DB::table('problems')->where('problem_id', $id)->first();
+        if (!$problem) {
+            return response()->json(['message' => 'Problem not found'], 404);
+        }
+        return view('problem.details', ['problem' => $problem]);
+    }
 }
