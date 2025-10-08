@@ -10,36 +10,33 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card">
         <div class="card-body">
-            <h2 class="card-title">🏆 Top Coders</h2>
-
+            <h3 class="card-title">Top Coders</h3>
             <ul class="list-group mt-3">
-                @foreach($persons as $person)
+                @foreach($persons as $index => $person)
                     @php
                         $r = (int) ($person['rating'] ?? 0);
-
-                        // Codeforces-like color mapping (approximate)
                         if ($r >= 2400) {
-                            $color = '#ff3b30';   // red
+                            $color = '#ff3b30';
                             $label = 'Grandmaster+';
                         } elseif ($r >= 2100) {
-                            $color = '#ff8c00';   // orange
+                            $color = '#ff8c00';
                             $label = 'Master';
                         } elseif ($r >= 1900) {
-                            $color = '#9b59b6';   // violet
+                            $color = '#9b59b6';
                             $label = 'Candidate Master';
                         } elseif ($r >= 1600) {
-                            $color = '#3498db';   // blue
+                            $color = '#3498db';
                             $label = 'Expert';
                         } elseif ($r >= 1400) {
-                            $color = '#1abc9c';   // cyan
+                            $color = '#1abc9c';
                             $label = 'Specialist';
                         } elseif ($r >= 1200) {
-                            $color = '#2ecc71';   // green
+                            $color = '#2ecc71';
                             $label = 'Pupil';
                         } else {
-                            $color = '#95a5a6';   // gray
+                            $color = '#95a5a6';
                             $label = 'Newbie';
                         }
                     @endphp
@@ -49,10 +46,9 @@
                             <span style="width:12px;height:12px;border-radius:50%;background:{{ $color }};display:inline-block;margin-right:12px;"></span>
                             <div>
                                 <strong>{{ $person['name'] }}</strong>
-                                <div class="text-muted small">{{ $label }} · id: {{ $person['id'] ?? '—' }}</div>
+                                <div class="text-muted small">{{ $label }} · ID: {{ $person['id'] ?? '—' }}</div>
                             </div>
                         </div>
-
                         <span class="badge badge-pill" style="background:{{ $color }};color:#fff;">
                             {{ $person['rating'] }}
                         </span>

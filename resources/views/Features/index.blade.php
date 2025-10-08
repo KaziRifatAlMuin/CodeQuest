@@ -10,25 +10,23 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">
-                    <thead class="thead-dark">
+                    <thead>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Rating</th>
-                            <th scope="col">Rank</th>
-                            <th scope="col">Action</th>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Rating</th>
+                            <th>Rank</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($persons as $user)
                             @php
                                 $r = (int) ($user['rating'] ?? 0);
-
-                                // Codeforces-like color mapping
                                 if ($r >= 2400) {
                                     $color = 'danger';
                                     $label = 'Grandmaster';
@@ -53,21 +51,17 @@
                                 }
                             @endphp
                             <tr>
-                                <th scope="row">{{ $user['id'] }}</th>
-                                <td>
-                                    <strong>{{ $user['name'] }}</strong>
-                                </td>
+                                <td>{{ $user['id'] }}</td>
+                                <td><strong>{{ $user['name'] }}</strong></td>
                                 <td>
                                     <span class="badge badge-{{ $color }}">
                                         {{ $user['rating'] }}
                                     </span>
                                 </td>
-                                <td>
-                                    <small class="text-muted">{{ $label }}</small>
-                                </td>
+                                <td>{{ $label }}</td>
                                 <td>
                                     <a href="/user/{{ $user['id'] }}" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-user"></i> View Profile
+                                        View Profile
                                     </a>
                                 </td>
                             </tr>
@@ -75,12 +69,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div class="mt-4">
-        <div class="alert alert-info" role="alert">
-            <i class="fas fa-info-circle"></i> Total Users: <strong>{{ count($persons) }}</strong>
         </div>
     </div>
 </x-layout>

@@ -10,18 +10,18 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">
-                    <thead class="thead-dark">
+                    <thead>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Title</th>
-                            <th scope="col">Difficulty</th>
-                            <th scope="col">Rating</th>
-                            <th scope="col">Solved</th>
-                            <th scope="col">Action</th>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Difficulty</th>
+                            <th>Rating</th>
+                            <th>Solved</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,10 +35,8 @@
                                 };
                             @endphp
                             <tr>
-                                <th scope="row">{{ $problem['id'] }}</th>
-                                <td>
-                                    <strong>{{ $problem['title'] }}</strong>
-                                </td>
+                                <td>{{ $problem['id'] }}</td>
+                                <td><strong>{{ $problem['title'] }}</strong></td>
                                 <td>
                                     <span class="badge badge-{{ $difficultyClass }}">
                                         {{ $problem['difficulty'] }}
@@ -49,14 +47,10 @@
                                         {{ $problem['rating'] }}
                                     </span>
                                 </td>
-                                <td>
-                                    <small class="text-muted">
-                                        <i class="fas fa-check-circle"></i> {{ number_format($problem['solved_count']) }}
-                                    </small>
-                                </td>
+                                <td>{{ number_format($problem['solved_count']) }}</td>
                                 <td>
                                     <a href="{{ $problem['link'] }}" target="_blank" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-external-link-alt"></i> Solve
+                                        Solve
                                     </a>
                                 </td>
                             </tr>
@@ -64,17 +58,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div class="mt-4">
-        <div class="alert alert-info" role="alert">
-            <h5 class="alert-heading"><i class="fas fa-lightbulb"></i> Tips:</h5>
-            <ul class="mb-0">
-                <li>Start with <strong>Easy</strong> problems to build fundamentals</li>
-                <li>Higher ratings indicate more challenging problems</li>
-                <li>Click "Solve" to attempt the problem on Codeforces</li>
-            </ul>
         </div>
     </div>
 </x-layout>
