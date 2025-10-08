@@ -5,6 +5,7 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\myController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\SingleActionController;
+use App\Http\Controllers\DatabaseController;
 
 Route::get('/', [SiteController::class, 'home']);
 Route::get('/home', [SiteController::class, 'home']);
@@ -140,3 +141,12 @@ Route::get('/tags', function(){
     return view('Features.tags', ['tags' => $tags]);
 });
 
+// Show all json data from database tables
+
+Route::get('/json_users', [DatabaseController::class, 'showUsers']);
+Route::get('/json_problems', [DatabaseController::class, 'showProblems']);
+Route::get('/json_tags', [DatabaseController::class, 'showTags']);
+Route::get('/json_problemtags', [DatabaseController::class, 'showProblemTags']);
+Route::get('/json_userproblems', [DatabaseController::class, 'showUserProblems']);
+Route::get('/json_friends', [DatabaseController::class, 'showFriends']);
+Route::get('/json_editorials', [DatabaseController::class, 'showEditorials']);

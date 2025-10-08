@@ -1,0 +1,482 @@
+[
+  {
+    "relationship_id": 1,
+    "user_id": 25,
+    "friend_id": 10,
+    "is_friend": 1,
+    "created_at": "2022-10-11 21:00:00",
+    "updated_at": "2024-11-09 21:00:00"
+  },
+  {
+    "relationship_id": 2,
+    "user_id": 12,
+    "friend_id": 10,
+    "is_friend": 1,
+    "created_at": "2022-11-22 21:00:00",
+    "updated_at": "2024-07-13 21:00:00"
+  },
+  {
+    "relationship_id": 3,
+    "user_id": 16,
+    "friend_id": 15,
+    "is_friend": 0,
+    "created_at": "2021-09-19 21:00:00",
+    "updated_at": "2025-02-09 21:00:00"
+  },
+  {
+    "relationship_id": 4,
+    "user_id": 25,
+    "friend_id": 27,
+    "is_friend": 1,
+    "created_at": "2024-08-17 21:00:00",
+    "updated_at": "2025-04-01 21:00:00"
+  },
+  {
+    "relationship_id": 5,
+    "user_id": 11,
+    "friend_id": 14,
+    "is_friend": 0,
+    "created_at": "2020-12-03 21:00:00",
+    "updated_at": "2025-06-16 21:00:00"
+  },
+  {
+    "relationship_id": 6,
+    "user_id": 24,
+    "friend_id": 5,
+    "is_friend": 0,
+    "created_at": "2022-08-31 21:00:00",
+    "updated_at": "2024-06-16 21:00:00"
+  },
+  {
+    "relationship_id": 7,
+    "user_id": 24,
+    "friend_id": 14,
+    "is_friend": 1,
+    "created_at": "2024-09-01 21:00:00",
+    "updated_at": "2025-04-22 21:00:00"
+  },
+  {
+    "relationship_id": 8,
+    "user_id": 8,
+    "friend_id": 13,
+    "is_friend": 1,
+    "created_at": "2024-05-22 21:00:00",
+    "updated_at": "2025-01-25 21:00:00"
+  },
+  {
+    "relationship_id": 9,
+    "user_id": 18,
+    "friend_id": 21,
+    "is_friend": 1,
+    "created_at": "2023-11-16 21:00:00",
+    "updated_at": "2025-05-29 21:00:00"
+  },
+  {
+    "relationship_id": 10,
+    "user_id": 16,
+    "friend_id": 24,
+    "is_friend": 1,
+    "created_at": "2023-01-07 21:00:00",
+    "updated_at": "2025-02-14 21:00:00"
+  },
+  {
+    "relationship_id": 11,
+    "user_id": 6,
+    "friend_id": 24,
+    "is_friend": 1,
+    "created_at": "2024-10-26 21:00:00",
+    "updated_at": "2025-07-28 21:00:00"
+  },
+  {
+    "relationship_id": 12,
+    "user_id": 24,
+    "friend_id": 18,
+    "is_friend": 1,
+    "created_at": "2020-08-17 21:00:00",
+    "updated_at": "2024-07-09 21:00:00"
+  },
+  {
+    "relationship_id": 13,
+    "user_id": 2,
+    "friend_id": 17,
+    "is_friend": 0,
+    "created_at": "2021-01-07 21:00:00",
+    "updated_at": "2025-08-30 21:00:00"
+  },
+  {
+    "relationship_id": 14,
+    "user_id": 27,
+    "friend_id": 22,
+    "is_friend": 0,
+    "created_at": "2025-09-24 21:00:00",
+    "updated_at": "2025-03-10 21:00:00"
+  },
+  {
+    "relationship_id": 15,
+    "user_id": 5,
+    "friend_id": 27,
+    "is_friend": 1,
+    "created_at": "2025-05-21 21:00:00",
+    "updated_at": "2024-10-10 21:00:00"
+  },
+  {
+    "relationship_id": 16,
+    "user_id": 5,
+    "friend_id": 1,
+    "is_friend": 1,
+    "created_at": "2023-03-19 21:00:00",
+    "updated_at": "2025-03-30 21:00:00"
+  },
+  {
+    "relationship_id": 17,
+    "user_id": 2,
+    "friend_id": 20,
+    "is_friend": 1,
+    "created_at": "2020-07-13 21:00:00",
+    "updated_at": "2024-11-26 21:00:00"
+  },
+  {
+    "relationship_id": 18,
+    "user_id": 30,
+    "friend_id": 16,
+    "is_friend": 1,
+    "created_at": "2025-09-05 21:00:00",
+    "updated_at": "2025-10-04 21:00:00"
+  },
+  {
+    "relationship_id": 19,
+    "user_id": 14,
+    "friend_id": 1,
+    "is_friend": 0,
+    "created_at": "2021-09-19 21:00:00",
+    "updated_at": "2025-05-20 21:00:00"
+  },
+  {
+    "relationship_id": 20,
+    "user_id": 18,
+    "friend_id": 10,
+    "is_friend": 0,
+    "created_at": "2021-03-17 21:00:00",
+    "updated_at": "2024-10-15 21:00:00"
+  },
+  {
+    "relationship_id": 21,
+    "user_id": 22,
+    "friend_id": 14,
+    "is_friend": 1,
+    "created_at": "2020-08-31 21:00:00",
+    "updated_at": "2025-07-08 21:00:00"
+  },
+  {
+    "relationship_id": 22,
+    "user_id": 4,
+    "friend_id": 30,
+    "is_friend": 0,
+    "created_at": "2024-12-07 21:00:00",
+    "updated_at": "2025-06-06 21:00:00"
+  },
+  {
+    "relationship_id": 23,
+    "user_id": 7,
+    "friend_id": 20,
+    "is_friend": 1,
+    "created_at": "2021-03-13 21:00:00",
+    "updated_at": "2025-04-09 21:00:00"
+  },
+  {
+    "relationship_id": 24,
+    "user_id": 9,
+    "friend_id": 26,
+    "is_friend": 1,
+    "created_at": "2023-09-04 21:00:00",
+    "updated_at": "2024-06-03 21:00:00"
+  },
+  {
+    "relationship_id": 25,
+    "user_id": 13,
+    "friend_id": 15,
+    "is_friend": 1,
+    "created_at": "2021-11-10 21:00:00",
+    "updated_at": "2025-06-14 21:00:00"
+  },
+  {
+    "relationship_id": 26,
+    "user_id": 10,
+    "friend_id": 22,
+    "is_friend": 1,
+    "created_at": "2025-04-25 21:00:00",
+    "updated_at": "2024-11-07 21:00:00"
+  },
+  {
+    "relationship_id": 27,
+    "user_id": 28,
+    "friend_id": 21,
+    "is_friend": 1,
+    "created_at": "2025-03-30 21:00:00",
+    "updated_at": "2025-03-14 21:00:00"
+  },
+  {
+    "relationship_id": 28,
+    "user_id": 18,
+    "friend_id": 16,
+    "is_friend": 0,
+    "created_at": "2025-09-18 21:00:00",
+    "updated_at": "2024-10-13 21:00:00"
+  },
+  {
+    "relationship_id": 29,
+    "user_id": 6,
+    "friend_id": 3,
+    "is_friend": 1,
+    "created_at": "2023-05-03 21:00:00",
+    "updated_at": "2024-11-11 21:00:00"
+  },
+  {
+    "relationship_id": 30,
+    "user_id": 26,
+    "friend_id": 11,
+    "is_friend": 1,
+    "created_at": "2020-12-15 21:00:00",
+    "updated_at": "2024-05-27 21:00:00"
+  },
+  {
+    "relationship_id": 31,
+    "user_id": 4,
+    "friend_id": 29,
+    "is_friend": 1,
+    "created_at": "2025-07-12 21:00:00",
+    "updated_at": "2025-06-12 21:00:00"
+  },
+  {
+    "relationship_id": 32,
+    "user_id": 7,
+    "friend_id": 29,
+    "is_friend": 1,
+    "created_at": "2020-10-16 21:00:00",
+    "updated_at": "2024-12-21 21:00:00"
+  },
+  {
+    "relationship_id": 33,
+    "user_id": 16,
+    "friend_id": 9,
+    "is_friend": 0,
+    "created_at": "2025-05-08 21:00:00",
+    "updated_at": "2024-10-22 21:00:00"
+  },
+  {
+    "relationship_id": 34,
+    "user_id": 30,
+    "friend_id": 9,
+    "is_friend": 1,
+    "created_at": "2022-08-10 21:00:00",
+    "updated_at": "2024-11-05 21:00:00"
+  },
+  {
+    "relationship_id": 35,
+    "user_id": 2,
+    "friend_id": 6,
+    "is_friend": 1,
+    "created_at": "2024-01-02 21:00:00",
+    "updated_at": "2025-09-29 21:00:00"
+  },
+  {
+    "relationship_id": 36,
+    "user_id": 7,
+    "friend_id": 19,
+    "is_friend": 1,
+    "created_at": "2021-03-02 21:00:00",
+    "updated_at": "2024-10-08 21:00:00"
+  },
+  {
+    "relationship_id": 37,
+    "user_id": 27,
+    "friend_id": 13,
+    "is_friend": 1,
+    "created_at": "2024-02-03 21:00:00",
+    "updated_at": "2025-07-16 21:00:00"
+  },
+  {
+    "relationship_id": 38,
+    "user_id": 19,
+    "friend_id": 8,
+    "is_friend": 1,
+    "created_at": "2021-01-02 21:00:00",
+    "updated_at": "2025-03-22 21:00:00"
+  },
+  {
+    "relationship_id": 39,
+    "user_id": 22,
+    "friend_id": 29,
+    "is_friend": 1,
+    "created_at": "2023-08-13 21:00:00",
+    "updated_at": "2024-09-16 21:00:00"
+  },
+  {
+    "relationship_id": 40,
+    "user_id": 26,
+    "friend_id": 23,
+    "is_friend": 1,
+    "created_at": "2022-12-17 21:00:00",
+    "updated_at": "2024-09-21 21:00:00"
+  },
+  {
+    "relationship_id": 41,
+    "user_id": 12,
+    "friend_id": 2,
+    "is_friend": 0,
+    "created_at": "2024-06-19 21:00:00",
+    "updated_at": "2024-08-04 21:00:00"
+  },
+  {
+    "relationship_id": 42,
+    "user_id": 3,
+    "friend_id": 11,
+    "is_friend": 1,
+    "created_at": "2022-04-29 21:00:00",
+    "updated_at": "2024-06-06 21:00:00"
+  },
+  {
+    "relationship_id": 43,
+    "user_id": 20,
+    "friend_id": 13,
+    "is_friend": 1,
+    "created_at": "2023-12-09 21:00:00",
+    "updated_at": "2025-09-22 21:00:00"
+  },
+  {
+    "relationship_id": 44,
+    "user_id": 21,
+    "friend_id": 9,
+    "is_friend": 1,
+    "created_at": "2023-03-30 21:00:00",
+    "updated_at": "2025-01-29 21:00:00"
+  },
+  {
+    "relationship_id": 45,
+    "user_id": 8,
+    "friend_id": 12,
+    "is_friend": 1,
+    "created_at": "2023-08-31 21:00:00",
+    "updated_at": "2025-02-28 21:00:00"
+  },
+  {
+    "relationship_id": 46,
+    "user_id": 6,
+    "friend_id": 22,
+    "is_friend": 1,
+    "created_at": "2023-08-21 21:00:00",
+    "updated_at": "2025-08-25 21:00:00"
+  },
+  {
+    "relationship_id": 47,
+    "user_id": 25,
+    "friend_id": 20,
+    "is_friend": 1,
+    "created_at": "2024-05-21 21:00:00",
+    "updated_at": "2024-10-07 21:00:00"
+  },
+  {
+    "relationship_id": 48,
+    "user_id": 9,
+    "friend_id": 5,
+    "is_friend": 1,
+    "created_at": "2021-05-16 21:00:00",
+    "updated_at": "2024-11-17 21:00:00"
+  },
+  {
+    "relationship_id": 49,
+    "user_id": 13,
+    "friend_id": 11,
+    "is_friend": 1,
+    "created_at": "2025-04-03 21:00:00",
+    "updated_at": "2025-10-05 21:00:00"
+  },
+  {
+    "relationship_id": 50,
+    "user_id": 10,
+    "friend_id": 15,
+    "is_friend": 1,
+    "created_at": "2024-04-03 21:00:00",
+    "updated_at": "2025-08-16 21:00:00"
+  },
+  {
+    "relationship_id": 51,
+    "user_id": 5,
+    "friend_id": 3,
+    "is_friend": 1,
+    "created_at": "2023-04-02 21:00:00",
+    "updated_at": "2024-12-26 21:00:00"
+  },
+  {
+    "relationship_id": 52,
+    "user_id": 18,
+    "friend_id": 17,
+    "is_friend": 1,
+    "created_at": "2025-08-15 21:00:00",
+    "updated_at": "2025-08-23 21:00:00"
+  },
+  {
+    "relationship_id": 53,
+    "user_id": 12,
+    "friend_id": 18,
+    "is_friend": 0,
+    "created_at": "2022-06-01 21:00:00",
+    "updated_at": "2024-09-01 21:00:00"
+  },
+  {
+    "relationship_id": 54,
+    "user_id": 11,
+    "friend_id": 28,
+    "is_friend": 1,
+    "created_at": "2024-02-18 21:00:00",
+    "updated_at": "2025-03-10 21:00:00"
+  },
+  {
+    "relationship_id": 55,
+    "user_id": 13,
+    "friend_id": 25,
+    "is_friend": 0,
+    "created_at": "2020-09-18 21:00:00",
+    "updated_at": "2024-12-25 21:00:00"
+  },
+  {
+    "relationship_id": 56,
+    "user_id": 29,
+    "friend_id": 8,
+    "is_friend": 1,
+    "created_at": "2024-10-25 21:00:00",
+    "updated_at": "2024-10-22 21:00:00"
+  },
+  {
+    "relationship_id": 57,
+    "user_id": 13,
+    "friend_id": 6,
+    "is_friend": 1,
+    "created_at": "2024-01-30 21:00:00",
+    "updated_at": "2025-05-23 21:00:00"
+  },
+  {
+    "relationship_id": 58,
+    "user_id": 16,
+    "friend_id": 5,
+    "is_friend": 0,
+    "created_at": "2023-05-01 21:00:00",
+    "updated_at": "2025-05-19 21:00:00"
+  },
+  {
+    "relationship_id": 59,
+    "user_id": 14,
+    "friend_id": 10,
+    "is_friend": 1,
+    "created_at": "2025-05-03 21:00:00",
+    "updated_at": "2025-04-06 21:00:00"
+  },
+  {
+    "relationship_id": 60,
+    "user_id": 9,
+    "friend_id": 8,
+    "is_friend": 1,
+    "created_at": "2022-12-27 21:00:00",
+    "updated_at": "2024-12-07 21:00:00"
+  }
+]

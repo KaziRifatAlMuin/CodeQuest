@@ -1,0 +1,1162 @@
+[
+  {
+    "problemtag_id": 1,
+    "problem_id": 1,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 2,
+    "problem_id": 1,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 3,
+    "problem_id": 2,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 4,
+    "problem_id": 2,
+    "tag_id": 15
+  },
+  {
+    "problemtag_id": 5,
+    "problem_id": 3,
+    "tag_id": 15
+  },
+  {
+    "problemtag_id": 6,
+    "problem_id": 3,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 7,
+    "problem_id": 4,
+    "tag_id": 15
+  },
+  {
+    "problemtag_id": 8,
+    "problem_id": 4,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 9,
+    "problem_id": 5,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 10,
+    "problem_id": 5,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 11,
+    "problem_id": 6,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 12,
+    "problem_id": 6,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 13,
+    "problem_id": 7,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 14,
+    "problem_id": 8,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 15,
+    "problem_id": 8,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 16,
+    "problem_id": 9,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 17,
+    "problem_id": 9,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 18,
+    "problem_id": 10,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 19,
+    "problem_id": 10,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 20,
+    "problem_id": 11,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 21,
+    "problem_id": 11,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 22,
+    "problem_id": 12,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 23,
+    "problem_id": 12,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 24,
+    "problem_id": 13,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 25,
+    "problem_id": 14,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 26,
+    "problem_id": 14,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 27,
+    "problem_id": 15,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 28,
+    "problem_id": 15,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 29,
+    "problem_id": 16,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 30,
+    "problem_id": 16,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 31,
+    "problem_id": 17,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 32,
+    "problem_id": 18,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 33,
+    "problem_id": 18,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 34,
+    "problem_id": 19,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 35,
+    "problem_id": 19,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 36,
+    "problem_id": 20,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 37,
+    "problem_id": 20,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 38,
+    "problem_id": 21,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 39,
+    "problem_id": 21,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 40,
+    "problem_id": 22,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 41,
+    "problem_id": 22,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 42,
+    "problem_id": 23,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 43,
+    "problem_id": 23,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 44,
+    "problem_id": 24,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 45,
+    "problem_id": 24,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 46,
+    "problem_id": 25,
+    "tag_id": 6
+  },
+  {
+    "problemtag_id": 47,
+    "problem_id": 25,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 48,
+    "problem_id": 26,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 49,
+    "problem_id": 26,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 50,
+    "problem_id": 27,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 51,
+    "problem_id": 28,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 52,
+    "problem_id": 28,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 53,
+    "problem_id": 29,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 54,
+    "problem_id": 29,
+    "tag_id": 14
+  },
+  {
+    "problemtag_id": 55,
+    "problem_id": 30,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 56,
+    "problem_id": 30,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 57,
+    "problem_id": 31,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 58,
+    "problem_id": 31,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 59,
+    "problem_id": 32,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 60,
+    "problem_id": 32,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 61,
+    "problem_id": 33,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 62,
+    "problem_id": 34,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 63,
+    "problem_id": 34,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 64,
+    "problem_id": 35,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 65,
+    "problem_id": 35,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 66,
+    "problem_id": 36,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 67,
+    "problem_id": 37,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 68,
+    "problem_id": 38,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 69,
+    "problem_id": 39,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 70,
+    "problem_id": 39,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 71,
+    "problem_id": 40,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 72,
+    "problem_id": 40,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 73,
+    "problem_id": 41,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 74,
+    "problem_id": 41,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 75,
+    "problem_id": 42,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 76,
+    "problem_id": 42,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 77,
+    "problem_id": 43,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 78,
+    "problem_id": 43,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 79,
+    "problem_id": 44,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 80,
+    "problem_id": 44,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 81,
+    "problem_id": 45,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 82,
+    "problem_id": 45,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 83,
+    "problem_id": 46,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 84,
+    "problem_id": 46,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 85,
+    "problem_id": 47,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 86,
+    "problem_id": 47,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 87,
+    "problem_id": 48,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 88,
+    "problem_id": 48,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 89,
+    "problem_id": 49,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 90,
+    "problem_id": 49,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 91,
+    "problem_id": 50,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 92,
+    "problem_id": 50,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 93,
+    "problem_id": 51,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 94,
+    "problem_id": 51,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 95,
+    "problem_id": 52,
+    "tag_id": 15
+  },
+  {
+    "problemtag_id": 96,
+    "problem_id": 52,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 97,
+    "problem_id": 53,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 98,
+    "problem_id": 53,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 99,
+    "problem_id": 54,
+    "tag_id": 9
+  },
+  {
+    "problemtag_id": 100,
+    "problem_id": 54,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 101,
+    "problem_id": 55,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 102,
+    "problem_id": 55,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 103,
+    "problem_id": 56,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 104,
+    "problem_id": 56,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 105,
+    "problem_id": 57,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 106,
+    "problem_id": 57,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 107,
+    "problem_id": 58,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 108,
+    "problem_id": 58,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 109,
+    "problem_id": 59,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 110,
+    "problem_id": 59,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 111,
+    "problem_id": 60,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 112,
+    "problem_id": 60,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 113,
+    "problem_id": 61,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 114,
+    "problem_id": 61,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 115,
+    "problem_id": 62,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 116,
+    "problem_id": 62,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 117,
+    "problem_id": 63,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 118,
+    "problem_id": 63,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 119,
+    "problem_id": 64,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 120,
+    "problem_id": 64,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 121,
+    "problem_id": 65,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 122,
+    "problem_id": 65,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 123,
+    "problem_id": 66,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 124,
+    "problem_id": 66,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 125,
+    "problem_id": 67,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 126,
+    "problem_id": 67,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 127,
+    "problem_id": 68,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 128,
+    "problem_id": 68,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 129,
+    "problem_id": 69,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 130,
+    "problem_id": 69,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 131,
+    "problem_id": 70,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 132,
+    "problem_id": 70,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 133,
+    "problem_id": 71,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 134,
+    "problem_id": 71,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 135,
+    "problem_id": 72,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 136,
+    "problem_id": 72,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 137,
+    "problem_id": 73,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 138,
+    "problem_id": 73,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 139,
+    "problem_id": 74,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 140,
+    "problem_id": 74,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 141,
+    "problem_id": 75,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 142,
+    "problem_id": 75,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 143,
+    "problem_id": 76,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 144,
+    "problem_id": 76,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 145,
+    "problem_id": 77,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 146,
+    "problem_id": 77,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 147,
+    "problem_id": 78,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 148,
+    "problem_id": 78,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 149,
+    "problem_id": 79,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 150,
+    "problem_id": 79,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 151,
+    "problem_id": 80,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 152,
+    "problem_id": 80,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 153,
+    "problem_id": 81,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 154,
+    "problem_id": 81,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 155,
+    "problem_id": 82,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 156,
+    "problem_id": 82,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 157,
+    "problem_id": 83,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 158,
+    "problem_id": 83,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 159,
+    "problem_id": 84,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 160,
+    "problem_id": 84,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 161,
+    "problem_id": 85,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 162,
+    "problem_id": 85,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 163,
+    "problem_id": 86,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 164,
+    "problem_id": 86,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 165,
+    "problem_id": 87,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 166,
+    "problem_id": 87,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 167,
+    "problem_id": 88,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 168,
+    "problem_id": 88,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 169,
+    "problem_id": 89,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 170,
+    "problem_id": 89,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 171,
+    "problem_id": 90,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 172,
+    "problem_id": 90,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 173,
+    "problem_id": 91,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 174,
+    "problem_id": 91,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 175,
+    "problem_id": 92,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 176,
+    "problem_id": 92,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 177,
+    "problem_id": 93,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 178,
+    "problem_id": 93,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 179,
+    "problem_id": 94,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 180,
+    "problem_id": 94,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 181,
+    "problem_id": 95,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 182,
+    "problem_id": 95,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 183,
+    "problem_id": 96,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 184,
+    "problem_id": 96,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 185,
+    "problem_id": 97,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 186,
+    "problem_id": 97,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 187,
+    "problem_id": 98,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 188,
+    "problem_id": 98,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 189,
+    "problem_id": 99,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 190,
+    "problem_id": 99,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 191,
+    "problem_id": 100,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 192,
+    "problem_id": 100,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 193,
+    "problem_id": 101,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 194,
+    "problem_id": 101,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 195,
+    "problem_id": 102,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 196,
+    "problem_id": 102,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 197,
+    "problem_id": 103,
+    "tag_id": 8
+  },
+  {
+    "problemtag_id": 198,
+    "problem_id": 103,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 199,
+    "problem_id": 104,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 200,
+    "problem_id": 104,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 201,
+    "problem_id": 105,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 202,
+    "problem_id": 105,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 203,
+    "problem_id": 106,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 204,
+    "problem_id": 106,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 205,
+    "problem_id": 107,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 206,
+    "problem_id": 107,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 207,
+    "problem_id": 108,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 208,
+    "problem_id": 108,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 209,
+    "problem_id": 109,
+    "tag_id": 5
+  },
+  {
+    "problemtag_id": 210,
+    "problem_id": 109,
+    "tag_id": 22
+  },
+  {
+    "problemtag_id": 211,
+    "problem_id": 110,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 212,
+    "problem_id": 110,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 213,
+    "problem_id": 111,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 214,
+    "problem_id": 111,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 215,
+    "problem_id": 112,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 216,
+    "problem_id": 112,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 217,
+    "problem_id": 113,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 218,
+    "problem_id": 113,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 219,
+    "problem_id": 114,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 220,
+    "problem_id": 114,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 221,
+    "problem_id": 115,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 222,
+    "problem_id": 115,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 223,
+    "problem_id": 116,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 224,
+    "problem_id": 116,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 225,
+    "problem_id": 117,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 226,
+    "problem_id": 117,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 227,
+    "problem_id": 118,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 228,
+    "problem_id": 118,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 229,
+    "problem_id": 119,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 230,
+    "problem_id": 119,
+    "tag_id": 21
+  },
+  {
+    "problemtag_id": 231,
+    "problem_id": 120,
+    "tag_id": 1
+  },
+  {
+    "problemtag_id": 232,
+    "problem_id": 120,
+    "tag_id": 21
+  }
+]

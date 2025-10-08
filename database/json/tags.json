@@ -1,0 +1,102 @@
+[
+  {
+    "tag_id": 1,
+    "tag_name": "math"
+  },
+  {
+    "tag_id": 2,
+    "tag_name": "dp"
+  },
+  {
+    "tag_id": 3,
+    "tag_name": "graphs"
+  },
+  {
+    "tag_id": 4,
+    "tag_name": "trees"
+  },
+  {
+    "tag_id": 5,
+    "tag_name": "greedy"
+  },
+  {
+    "tag_id": 6,
+    "tag_name": "binary-search"
+  },
+  {
+    "tag_id": 7,
+    "tag_name": "two-pointers"
+  },
+  {
+    "tag_id": 8,
+    "tag_name": "strings"
+  },
+  {
+    "tag_id": 9,
+    "tag_name": "hashing"
+  },
+  {
+    "tag_id": 10,
+    "tag_name": "data-structures"
+  },
+  {
+    "tag_id": 11,
+    "tag_name": "flows"
+  },
+  {
+    "tag_id": 12,
+    "tag_name": "combinatorics"
+  },
+  {
+    "tag_id": 13,
+    "tag_name": "geometry"
+  },
+  {
+    "tag_id": 14,
+    "tag_name": "number-theory"
+  },
+  {
+    "tag_id": 15,
+    "tag_name": "bruteforce"
+  },
+  {
+    "tag_id": 16,
+    "tag_name": "bitmasks"
+  },
+  {
+    "tag_id": 17,
+    "tag_name": "divide-and-conquer"
+  },
+  {
+    "tag_id": 18,
+    "tag_name": "fft"
+  },
+  {
+    "tag_id": 19,
+    "tag_name": "probability"
+  },
+  {
+    "tag_id": 20,
+    "tag_name": "games"
+  },
+  {
+    "tag_id": 21,
+    "tag_name": "implementation"
+  },
+  {
+    "tag_id": 22,
+    "tag_name": "sortings"
+  },
+  {
+    "tag_id": 23,
+    "tag_name": "dfs-bfs"
+  },
+  {
+    "tag_id": 24,
+    "tag_name": "constructive"
+  },
+  {
+    "tag_id": 25,
+    "tag_name": "interactive"
+  }
+]
