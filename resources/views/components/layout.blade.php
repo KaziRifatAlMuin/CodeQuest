@@ -356,12 +356,13 @@
         }
 
         .table tbody tr:hover {
-            background-color: rgba(147, 228, 211, 0.3) !important;
+            background-color: rgba(102, 126, 234, 0.08) !important;
             transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
         }
 
         .table tbody tr:hover td {
-            border-color: #dee2e6;
+            border-color: rgba(102, 126, 234, 0.2);
         }
 
         .table tbody td {
@@ -957,6 +958,12 @@
                 </a>
             </li>
             <li>
+                <a href="{{ url('editorials') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
+                    <i class="menu-icon fas fa-book"></i>
+                    <span>Editorials</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{ url('tags') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-tags"></i>
                     <span>Tags</span>
@@ -992,6 +999,9 @@
                 </li>
                 <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ url('users') }}">Users</a>
+                </li>
+                <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ url('editorials') }}">Editorials</a>
                 </li>
                 <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ url('tags') }}">Tags</a>

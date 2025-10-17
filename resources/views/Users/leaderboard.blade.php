@@ -14,24 +14,27 @@
         <div class="card-body">
             <h3 class="card-title">Top Coders</h3>
             <ul class="list-group mt-3">
-                @foreach($persons as $index => $person)
+                @foreach($users as $index => $user)
                     @php
-                        $r = (int) ($person['rating'] ?? 0);
+                        $r = (int) ($user->cf_max_rating ?? 0);
                         $ratingColor = \App\Helpers\RatingHelper::getRatingColor($r);
                         $ratingTitle = \App\Helpers\RatingHelper::getRatingTitle($r);
                         $ratingDotClass = \App\Helpers\RatingHelper::getRatingDotClass($r);
                     @endphp
 
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor: pointer;" onclick="window.location='{{ url('/users/' . ($user->id ?? $user->user_id)) }}'">
                         <div class="d-flex align-items-center">
                             <span class="rating-dot {{ $ratingDotClass }}"></span>
                             <div>
-                                <b>{{ $person['name'] }}</b>
-                                <div class="text-muted small">{{ $ratingTitle }} · ID: {{ $person['id'] ?? '—' }}</div>
+                                <b>{{ $user->name }}</b>
+                                @if($user->cf_handle)
+                                    <span class="text-muted small">(@{{ $user->cf_handle }})</span>
+                                @endif
+                                <div class="text-muted small">{{ $ratingTitle }}</div>
                             </div>
                         </div>
                         <span class="badge badge-pill" style="background:{{ $ratingColor }};color:#fff;">
-                            {{ $person['rating'] }}
+                            {{ $user->cf_max_rating ?? 0 }}
                         </span>
                     </li>
                 @endforeach

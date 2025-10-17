@@ -60,7 +60,7 @@ class DatabaseController extends Controller
     public function showProblemset()
     {
         $problems = DB::table('problems')->get();
-        return view('Features.problemset', ['problems' => $problems]);
+        return view('Problems.index', ['problems' => $problems]);
     }
 
     // Show single problem details
@@ -70,6 +70,86 @@ class DatabaseController extends Controller
         if (!$problem) {
             return response()->json(['message' => 'Problem not found'], 404);
         }
-        return view('problem.details', ['problem' => $problem]);
+        return view('Problems.details', ['problem' => $problem]);
+    }
+
+    // Show users list view
+    public function showUsersList()
+    {
+        $users = DB::table('users')->get();
+        return view('Users.index', ['users' => $users]);
+    }
+
+    // Show single user details view
+    public function showUserDetails($id)
+    {
+        $user = DB::table('users')->where('user_id', $id)->first();
+        if (!$user) {
+            abort(404, 'User not found');
+        }
+        return view('Users.details', ['user' => $user]);
+    }
+
+    // Show leaderboard view
+    public function showLeaderboard()
+    {
+        $users = DB::table('users')
+            ->orderBy('cf_max_rating', 'desc')
+            ->get();
+        return view('Users.leaderboard', ['users' => $users]);
+    }
+
+    // Show editorials list view
+    public function showEditorialsList()
+    {
+        $editorials = DB::table('editorials')
+            ->join('problems', 'editorials.problem_id', '=', 'problems.problem_id')
+            ->join('users', 'editorials.author_id', '=', 'users.user_id')
+            ->select(
+                'editorials.*',
+                'problems.title as problem_title',
+                'users.name as author_name'
+            )
+            ->orderBy('editorials.created_at', 'desc')
+            ->get();
+        return view('Editorials.index', ['editorials' => $editorials]);
+    }
+
+    // Show single editorial details view
+    public function showEditorialDetails($id)
+    {
+        $editorial = DB::table('editorials')
+            ->join('problems', 'editorials.problem_id', '=', 'problems.problem_id')
+            ->join('users', 'editorials.author_id', '=', 'users.user_id')
+            ->select(
+                'editorials.*',
+                'problems.title as problem_title',
+                'problems.rating as problem_rating',
+                'problems.problem_link as problem_link',
+                'users.name as author_name',
+                'users.cf_handle as author_handle'
+            )
+            ->where('editorials.editorial_id', $id)
+            ->first();
+        
+        if (!$editorial) {
+            abort(404, 'Editorial not found');
+        }
+        return view('Editorials.details', ['editorial' => $editorial]);
+    }
+
+    // Show tags list view
+    public function showTagsList()
+    {
+        $tags = DB::table('tags')
+            ->leftJoin('problemtags', 'tags.tag_id', '=', 'problemtags.tag_id')
+            ->select(
+                'tags.*',
+                DB::raw('COUNT(problemtags.problem_id) as problem_count')
+            )
+            ->groupBy('tags.tag_id', 'tags.tag_name')
+            ->orderBy('problem_count', 'desc')
+            ->get();
+        return view('tags', ['tags' => $tags]);
     }
 }

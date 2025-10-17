@@ -24,8 +24,7 @@
                                         <th>Solved</th>
                                         <th>Stars</th>
                                         <th>Popularity</th>
-                                        <th>Created</th>
-                                        <th>Action</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,7 +33,7 @@
                                             $rating = (int) ($problem->rating ?? 0);
                                             $ratingBgClass = \App\Helpers\RatingHelper::getRatingBgClass($rating);
                                         @endphp
-                                        <tr>
+                                        <tr style="cursor: pointer;" onclick="window.location='{{ route('problems.details', $problem->problem_id) }}'">
                                             <td>{{ $problem->problem_id }}</td>
                                             <td><b>{{ $problem->title }}</b></td>
                                             <td>
@@ -45,12 +44,9 @@
                                             <td>{{ number_format($problem->solved_count) }}</td>
                                             <td>{{ $problem->stars }}</td>
                                             <td>{{ $problem->popularity }}</td>
-                                            <td>
-                                                <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary mr-1">
+                                            <td onclick="event.stopPropagation();">
+                                                <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary">
                                                     <i class="fas fa-external-link-alt"></i> Solve
-                                                </a>
-                                                <a href="{{ route('problem.details', $problem->problem_id) }}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i> View
                                                 </a>
                                             </td>
                                         </tr>

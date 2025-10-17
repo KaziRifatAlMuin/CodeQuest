@@ -20,30 +20,29 @@
                             <th>Name</th>
                             <th>Rating</th>
                             <th>Rank</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($persons as $user)
+                        @foreach ($users as $user)
                             @php
-                                $r = (int) ($user['rating'] ?? 0);
+                                $r = (int) ($user->cf_max_rating ?? 0);
                                 $ratingClass = \App\Helpers\RatingHelper::getRatingClass($r);
                                 $ratingTitle = \App\Helpers\RatingHelper::getRatingTitle($r);
                             @endphp
-                            <tr>
-                                <td>{{ $user['id'] }}</td>
-                                <td><b>{{ $user['name'] }}</b></td>
+                            <tr style="cursor: pointer;" onclick="window.location='{{ url('/users/' . ($user->id ?? $user->user_id) ) }}'">
+                                <td>{{ $user->id ?? $user->user_id }}</td>
+                                <td>
+                                    <b>{{ $user->name }}</b>
+                                    @if($user->cf_handle)
+                                        <span class="text-muted small">(@{{ $user->cf_handle }})</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <span class="badge {{ $ratingClass }}">
-                                        {{ $user['rating'] }}
+                                        {{ $user->cf_max_rating ?? 0 }}
                                     </span>
                                 </td>
                                 <td>{{ $ratingTitle }}</td>
-                                <td>
-                                    <a href="/user/{{ $user['id'] }}" class="btn btn-sm btn-primary">
-                                        View Profile
-                                    </a>
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>
