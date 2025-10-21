@@ -1019,6 +1019,10 @@
     <footer class="text-center text-lg-start mt-auto">
         <div class="text-center p-3">
             Copyright &copy; 2025 CodeQuest | Developed by <a href="https://github.com/kazirifatalmuin">Kazi Rifat Al Muin</a>. All rights reserved.
+            <br>
+            <a href="{{ url('admin/dashboard') }}" class="mt-2 d-inline-block">
+                <i class="fas fa-user-shield"></i> Admin Panel
+            </a>
         </div>
     </footer>
 
