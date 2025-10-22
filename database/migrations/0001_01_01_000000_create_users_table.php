@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->string('role')->default('user')->comment('possible values: user, admin, moderator');
-            $table->string('cf_handle')->unique();
+            $table->string('cf_handle');
             $table->integer('cf_max_rating')->default(0);
             $table->integer('solved_problems_count')->default(0);
             $table->float('average_problem_rating')->default(0);

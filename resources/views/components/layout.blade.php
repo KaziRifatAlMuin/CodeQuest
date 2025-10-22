@@ -124,6 +124,206 @@
             width: 80%;
         }
 
+        /* Auth Buttons in Navbar */
+        .btn-login-nav,
+        .btn-register-nav {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 0.5rem 1.2rem !important;
+            margin: 0 0.3rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login-nav:hover,
+        .btn-register-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-register-nav {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-register-nav:hover {
+            background: rgba(255, 215, 0, 0.4);
+        }
+
+        /* Dropdown Menu Styling */
+        .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border: none;
+            margin-top: 10px;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f0f4ff;
+            color: #667eea;
+            padding-left: 25px;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+        }
+
+        .dropdown-divider {
+            margin: 5px 0;
+        }
+
+        /* Auth Pages Shared Styles */
+        .auth-container {
+            max-width: 550px;
+            margin: 60px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .auth-header .auth-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 25px;
+        }
+
+        .auth-header h2 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .auth-header p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box i {
+            color: #667eea;
+        }
+
+        /* Dropdown Menu Styles */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #6b7280;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
         /* Mobile Sidebar */
         .mobile-sidebar {
             position: fixed;
@@ -939,36 +1139,67 @@
                     <span>Contact</span>
                 </a>
             </li>
-            <li>
-                <a href="{{ route('problem.index') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
-                    <i class="menu-icon fas fa-code"></i>
-                    <span>Problems</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('leaderboard') }}" class="{{ request()->is('leaderboard') ? 'active' : '' }}">
-                    <i class="menu-icon fas fa-list-ol"></i>
-                    <span>Leaderboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('user.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="menu-icon fas fa-users"></i>
-                    <span>Users</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('editorials.index') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
-                    <i class="menu-icon fas fa-book"></i>
-                    <span>Editorials</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('tags.index') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
-                    <i class="menu-icon fas fa-tags"></i>
-                    <span>Tags</span>
-                </a>
-            </li>
+            
+            @auth
+                <li>
+                    <a href="{{ route('problem.index') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-code"></i>
+                        <span>Problems</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('leaderboard') }}" class="{{ request()->is('leaderboard') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-list-ol"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('user.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('editorials.index') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-book"></i>
+                        <span>Editorials</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('tags.index') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-tags"></i>
+                        <span>Tags</span>
+                    </a>
+                </li>
+                <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
+                    <a href="{{ route('account.profile') }}" class="{{ request()->is('account/profile') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-user-circle"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <form action="{{ route('account.logout') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" style="background: none; border: none; color: rgba(255,255,255,0.95); width: 100%; text-align: left; padding: 12px 20px; cursor: pointer; display: flex; align-items: center; font-size: 0.9rem;">
+                            <i class="menu-icon fas fa-sign-out-alt" style="width: 24px; margin-right: 15px;"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
+            @else
+                <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
+                    <a href="{{ route('account.login') }}">
+                        <i class="menu-icon fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('account.register') }}">
+                        <i class="menu-icon fas fa-user-plus"></i>
+                        <span>Register</span>
+                    </a>
+                </li>
+            @endauth
         </ul>
     </div>
 
@@ -991,21 +1222,66 @@
                 <li class="nav-item {{ request()->is('contact') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('contact') }}">Contact</a>
                 </li>
-                <li class="nav-item {{ request()->is('problems*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('problem.index') }}">Problems</a>
-                </li>
-                <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
-                </li>
-                <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('user.index') }}">Users</a>
-                </li>
-                <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('editorials.index') }}">Editorials</a>
-                </li>
-                <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
-                </li>
+                
+                @auth
+                    <li class="nav-item {{ request()->is('problems*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('problem.index') }}">Problems</a>
+                    </li>
+                    <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
+                    </li>
+                    <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('user.index') }}">Users</a>
+                    </li>
+                    <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('editorials.index') }}">Editorials</a>
+                    </li>
+                    <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
+                    </li>
+                    
+                    <!-- User Profile Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding-right: 0.5rem;">
+                            @if(Auth::user()->profile_picture)
+                                <img src="{{ asset('images/profile/' . Auth::user()->profile_picture) }}" 
+                                     alt="{{ Auth::user()->name }}" 
+                                     class="rounded-circle mr-2" 
+                                     style="width: 35px; height: 35px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3);">
+                            @else
+                                <i class="fas fa-user-circle mr-2" style="font-size: 1.8rem;"></i>
+                            @endif
+                            <span>{{ Auth::user()->name }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{{ route('account.profile') }}">
+                                <i class="fas fa-user"></i> My Profile
+                            </a>
+                            <a class="dropdown-item" href="{{ route('account.editProfile') }}">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form action="{{ route('account.logout') }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                @else
+                    <!-- Guest User Buttons -->
+                    <li class="nav-item">
+                        <a class="nav-link btn-login-nav" href="{{ route('account.login') }}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-register-nav" href="{{ route('account.register') }}">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                @endauth
             </ul>
         </div>
     </nav>
