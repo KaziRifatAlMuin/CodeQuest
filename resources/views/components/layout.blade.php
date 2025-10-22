@@ -1195,6 +1195,14 @@
                         <span>My Profile</span>
                     </a>
                 </li>
+                @if(Auth::user()->role === 'admin')
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin*') ? 'active' : '' }}">
+                        <i class="menu-icon fas fa-tachometer-alt"></i>
+                        <span>Admin Dashboard</span>
+                    </a>
+                </li>
+                @endif
                 <li>
                     <form action="{{ route('account.logout') }}" method="POST" style="margin: 0;">
                         @csrf
@@ -1241,12 +1249,12 @@
                     <a class="nav-link" href="{{ route('contact') }}">Contact</a>
                 </li>
                 
+                <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
+                </li>
                 @auth
                     <li class="nav-item {{ request()->is('problems*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('problem.index') }}">Problems</a>
-                    </li>
-                    <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
                     </li>
                     <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('user.index') }}">Users</a>
@@ -1366,9 +1374,6 @@
         <div class="text-center p-3">
             Copyright &copy; 2025 CodeQuest | Developed by <a href="https://github.com/kazirifatalmuin">Kazi Rifat Al Muin</a>. All rights reserved.
             <br>
-            <a href="{{ route('admin.dashboard') }}" class="mt-2 d-inline-block">
-                <i class="fas fa-user-shield"></i> Admin Panel
-            </a>
         </div>
     </footer>
 
