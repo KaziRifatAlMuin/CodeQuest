@@ -111,17 +111,34 @@ Route::middleware('auth')->group(function () {
         Route::post('/problems/{problem}/toggle-star', [UserProblemController::class, 'toggleStar'])->name('problem.toggleStar');
         Route::post('/problems/{problem}/update-status', [UserProblemController::class, 'updateStatus'])->name('problem.updateStatus');
         
-        // Tags route
-        Route::get('/tags', [DatabaseController::class, 'showTagsList'])->name('tags.index');
+        // Tag Management Routes
+        Route::get('/tags', [\App\Http\Controllers\TagController::class, 'index'])->name('tag.index');
+        
+        // Tag Create - Moderators and Admins only
+        Route::middleware(['checkRole:moderator,admin'])->group(function () {
+            Route::get('/tags/create', [\App\Http\Controllers\TagController::class, 'create'])->name('tag.create');
+            Route::post('/tags', [\App\Http\Controllers\TagController::class, 'store'])->name('tag.store');
+            Route::get('/tags/{tag}/edit', [\App\Http\Controllers\TagController::class, 'edit'])->name('tag.edit');
+            Route::put('/tags/{tag}', [\App\Http\Controllers\TagController::class, 'update'])->name('tag.update');
+        });
+        
+        // Tag Delete - Admins only
+        Route::middleware(['checkRole:admin'])->group(function () {
+            Route::delete('/tags/{tag}', [\App\Http\Controllers\TagController::class, 'destroy'])->name('tag.destroy');
+        });
+        
+        Route::get('/tags/{tag}', [\App\Http\Controllers\TagController::class, 'show'])->name('tag.show');
         
         // Editorial Routes
         // Public editorial viewing
         Route::get('/editorials', [EditorialController::class, 'index'])->name('editorials.index');
-        Route::get('/editorials/{editorial}', [EditorialController::class, 'show'])->name('editorials.show');
         
-        // Creating editorials - all authenticated users
+        // Creating editorials - all authenticated users (MUST come before /{editorial} route)
         Route::get('/editorials/create', [EditorialController::class, 'create'])->name('editorials.create');
         Route::post('/editorials', [EditorialController::class, 'store'])->name('editorials.store');
+        
+        // Show specific editorial (MUST come after /create route)
+        Route::get('/editorials/{editorial}', [EditorialController::class, 'show'])->name('editorials.show');
         
         // Voting on editorials - all authenticated users
         Route::post('/editorials/{editorial}/upvote', [EditorialController::class, 'upvote'])->name('editorials.upvote');
@@ -142,6 +159,9 @@ Route::middleware('auth')->group(function () {
         Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
             Route::get('/dashboard', [AccountController::class, 'adminDashboard'])->name('admin.dashboard');
             Route::post('/users/{user}/update-role', [AccountController::class, 'updateUserRole'])->name('admin.updateUserRole');
+            // Admin tag management (accessible from admin dashboard)
+            Route::get('/tags', [\App\Http\Controllers\TagController::class, 'adminIndex'])->name('admin.tags.index');
+            Route::get('/tags/{tag}/manage', [\App\Http\Controllers\TagController::class, 'manage'])->name('admin.tags.manage');
         });
     });
 });

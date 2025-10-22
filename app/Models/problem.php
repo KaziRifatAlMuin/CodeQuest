@@ -98,4 +98,20 @@ class Problem extends Model
     {
         return $this->hasMany(Editorial::class, 'problem_id', 'problem_id');
     }
+
+    /**
+     * Get all tags associated with this problem
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'problemtags', 'problem_id', 'tag_id');
+    }
+
+    /**
+     * Get the problem tags pivot records
+     */
+    public function problemTags()
+    {
+        return $this->hasMany(ProblemTag::class, 'problem_id', 'problem_id');
+    }
 }

@@ -42,6 +42,30 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card border-secondary shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tags fa-3x text-secondary mb-3"></i>
+                        <h5 class="card-title">Manage Tags</h5>
+                        <p class="text-muted small mb-3">Create, update, or delete tags used across the site</p>
+                        <a href="{{ route('admin.tags.index') }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-right"></i> Go to Tags
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card border-dark shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-newspaper fa-3x text-dark mb-3"></i>
+                        <h5 class="card-title">Manage Editorials</h5>
+                        <p class="text-muted small mb-3">Review and moderate editorials</p>
+                        <a href="{{ route('editorials.index') }}" class="btn btn-dark btn-sm text-white">
+                            <i class="fas fa-arrow-right"></i> Go to Editorials
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
                 <div class="card border-success shadow-sm h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-code fa-3x text-success mb-3"></i>
@@ -73,6 +97,30 @@
                         <p class="text-muted small mb-3">Add a new problem to the system</p>
                         <a href="{{ route('problem.create') }}" class="btn btn-info btn-sm text-white">
                             <i class="fas fa-plus"></i> Create Problem
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card border-success shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tag fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Create Tag</h5>
+                        <p class="text-muted small mb-3">Add a new tag to the system</p>
+                        <a href="{{ route('tag.create') }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Create Tag
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card border-success shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-pen-fancy fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Create Editorial</h5>
+                        <p class="text-muted small mb-3">Write a new editorial for a problem</p>
+                        <a href="{{ route('editorials.create') }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Create Editorial
                         </a>
                     </div>
                 </div>

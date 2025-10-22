@@ -1184,7 +1184,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('tags.index') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
+                    <a href="{{ route('tag.index') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
                         <i class="menu-icon fas fa-tags"></i>
                         <span>Tags</span>
                     </a>
@@ -1263,7 +1263,7 @@
                         <a class="nav-link" href="{{ route('editorials.index') }}">Editorials</a>
                     </li>
                     <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
+                        <a class="nav-link" href="{{ route('tag.index') }}">Tags</a>
                     </li>
                 @endauth
             </ul>

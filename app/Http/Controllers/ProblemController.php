@@ -12,8 +12,8 @@ class ProblemController extends Controller
      */
     public function index()
     {
-        // Order problems by creation date (newest first)
-        $problems = Problem::orderBy('created_at', 'desc')->paginate(20);
+        // Order problems by creation date (newest first) and load tags
+        $problems = Problem::with('tags')->orderBy('created_at', 'desc')->paginate(20);
         return view('problem.index', compact('problems'));
     }
 
@@ -22,7 +22,8 @@ class ProblemController extends Controller
      */
     public function create()
     {
-        return view('problem.create');
+        $tags = \App\Models\Tag::orderBy('tag_name', 'asc')->get();
+        return view('problem.create', compact('tags'));
     }
 
     /**
@@ -34,6 +35,8 @@ class ProblemController extends Controller
             'title' => 'required|string|max:255',
             'problem_link' => 'required|url',
             'rating' => 'required|integer|min:0|max:3500',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,tag_id',
         ]);
 
         // Initialize dynamic fields to 0
@@ -41,7 +44,17 @@ class ProblemController extends Controller
         $data['stars'] = 0;
         $data['popularity'] = 0;
 
-        Problem::create($data);
+        // Extract tags before creating problem
+        $tags = $data['tags'] ?? [];
+        unset($data['tags']);
+
+        $problem = Problem::create($data);
+
+        // Sync tags with the problem
+        if (!empty($tags)) {
+            $problem->tags()->sync($tags);
+        }
+
         return redirect()->route('problem.index')->with('success', 'Problem created successfully.');
     }
 
@@ -50,6 +63,7 @@ class ProblemController extends Controller
      */
     public function show(Problem $problem)
     {
+        $problem->load('tags');
         return view('problem.show', compact('problem'));
     }
 
@@ -58,7 +72,9 @@ class ProblemController extends Controller
      */
     public function edit(Problem $problem)
     {
-        return view('problem.edit', compact('problem'));
+        $tags = \App\Models\Tag::orderBy('tag_name', 'asc')->get();
+        $problem->load('tags');
+        return view('problem.edit', compact('problem', 'tags'));
     }
 
     /**
@@ -70,12 +86,22 @@ class ProblemController extends Controller
             'title' => 'required|string|max:255',
             'problem_link' => 'required|url',
             'rating' => 'required|integer|min:0|max:3500',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,tag_id',
         ]);
 
         // Don't allow manual update of solved_count, stars, or popularity
         // These are updated automatically via UserProblem events
 
+        // Extract tags before updating problem
+        $tags = $data['tags'] ?? [];
+        unset($data['tags']);
+
         $problem->update($data);
+
+        // Sync tags with the problem
+        $problem->tags()->sync($tags);
+
         return redirect()->route('problem.index')->with('success', 'Problem updated successfully.');
     }
 

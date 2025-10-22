@@ -99,6 +99,20 @@
                             <p class="text-muted">{{ $themeName }}</p>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12 mb-3">
+                            <p class="mb-2"><strong style="color: {{ $themeColor }};">Tags:</strong></p>
+                            @if($problem->tags->count() > 0)
+                                <div>
+                                    @foreach($problem->tags as $tag)
+                                        <x-tag-badge :tagName="$tag->tag_name" :tagId="$tag->tag_id" />
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-muted">No tags assigned</p>
+                            @endif
+                        </div>
+                    </div>
                     @if(!empty($problem->created_at))
                     <div class="row mt-3">
                         <div class="col-md-6 mb-3">

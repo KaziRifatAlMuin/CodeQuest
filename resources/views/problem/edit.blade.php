@@ -50,6 +50,36 @@
                             <small class="text-muted">Problem difficulty rating (0-3500)</small>
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label">Tags (Optional)</label>
+                            <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                                @if($tags->count() > 0)
+                                    <div class="row">
+                                        @foreach($tags as $tag)
+                                            <div class="col-md-6 mb-2">
+                                                <div class="form-check">
+                                                    <input 
+                                                        class="form-check-input" 
+                                                        type="checkbox" 
+                                                        name="tags[]" 
+                                                        value="{{ $tag->tag_id }}" 
+                                                        id="tag_{{ $tag->tag_id }}"
+                                                        {{ in_array($tag->tag_id, old('tags', $problem->tags->pluck('tag_id')->toArray())) ? 'checked' : '' }}
+                                                    >
+                                                    <label class="form-check-label" for="tag_{{ $tag->tag_id }}">
+                                                        <x-tag-badge :tagName="$tag->tag_name" :tagId="$tag->tag_id" />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-muted mb-0">No tags available. <a href="{{ route('tag.create') }}">Create one</a></p>
+                                @endif
+                            </div>
+                            <small class="text-muted">Select one or more tags that describe this problem</small>
+                        </div>
+
                         <div class="card mb-4 bg-light">
                             <div class="card-body">
                                 <h6 class="card-title"><i class="fas fa-chart-line"></i> Current Statistics (Auto-calculated)</h6>
