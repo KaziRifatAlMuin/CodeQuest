@@ -115,4 +115,50 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(UserProblem::class, 'user_id', 'user_id')
                     ->where('is_starred', true);
     }
+
+    /**
+     * Relationship: Get users that this user is following
+     */
+    public function following()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'friends',
+            'user_id',
+            'friend_id',
+            'user_id',
+            'user_id'
+        );
+    }
+
+    /**
+     * Relationship: Get users who are following this user (followers)
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'friends',
+            'friend_id',
+            'user_id',
+            'user_id',
+            'user_id'
+        );
+    }
+
+    /**
+     * Check if this user is following another user
+     */
+    public function isFollowing($userId)
+    {
+        return $this->following()->where('friends.friend_id', $userId)->exists();
+    }
+
+    /**
+     * Check if this user is followed by another user
+     */
+    public function isFollowedBy($userId)
+    {
+        return $this->followers()->where('friends.user_id', $userId)->exists();
+    }
 }

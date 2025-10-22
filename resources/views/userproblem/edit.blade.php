@@ -69,6 +69,18 @@
                                 </div>
                             </div>
 
+                            <!-- Star Checkbox -->
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="is_starred" id="is_starred" value="1"
+                                        {{ old('is_starred', $userProblem?->is_starred ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_starred">
+                                        <i class="fas fa-star text-warning"></i> <strong>Mark as Starred</strong>
+                                    </label>
+                                    <div class="form-text">Add this problem to your starred list for quick access</div>
+                                </div>
+                            </div>
+
                             <!-- Submission Link -->
                             <div class="mb-3">
                                 <label for="submission_link" class="form-label">Submission Link (Optional)</label>

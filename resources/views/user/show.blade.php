@@ -50,6 +50,24 @@
                 </div>
                 <div class="col-md-2 text-end">
                     @auth
+                        @if(auth()->user()->user_id !== $user->user_id)
+                            @php
+                                $isFollowing = auth()->user()->isFollowing($user->user_id);
+                            @endphp
+                            <form action="{{ $isFollowing ? route('friend.unfollow', $user->user_id) : route('friend.follow', $user->user_id) }}" method="POST" class="mb-2">
+                                @csrf
+                                @if($isFollowing)
+                                    <button type="submit" class="btn btn-outline-secondary" style="width: 100%;">
+                                        <i class="fas fa-user-minus"></i> Unfollow
+                                    </button>
+                                @else
+                                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                        <i class="fas fa-user-plus"></i> Follow
+                                    </button>
+                                @endif
+                            </form>
+                        @endif
+                        
                         @if(in_array(auth()->user()->role, ['moderator', 'admin']))
                             <a href="{{ route('user.edit', $user->user_id) }}" class="btn btn-primary mb-2" style="width: 100%;">
                                 <i class="fas fa-edit"></i> Edit

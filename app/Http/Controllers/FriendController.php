@@ -4,62 +4,81 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Friend;
+use App\Models\User;
 
 class FriendController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display followers of a user
      */
-    public function index()
+    public function followers(User $user)
     {
-        //
+        $followers = $user->followers()->paginate(20);
+        
+        return view('friend.followers', [
+            'user' => $user,
+            'followers' => $followers,
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display following list of a user
      */
-    public function create()
+    public function followings(User $user)
     {
-        //
+        $following = $user->following()->paginate(20);
+        
+        return view('friend.followings', [
+            'user' => $user,
+            'following' => $following,
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Follow a user
      */
-    public function store(Request $request)
+    public function follow(User $user)
     {
-        //
+        $authUser = auth()->user();
+        
+        // Prevent user from following themselves
+        if ($authUser->user_id === $user->user_id) {
+            return back()->with('error', 'You cannot follow yourself.');
+        }
+
+        // Check if already following
+        if ($authUser->isFollowing($user->user_id)) {
+            return back()->with('info', 'You are already following this user.');
+        }
+
+        // Create follow relationship
+        Friend::create([
+            'user_id' => $authUser->user_id,
+            'friend_id' => $user->user_id,
+            'is_friend' => false,
+        ]);
+
+        // Update follower count
+        $user->increment('followers_count');
+
+        return back()->with('success', 'You are now following ' . $user->name . '.');
     }
 
     /**
-     * Display the specified resource.
+     * Unfollow a user
      */
-    public function show(string $id)
+    public function unfollow(User $user)
     {
-        //
-    }
+        $authUser = auth()->user();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // Remove follow relationship
+        Friend::where('user_id', $authUser->user_id)
+               ->where('friend_id', $user->user_id)
+               ->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        // Update follower count
+        $user->decrement('followers_count');
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', 'You have unfollowed ' . $user->name . '.');
     }
 }

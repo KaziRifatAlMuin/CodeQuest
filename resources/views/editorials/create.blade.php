@@ -76,18 +76,19 @@
                         <div class="mb-4">
                             <label for="solution" class="form-label">Solution / Approach <span class="text-danger">*</span></label>
                             <small class="text-muted d-block mb-2">
-                                <i class="fas fa-info-circle"></i> Write your solution explanation in Markdown. Supports **bold**, *italic*, lists, code blocks, etc.
+                                <i class="fas fa-info-circle"></i> Write your solution explanation. You can use Markdown formatting.
                             </small>
                             <textarea class="form-control @error('solution') is-invalid @enderror" 
                                       id="solution" 
                                       name="solution" 
                                       rows="10" 
-                                      required>{{ old('solution') }}</textarea>
+                                      required 
+                                      placeholder="Write your solution explanation here...">{{ old('solution') }}</textarea>
                             @error('solution') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="code" class="form-label">Code Implementation <span class="text-danger">*</span></label>
+                            <label for="code" class="form-label">Code Implementation (Optional)</label>
                             <small class="text-muted d-block mb-2">
                                 <i class="fas fa-code"></i> Paste your code solution here (will be displayed with syntax highlighting)
                             </small>
@@ -95,8 +96,7 @@
                                       id="code" 
                                       name="code" 
                                       rows="15" 
-                                      style="font-family: 'Courier New', monospace; font-size: 14px;"
-                                      required>{{ old('code') }}</textarea>
+                                      style="font-family: 'Courier New', monospace; font-size: 14px;">{{ old('code') }}</textarea>
                             @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
@@ -113,7 +113,7 @@
                         <hr>
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-lg" style="background: {{ $themeColor }}; color: white;">
+                            <button type="submit" id="publishBtn" class="btn btn-lg" style="background: {{ $themeColor }}; color: white;">
                                 <i class="fas fa-save"></i> Publish Editorial
                             </button>
                             <a href="{{ $problem ? route('problem.show', $problem->problem_id) : route('editorials.index') }}" 
@@ -128,19 +128,54 @@
     </div>
 
     <script>
-        // Initialize SimpleMDE for Markdown editing
-        var simplemde = new SimpleMDE({
-            element: document.getElementById("solution"),
-            spellChecker: false,
-            placeholder: "Write your solution explanation here...\n\nExample:\n## Approach\nThis problem can be solved using...\n\n### Algorithm\n1. First step\n2. Second step\n\n### Complexity\n- Time: O(n)\n- Space: O(1)",
-            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", 
-                      "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"],
-            status: ["lines", "words", "cursor"],
-        });
-
-        // Highlight code preview
-        document.getElementById('code').addEventListener('input', function() {
-            this.style.color = '#e83e8c';
+        // Form submission handler - WITHOUT SimpleMDE
+        var formSubmitting = false;
+        
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Prevent double submission
+            if (formSubmitting) {
+                e.preventDefault();
+                console.log('Prevented double submission');
+                return false;
+            }
+            
+            console.log('=== Form submission started ===');
+            
+            // Get form values directly from textarea
+            var solutionValue = document.getElementById('solution').value;
+            var problemId = document.querySelector('[name="problem_id"]')?.value;
+            var codeValue = document.getElementById('code').value;
+            
+            console.log('Solution length:', solutionValue ? solutionValue.length : 0);
+            console.log('Problem ID:', problemId);
+            console.log('Code length:', codeValue ? codeValue.length : 0);
+            
+            // Validate that solution is not empty
+            if (!solutionValue || solutionValue.trim().length < 10) {
+                e.preventDefault();
+                alert('Please write a solution explanation (at least 10 characters).');
+                return false;
+            }
+            
+            // Validate problem_id
+            if (!problemId) {
+                e.preventDefault();
+                alert('Please select a problem.');
+                return false;
+            }
+            
+            console.log('=== Form validation passed, submitting ===');
+            
+            // Disable button and show loading state
+            formSubmitting = true;
+            var btn = document.getElementById('publishBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+            }
+            
+            // Allow form to submit
+            return true;
         });
     </script>
 </x-layout>

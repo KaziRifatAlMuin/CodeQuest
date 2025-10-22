@@ -10,13 +10,25 @@
         <div class="card-header" style="background-color: #f0f4ff;">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-user"></i> Your Status</h5>
-                @if($userStatus)
-                    <a href="{{ route('userProblem.edit', [$problem, auth()->id()]) }}" 
-                       class="btn btn-sm btn-outline-primary"
-                       title="Update your status">
-                        <i class="fas fa-pencil-alt"></i> Update
-                    </a>
-                @endif
+                <div class="d-flex gap-2">
+                    <!-- Star Toggle Button -->
+                    <form action="{{ route('problem.toggleStar', $problem) }}" method="POST" style="display: inline;">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                        <button type="submit" class="btn btn-sm {{ $userStatus && $userStatus->is_starred ? 'btn-warning' : 'btn-outline-warning' }}" 
+                                title="{{ $userStatus && $userStatus->is_starred ? 'Remove star' : 'Add star' }}">
+                            <i class="fas fa-star"></i> {{ $userStatus && $userStatus->is_starred ? 'Starred' : 'Star' }}
+                        </button>
+                    </form>
+                    
+                    @if($userStatus)
+                        <a href="{{ route('userProblem.edit', [$problem, auth()->id()]) }}" 
+                           class="btn btn-sm btn-outline-primary"
+                           title="Update your status">
+                            <i class="fas fa-pencil-alt"></i> Update
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
         <div class="card-body">

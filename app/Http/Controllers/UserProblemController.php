@@ -156,12 +156,14 @@ class UserProblemController extends Controller
             'status' => 'required|in:unsolved,trying,solved',
             'notes' => 'nullable|string|max:1000',
             'submission_link' => 'nullable|url',
+            'is_starred' => 'nullable|boolean',
         ]);
 
         $data = [
             'status' => $request->status,
             'notes' => $request->notes,
             'submission_link' => $request->submission_link,
+            'is_starred' => $request->has('is_starred') ? true : false,
         ];
 
         if ($request->status === 'solved') {

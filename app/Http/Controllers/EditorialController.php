@@ -39,21 +39,32 @@ class EditorialController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'problem_id' => 'required|integer|exists:problems,problem_id',
-            'solution' => 'required|string',
-            'code' => 'required|string',
-        ]);
-        
-        // Set author_id to logged-in user
-        $data['author_id'] = auth()->id();
-        $data['upvotes'] = 0;
-        $data['downvotes'] = 0;
-        
-        Editorial::create($data);
-        
-        return redirect()->route('problem.show', $data['problem_id'])
-            ->with('success', 'Editorial created successfully.');
+        try {
+            // Validate request data
+            $validated = $request->validate([
+                'problem_id' => 'required|exists:problems,problem_id',
+                'solution' => 'required|string|min:10',
+                'code' => 'nullable|string',
+            ]);
+            
+            // Create editorial
+            $editorial = Editorial::create([
+                'problem_id' => $validated['problem_id'],
+                'author_id' => auth()->user()->user_id,
+                'solution' => $validated['solution'],
+                'code' => $validated['code'] ?? '',
+                'upvotes' => 0,
+                'downvotes' => 0,
+            ]);
+            
+            return redirect()->route('problem.show', $validated['problem_id'])
+                ->with('success', 'Editorial published successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withInput()->withErrors($e->errors());
+        } catch (\Exception $e) {
+            \Log::error('Editorial creation error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Error publishing editorial: ' . $e->getMessage());
+        }
     }
 
     /**

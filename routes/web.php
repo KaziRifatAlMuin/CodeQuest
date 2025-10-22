@@ -8,6 +8,7 @@ use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\UserProblemController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EditorialController;
+use App\Http\Controllers\FriendController;
 use App\Http\Middleware\ValidUser;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -84,6 +85,13 @@ Route::middleware('auth')->group(function () {
         Route::middleware(['checkRole:admin'])->group(function () {
             Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
         });
+        
+        // Friend/Following Routes - All authenticated users
+        Route::get('/users/{user}/followers', [FriendController::class, 'followers'])->name('friend.followers');
+        Route::get('/users/{user}/following', [FriendController::class, 'followings'])->name('friend.following');
+    Route::post('/users/{user}/follow', [FriendController::class, 'follow'])->name('friend.follow');
+    // Accept both POST and DELETE methods for unfollow for backward-compatibility
+    Route::match(['post', 'delete'], '/users/{user}/unfollow', [FriendController::class, 'unfollow'])->name('friend.unfollow');
         
         // Problem Management Routes
         Route::get('/problems', [ProblemController::class, 'index'])->name('problem.index');
