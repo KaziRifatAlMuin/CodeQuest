@@ -90,4 +90,12 @@ class Problem extends Model
         $this->updateStarsCount();
         $this->updatePopularity();
     }
+
+    /**
+     * Relationship: Problem has many Editorials
+     */
+    public function editorials()
+    {
+        return $this->hasMany(Editorial::class, 'problem_id', 'problem_id');
+    }
 }

@@ -125,6 +125,11 @@
                 </a>
                 
                 @auth
+                    <a href="{{ route('editorials.create', ['problem_id' => $problem->problem_id]) }}" 
+                       class="btn btn-primary">
+                        <i class="fas fa-pen"></i> Write Editorial
+                    </a>
+                    
                     @if(auth()->user()->role === 'admin')
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">
                             <i class="fas fa-tachometer-alt"></i> Go to Admin Dashboard
@@ -150,4 +155,71 @@
             </div>
         </div>
     </div>
+
+    <!-- Editorials Section -->
+    @php
+        $editorials = $problem->editorials()->with('author')->orderBy('upvotes', 'desc')->get();
+    @endphp
+    
+    @if($editorials->count() > 0)
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header" style="background: {{ $themeBg }}; border-bottom: 2px solid {{ $themeColor }};">
+                        <h4 class="mb-0" style="color: {{ $themeColor }};">
+                            <i class="fas fa-book-open"></i> Community Editorials ({{ $editorials->count() }})
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-4">
+                            <i class="fas fa-info-circle"></i> Editorials are sorted by upvotes
+                        </p>
+                        
+                        <div class="row">
+                            @foreach($editorials as $editorial)
+                                <div class="col-lg-6 mb-3">
+                                    <div class="card h-100" style="border-left: 3px solid {{ $themeColor }};">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-0">
+                                                    <i class="fas fa-user-circle" style="color: {{ $themeColor }};"></i>
+                                                    <a href="{{ route('user.show', $editorial->author->user_id) }}" 
+                                                       class="text-decoration-none">
+                                                        {{ $editorial->author->name }}
+                                                    </a>
+                                                </h6>
+                                                <div>
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-thumbs-up"></i> {{ $editorial->upvotes }}
+                                                    </span>
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-thumbs-down"></i> {{ $editorial->downvotes }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="card-text text-muted mb-2" style="font-size: 0.9rem;">
+                                                {{ Str::limit(strip_tags($editorial->solution), 100) }}
+                                            </p>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="far fa-clock"></i> {{ $editorial->updated_at->diffForHumans() }}
+                                                </small>
+                                                <a href="{{ route('editorials.show', $editorial->editorial_id) }}" 
+                                                   class="btn btn-sm" 
+                                                   style="background: {{ $themeColor }}; color: white;">
+                                                    <i class="fas fa-eye"></i> Read
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </x-layout>

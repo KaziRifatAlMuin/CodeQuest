@@ -204,6 +204,77 @@
         </div>
     </div>
 
+    <!-- Editorials Section -->
+    @php
+        $editorials = $user->editorials()->with('problem')->orderBy('upvotes', 'desc')->get();
+    @endphp
+    
+    @if($editorials->count() > 0)
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header" style="background: {{ $themeBg }}; border-bottom: 2px solid {{ $themeColor }};">
+                        <h4 class="mb-0" style="color: {{ $themeColor }};">
+                            <i class="fas fa-book-open"></i> Editorials Written ({{ $editorials->count() }})
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-4">
+                            <i class="fas fa-info-circle"></i> Editorials are sorted by upvotes
+                        </p>
+                        
+                        <div class="row">
+                            @foreach($editorials as $editorial)
+                                @php
+                                    $problemRating = (int) ($editorial->problem->rating ?? 0);
+                                    $problemThemeColor = \App\Helpers\RatingHelper::getRatingColor($problemRating);
+                                @endphp
+                                
+                                <div class="col-lg-6 mb-3">
+                                    <div class="card h-100" style="border-left: 3px solid {{ $problemThemeColor }};">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-0">
+                                                    <a href="{{ route('problem.show', $editorial->problem->problem_id) }}" 
+                                                       style="color: {{ $problemThemeColor }}; text-decoration: none; font-weight: 700;">
+                                                        {{ $editorial->problem->title }}
+                                                    </a>
+                                                </h6>
+                                                <div>
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-thumbs-up"></i> {{ $editorial->upvotes }}
+                                                    </span>
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-thumbs-down"></i> {{ $editorial->downvotes }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="card-text text-muted mb-2" style="font-size: 0.9rem;">
+                                                {{ Str::limit(strip_tags($editorial->solution), 100) }}
+                                            </p>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="far fa-clock"></i> {{ $editorial->updated_at->diffForHumans() }}
+                                                </small>
+                                                <a href="{{ route('editorials.show', $editorial->editorial_id) }}" 
+                                                   class="btn btn-sm" 
+                                                   style="background: {{ $problemThemeColor }}; color: white;">
+                                                    <i class="fas fa-eye"></i> Read
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Action Buttons at Bottom (Left Aligned) -->
     <div class="row mt-4 pt-4" style="border-top: 2px solid #dee2e6;">
         <div class="col-12">

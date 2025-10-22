@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'isAuth' => \App\Http\Middleware\CheckAuthentication::class,
             'checkRole' => \App\Http\Middleware\CheckUserRole::class,
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'editorialOwner' => \App\Http\Middleware\CheckEditorialOwnership::class,
         ]);
     })
 

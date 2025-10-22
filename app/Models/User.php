@@ -81,4 +81,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $value ?? 'user';
     }
+
+    /**
+     * Relationship: User has many Editorials (as author)
+     */
+    public function editorials()
+    {
+        return $this->hasMany(Editorial::class, 'author_id', 'user_id');
+    }
 }

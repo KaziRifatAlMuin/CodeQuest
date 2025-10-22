@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\UserProblemController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\EditorialController;
 use App\Http\Middleware\ValidUser;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -114,8 +115,28 @@ Route::middleware('auth')->group(function () {
         Route::get('/tags', [DatabaseController::class, 'showTagsList'])->name('tags.index');
         
         // Editorial Routes
-        Route::get('/editorials', [DatabaseController::class, 'showEditorialsList'])->name('editorials.index');
-        Route::get('/editorials/{id}', [DatabaseController::class, 'showEditorialshow'])->name('editorials.show');
+        // Public editorial viewing
+        Route::get('/editorials', [EditorialController::class, 'index'])->name('editorials.index');
+        Route::get('/editorials/{editorial}', [EditorialController::class, 'show'])->name('editorials.show');
+        
+        // Creating editorials - all authenticated users
+        Route::get('/editorials/create', [EditorialController::class, 'create'])->name('editorials.create');
+        Route::post('/editorials', [EditorialController::class, 'store'])->name('editorials.store');
+        
+        // Voting on editorials - all authenticated users
+        Route::post('/editorials/{editorial}/upvote', [EditorialController::class, 'upvote'])->name('editorials.upvote');
+        Route::post('/editorials/{editorial}/downvote', [EditorialController::class, 'downvote'])->name('editorials.downvote');
+        
+        // Editing editorials - only author or admin
+        Route::middleware(['editorialOwner'])->group(function () {
+            Route::get('/editorials/{editorial}/edit', [EditorialController::class, 'edit'])->name('editorials.edit');
+            Route::put('/editorials/{editorial}', [EditorialController::class, 'update'])->name('editorials.update');
+        });
+        
+        // Deleting editorials - admins only
+        Route::middleware(['checkRole:admin'])->group(function () {
+            Route::delete('/editorials/{editorial}', [EditorialController::class, 'destroy'])->name('editorials.destroy');
+        });
         
         // Admin Routes - Only for admins
         Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
