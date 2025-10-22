@@ -63,6 +63,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        // Middleware handles authorization
         return view('user.edit', compact('user'));
     }
 
@@ -71,17 +72,32 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        // Middleware handles authorization
+        
         // Validate incoming request data
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->user_id . ',user_id',
             'password' => 'nullable|string|min:8',
-            'cf_handle' => 'required|string|max:255|unique:users,cf_handle,' . $user->user_id . ',user_id',
-            'profile_picture' => 'nullable|string|max:255',
-            'bio' => 'nullable|string|max:1000',
+            'cf_handle' => 'required|string|max:255',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'bio' => 'nullable|string|max:200',
             'country' => 'nullable|string|max:255',
             'university' => 'nullable|string|max:255',
         ]);
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if exists
+            if ($user->profile_picture && file_exists(public_path('images/profile/' . $user->profile_picture))) {
+                unlink(public_path('images/profile/' . $user->profile_picture));
+            }
+
+            $file = $request->file('profile_picture');
+            $filename = time() . '_' . $user->user_id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/profile'), $filename);
+            $data['profile_picture'] = $filename;
+        }
 
         // Hash the password if provided
         if (!empty($data['password'])) {
@@ -92,7 +108,7 @@ class UserController extends Controller
 
         // Update user
         $user->update($data);
-        return redirect()->route('user.index')->with('success', 'User updated successfully.');
+        return redirect()->route('user.show', $user->user_id)->with('success', 'User updated successfully.');
     }
 
     /**
@@ -100,6 +116,13 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        // Middleware handles authorization
+        
+        // Delete profile picture if exists
+        if ($user->profile_picture && file_exists(public_path('images/profile/' . $user->profile_picture))) {
+            unlink(public_path('images/profile/' . $user->profile_picture));
+        }
+
         $user->delete();
         return redirect()->route('user.index')->with('success', 'User deleted successfully.');
     }

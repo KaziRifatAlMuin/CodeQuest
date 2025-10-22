@@ -23,7 +23,7 @@
                     </h1>
                     <p class="lead mb-2">
                         <a href="{{ $problem->problem_link }}" target="_blank" style="color: {{ $themeColor }}; text-decoration: none; font-weight: 600;">
-                            <i class="fas fa-external-link-alt"></i> View on Codeforces
+                            <i class="fas fa-external-link-alt"></i> View on Online Judge
                         </a>
                     </p>
                     <span class="badge" style="background: {{ $themeColor }}; font-size: 1rem; padding: 8px 16px;">
@@ -123,16 +123,24 @@
                 <a href="{{ route('problem.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Problems
                 </a>
-                <a href="{{ route('problem.edit', $problem) }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit Problem
-                </a>
-                <form action="{{ route('problem.destroy', $problem) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this problem? This action cannot be undone.');">
-                        <i class="fas fa-trash"></i> Delete Problem
-                    </button>
-                </form>
+                
+                @auth
+                    @if(in_array(auth()->user()->role, ['moderator', 'admin']))
+                        <a href="{{ route('problem.edit', $problem) }}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit Problem
+                        </a>
+                    @endif
+                    
+                    @if(auth()->user()->role === 'admin')
+                        <form action="{{ route('problem.destroy', $problem) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this problem? This action cannot be undone.');">
+                                <i class="fas fa-trash"></i> Delete Problem
+                            </button>
+                        </form>
+                    @endif
+                @endauth
             </div>
         </div>
     </div>

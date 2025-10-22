@@ -13,11 +13,18 @@
         <div class="card-body">
             <div class="row align-items-center">
                 <div class="col-md-2 text-center">
-                    <div style="width: 120px; height: 120px; border-radius: 50%; background: {{ $themeBg }}; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid {{ $themeColor }};">
-                        <i class="fas fa-laptop-code" style="font-size: 3rem; color: {{ $themeColor }};"></i>
-                    </div>
+                    @if($user->profile_picture)
+                        <img src="{{ asset('images/profile/' . $user->profile_picture) }}" 
+                             alt="{{ $user->name }}" 
+                             class="rounded-circle" 
+                             style="width: 120px; height: 120px; object-fit: cover; border: 3px solid {{ $themeColor }}; margin: 0 auto;">
+                    @else
+                        <div style="width: 120px; height: 120px; border-radius: 50%; background: {{ $themeBg }}; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid {{ $themeColor }};">
+                            <i class="fas fa-user-circle" style="font-size: 3rem; color: {{ $themeColor }};"></i>
+                        </div>
+                    @endif
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-8">
                     <h1 class="display-5 mb-2" style="color: {{ $themeColor }}; font-weight: 700;">
                         {{ $user->name }}
                     </h1>
@@ -40,6 +47,25 @@
                     <span class="badge bg-secondary" style="font-size: 1rem; padding: 8px 16px; margin-left: 8px;">
                         <i class="fas fa-user-tag"></i> {{ ucfirst($user->role ?? 'user') }}
                     </span>
+                </div>
+                <div class="col-md-2 text-end">
+                    @auth
+                        @if(in_array(auth()->user()->role, ['moderator', 'admin']))
+                            <a href="{{ route('user.edit', $user->user_id) }}" class="btn btn-primary mb-2" style="width: 100%;">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        @endif
+                        
+                        @if(auth()->user()->role === 'admin' && auth()->user()->user_id !== $user->user_id)
+                            <form action="{{ route('user.destroy', $user->user_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger" style="width: 100%;">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
                 </div>
             </div>
         </div>

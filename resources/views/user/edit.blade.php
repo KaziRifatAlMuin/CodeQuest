@@ -27,9 +27,42 @@
         <div class="col-lg-8 mx-auto">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form action="{{ route('user.update', $user->user_id) }}" method="POST">
+                    <form action="{{ route('user.update', $user->user_id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+
+                        <!-- Profile Picture Section -->
+                        <div class="text-center mb-4">
+                            <div class="position-relative d-inline-block">
+                                @if($user->profile_picture)
+                                    <img src="{{ asset('images/profile/' . $user->profile_picture) }}" 
+                                         alt="{{ $user->name }}" 
+                                         id="profilePreview"
+                                         class="rounded-circle" 
+                                         style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #667eea;">
+                                @else
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle" 
+                                         id="profilePreview"
+                                         style="width: 120px; height: 120px; border: 4px solid #667eea; background: #f0f4ff;">
+                                        <i class="fas fa-user-circle" style="font-size: 4rem; color: #667eea;"></i>
+                                    </div>
+                                @endif
+                                
+                                <label for="profile_picture" class="position-absolute" style="bottom: 0; right: 0; cursor: pointer;">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                         style="width: 35px; height: 35px; border: 3px solid white;">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </label>
+                            </div>
+                            <input type="file" 
+                                   id="profile_picture" 
+                                   name="profile_picture" 
+                                   accept="image/*" 
+                                   style="display: none;"
+                                   onchange="previewImage(event)">
+                            <p class="text-muted small mt-2">Click the camera icon to change profile picture</p>
+                        </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
@@ -73,12 +106,8 @@
 
                         <div class="mb-4">
                             <label for="bio" class="form-label">Bio</label>
-                            <textarea class="form-control" id="bio" name="bio" rows="4">{{ old('bio', $user->bio) }}</textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="profile_picture" class="form-label">Profile Picture URL</label>
-                            <input type="text" class="form-control" id="profile_picture" name="profile_picture" value="{{ old('profile_picture', $user->profile_picture) }}" placeholder="https://example.com/image.jpg">
+                            <textarea class="form-control" id="bio" name="bio" rows="4" maxlength="200">{{ old('bio', $user->bio) }}</textarea>
+                            <small class="form-text text-muted">Max 200 characters</small>
                         </div>
 
                         <hr>
@@ -87,7 +116,7 @@
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-save"></i> Update User
                             </button>
-                            <a href="{{ route('user.index') }}" class="btn btn-secondary btn-lg">
+                            <a href="{{ route('user.show', $user->user_id) }}" class="btn btn-secondary btn-lg">
                                 <i class="fas fa-times"></i> Cancel
                             </a>
                         </div>
@@ -96,4 +125,19 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Preview image before upload
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('profilePreview');
+                    preview.innerHTML = '<img src="' + e.target.result + '" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #667eea;">';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </x-layout>

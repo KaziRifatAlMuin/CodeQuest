@@ -12,15 +12,30 @@ class CheckUserRole
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  string  ...$roles
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        echo "CheckUserRole middleware executed.";
-        $checkrole = $request->user()->role;
-        if ($checkrole == $role) {
-            return $next($request);
-        } else {
-            return redirect()->route('home')->with('error', 'You do not have permission to access this page.');
+        if (!$request->user()) {
+            abort(403, 'Unauthorized. Please login to continue.');
         }
+
+        $userRole = $request->user()->role;
+
+        if (!in_array($userRole, $roles)) {
+            // Check if it's an AJAX request
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Unauthorized. You do not have permission to perform this action.',
+                    'required_roles' => $roles,
+                    'your_role' => $userRole
+                ], 403);
+            }
+
+            // For web requests, show alert via session
+            return redirect()->back()->with('error', 'Unauthorized. You do not have permission to perform this action.');
+        }
+
+        return $next($request);
     }
 }

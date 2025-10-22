@@ -64,24 +64,48 @@ Route::middleware('auth')->group(function () {
         // Users Routes (Public within auth)
         Route::get('/leaderboard', [DatabaseController::class, 'showLeaderboard'])->name('leaderboard');
         
-        // User Management Routes (CRUD)
+        // User Management Routes
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
-        Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
-        Route::post('/users', [UserController::class, 'store'])->name('user.store');
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('user.update');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+        
+        // User Create - Moderators and Admins only (MUST come before {user} route)
+        Route::middleware(['checkRole:moderator,admin'])->group(function () {
+            Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
+            Route::post('/users', [UserController::class, 'store'])->name('user.store');
+        });
+        
         Route::get('/users/{user}', [UserController::class, 'show'])->name('user.show');
         
-        // Problem Management Routes (CRUD)
+        // User Edit/Update - Moderators and Admins only
+        Route::middleware(['checkRole:moderator,admin'])->group(function () {
+            Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+            Route::put('/users/{user}', [UserController::class, 'update'])->name('user.update');
+        });
+        
+        // User Delete - Admins only
+        Route::middleware(['checkRole:admin'])->group(function () {
+            Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+        });
+        
+        // Problem Management Routes
         Route::get('/problems', [ProblemController::class, 'index'])->name('problem.index');
+        Route::get('/problemset', [ProblemController::class, 'index'])->name('problemset');
+        
+        // Problem Create - All authenticated users can create (MUST come before {problem} route)
         Route::get('/problems/create', [ProblemController::class, 'create'])->name('problem.create');
         Route::post('/problems', [ProblemController::class, 'store'])->name('problem.store');
-        Route::get('/problems/{problem}/edit', [ProblemController::class, 'edit'])->name('problem.edit');
-        Route::put('/problems/{problem}', [ProblemController::class, 'update'])->name('problem.update');
-        Route::delete('/problems/{problem}', [ProblemController::class, 'destroy'])->name('problem.destroy');
+        
         Route::get('/problems/{problem}', [ProblemController::class, 'show'])->name('problem.show');
-        Route::get('/problemset', [ProblemController::class, 'index'])->name('problemset');
+        
+        // Problem Edit/Update - Moderators and Admins only
+        Route::middleware(['checkRole:moderator,admin'])->group(function () {
+            Route::get('/problems/{problem}/edit', [ProblemController::class, 'edit'])->name('problem.edit');
+            Route::put('/problems/{problem}', [ProblemController::class, 'update'])->name('problem.update');
+        });
+        
+        // Problem Delete - Admins only
+        Route::middleware(['checkRole:admin'])->group(function () {
+            Route::delete('/problems/{problem}', [ProblemController::class, 'destroy'])->name('problem.destroy');
+        });
         
         // User-Problem Interaction Routes
         Route::post('/problems/{problem}/mark-solved', [UserProblemController::class, 'markSolved'])->name('problem.markSolved');
@@ -105,7 +129,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/json_editorials', [DatabaseController::class, 'showEditorials'])->name('json.editorials');
         
         // Admin Routes - Only for admins
-        Route::middleware('can:admin')->prefix('admin')->group(function () {
+        Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
             Route::get('/dashboard', [DatabaseController::class, 'adminDashboard'])->name('admin.dashboard');
         });
     });

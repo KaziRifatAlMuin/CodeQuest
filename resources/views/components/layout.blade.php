@@ -253,8 +253,16 @@
             border: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border-radius: 8px;
-            padding: 0.5rem 0;
+            padding: 0;
             margin-top: 0.5rem;
+            min-width: 250px;
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0.5rem;
         }
 
         .dropdown-item {
@@ -275,6 +283,15 @@
 
         .dropdown-divider {
             margin: 0.5rem 0;
+        }
+
+        /* Profile Icon Color in Navbar */
+        .nav-link .fa-user-circle {
+            transition: transform 0.2s;
+        }
+
+        .nav-link:hover .fa-user-circle {
+            transform: scale(1.1);
         }
 
         .divider {
@@ -1212,7 +1229,7 @@
             <span class="text-primary">Code</span><span class="text-warning">Quest</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item {{ request()->is('/') || request()->is('home') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('home') }}">Home</a>
                 </li>
@@ -1239,21 +1256,38 @@
                     <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
                     </li>
+                @endauth
+            </ul>
+            
+            <!-- Right Side: Auth Buttons or Profile -->
+            <ul class="navbar-nav ms-auto">
+                @auth
+                    @php
+                        $rating = (int) (Auth::user()->cf_max_rating ?? 0);
+                        $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
+                    @endphp
                     
                     <!-- User Profile Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding-right: 0.5rem;">
-                            @if(Auth::user()->profile_picture)
-                                <img src="{{ asset('images/profile/' . Auth::user()->profile_picture) }}" 
-                                     alt="{{ Auth::user()->name }}" 
-                                     class="rounded-circle mr-2" 
-                                     style="width: 35px; height: 35px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3);">
-                            @else
-                                <i class="fas fa-user-circle mr-2" style="font-size: 1.8rem;"></i>
-                            @endif
-                            <span>{{ Auth::user()->name }}</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle me-2" style="font-size: 1.8rem; color: {{ $ratingColor }};"></i>
+                            <span style="color: white;">{{ Auth::user()->name }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <div class="dropdown-header d-flex align-items-center" style="border-bottom: 2px solid {{ $ratingColor }};">
+                                @if(Auth::user()->profile_picture)
+                                    <img src="{{ asset('images/profile/' . Auth::user()->profile_picture) }}" 
+                                         alt="{{ Auth::user()->name }}" 
+                                         class="rounded-circle me-2" 
+                                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid {{ $ratingColor }};">
+                                @else
+                                    <i class="fas fa-user-circle me-2" style="font-size: 2.5rem; color: {{ $ratingColor }};"></i>
+                                @endif
+                                <div>
+                                    <strong style="color: {{ $ratingColor }};">{{ Auth::user()->name }}</strong><br>
+                                    <small class="text-muted">{{ Auth::user()->cf_handle }} ({{ $rating }})</small>
+                                </div>
+                            </div>
                             <a class="dropdown-item" href="{{ route('account.profile') }}">
                                 <i class="fas fa-user"></i> My Profile
                             </a>
@@ -1288,6 +1322,35 @@
 
     <!-- Main Content -->
     <div class="container mt-4">
+        <!-- Global Alert Messages -->
+        @if(session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session()->has('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> <strong>Success:</strong> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session()->has('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session()->has('info'))
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i> <strong>Info:</strong> {{ session('info') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         {{ $slot }}
     </div>
 

@@ -60,11 +60,15 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mt-4">
-        <div>
-            <a href="{{ route('user.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New User
-            </a>
-        </div>
-    </div>
+    @auth
+        @if(in_array(auth()->user()->role, ['moderator', 'admin']))
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div>
+                    <a href="{{ route('user.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New User
+                    </a>
+                </div>
+            </div>
+        @endif
+    @endauth
 </x-layout>
