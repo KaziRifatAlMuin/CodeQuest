@@ -111,6 +111,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/problems/{problem}/toggle-star', [UserProblemController::class, 'toggleStar'])->name('problem.toggleStar');
         Route::post('/problems/{problem}/update-status', [UserProblemController::class, 'updateStatus'])->name('problem.updateStatus');
         
+        // User-Problem Edit/Update
+        Route::get('/problems/{problem}/user/{user}/edit', [UserProblemController::class, 'edit'])->name('userProblem.edit');
+        Route::put('/problems/{problem}/user/{user}', [UserProblemController::class, 'update'])->name('userProblem.update');
+        
         // Tag Management Routes
         Route::get('/tags', [\App\Http\Controllers\TagController::class, 'index'])->name('tag.index');
         

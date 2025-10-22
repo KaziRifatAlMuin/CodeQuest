@@ -34,6 +34,9 @@
         </div>
     </div>
 
+    <!-- User Personalized Status -->
+    <x-user-problem-status :problem="$problem" />
+
     <!-- Main Content -->
     <div class="row">
         <div class="col-lg-12">

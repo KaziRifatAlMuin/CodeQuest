@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class UserProblem extends Model
 {
     protected $table = 'userproblems';
+    protected $primaryKey = 'userproblem_id';
+    public $timestamps = false; // Table doesn't have created_at/updated_at columns
     use HasFactory;
     
     protected $fillable = [

@@ -204,6 +204,138 @@
         </div>
     </div>
 
+    <!-- Problem History Section -->
+    @php
+        $userProblems = $user->userProblems()->with('problem.tags')->orderBy('solved_at', 'desc')->get();
+        $solvedProblems = $userProblems->where('status', 'solved');
+        $tryingProblems = $userProblems->where('status', 'trying');
+        $starredProblems = $userProblems->where('is_starred', true);
+    @endphp
+
+    @if($userProblems->count() > 0)
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header" style="background: {{ $themeBg }}; border-bottom: 2px solid {{ $themeColor }};">
+                        <h4 class="mb-0" style="color: {{ $themeColor }};">
+                            <i class="fas fa-history"></i> Problem History
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Stats Overview -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle text-success me-2" style="font-size: 1.5rem;"></i>
+                                    <div>
+                                        <strong>{{ $solvedProblems->count() }}</strong> Solved
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-spinner text-warning me-2" style="font-size: 1.5rem;"></i>
+                                    <div>
+                                        <strong>{{ $tryingProblems->count() }}</strong> Trying
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star text-warning me-2" style="font-size: 1.5rem;"></i>
+                                    <div>
+                                        <strong>{{ $starredProblems->count() }}</strong> Starred
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Problem List -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Problem</th>
+                                        <th>Rating</th>
+                                        <th>Tags</th>
+                                        <th>Status</th>
+                                        <th>Solved Date</th>
+                                        <th>Submission</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($userProblems->take(20) as $userProblem)
+                                        @php
+                                            $problem = $userProblem->problem;
+                                            $problemRating = (int) ($problem->rating ?? 0);
+                                            $problemColor = \App\Helpers\RatingHelper::getRatingColor($problemRating);
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('problem.show', $problem) }}" class="text-decoration-none" style="color: {{ $problemColor }}; font-weight: 600;">
+                                                    {{ $problem->title }}
+                                                </a>
+                                                @if($userProblem->is_starred)
+                                                    <i class="fas fa-star text-warning ms-1" title="Starred"></i>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="background: {{ $problemColor }}; color: white;">
+                                                    {{ $problemRating }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if($problem->tags->count() > 0)
+                                                    @foreach($problem->tags->take(2) as $tag)
+                                                        <x-tag-badge :tagName="$tag->tag_name" :tagId="$tag->tag_id" />
+                                                    @endforeach
+                                                    @if($problem->tags->count() > 2)
+                                                        <span class="text-muted small">+{{ $problem->tags->count() - 2 }}</span>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($userProblem->status === 'solved')
+                                                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> Solved</span>
+                                                @elseif($userProblem->status === 'trying')
+                                                    <span class="badge bg-warning"><i class="fas fa-spinner"></i> Trying</span>
+                                                @else
+                                                    <span class="badge bg-secondary"><i class="fas fa-times-circle"></i> Unsolved</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($userProblem->solved_at)
+                                                    <small class="text-muted">{{ $userProblem->solved_at->format('M d, Y') }}</small>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($userProblem->submission_link)
+                                                    <a href="{{ $userProblem->submission_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-external-link-alt"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if($userProblems->count() > 20)
+                            <p class="text-muted text-center mt-3">
+                                <em>Showing 20 most recent problems</em>
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Editorials Section -->
     @php
         $editorials = $user->editorials()->with('problem')->orderBy('upvotes', 'desc')->get();

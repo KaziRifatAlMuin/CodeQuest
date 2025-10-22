@@ -8,13 +8,48 @@ use App\Models\Problem;
 class ProblemController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource with filters
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Order problems by creation date (newest first) and load tags
-        $problems = Problem::with('tags')->orderBy('created_at', 'desc')->paginate(20);
-        return view('problem.index', compact('problems'));
+        // Get all tags for filter options
+        $tags = \App\Models\Tag::orderBy('tag_name', 'asc')->get();
+
+        // Start query
+        $problemsQuery = Problem::with('tags');
+
+        // Filter by tags
+        $selectedTags = $request->input('tags', []);
+        if (!empty($selectedTags)) {
+            $problemsQuery->whereHas('tags', function($query) use ($selectedTags) {
+                $query->whereIn('tags.tag_id', $selectedTags);
+            });
+        }
+
+        // Filter by rating range
+        $minRating = $request->input('min_rating');
+        $maxRating = $request->input('max_rating');
+        
+        if ($minRating !== null && $minRating !== '') {
+            $problemsQuery->where('rating', '>=', $minRating);
+        }
+        
+        if ($maxRating !== null && $maxRating !== '') {
+            $problemsQuery->where('rating', '<=', $maxRating);
+        }
+
+        // Filter by starred only (for current user)
+        $showStarred = $request->input('starred', false);
+        if ($showStarred && auth()->check()) {
+            $problemsQuery->whereHas('userProblems', function($query) {
+                $query->where('user_id', auth()->id())
+                      ->where('is_starred', true);
+            });
+        }
+
+        $problems = $problemsQuery->orderBy('created_at', 'desc')->paginate(20);
+
+        return view('problem.index', compact('problems', 'tags', 'selectedTags', 'showStarred'));
     }
 
     /**

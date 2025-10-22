@@ -26,26 +26,32 @@ class TagController extends Controller
             ->orderBy('problem_count', 'desc')
             ->get();
 
-        // Build chart colors by rank using 5 groups (0..4) each with 10 shades -> 50 colors
-        $paletteGroups = [
-            // soft blue group
-            ['#E8F6FF','#DAF2FF','#D1F0FF','#C7EEFF','#BDEBFF','#DFF7F0','#E6FBF5','#F0FEF9','#EAF7FF','#E8F0FF'],
-            // soft purple group
-            ['#F5E8FF','#F0E1FF','#EBD9FF','#E6D1FF','#F6EAF9','#FFF0F6','#FFEFF8','#FCEFF5','#F8E6FF','#F3DFFF'],
-            // soft yellow/amber group
-            ['#FFF9E6','#FFF5D1','#FFF0B8','#FFF6DF','#FFF7E6','#FFFBE6','#FFF6CC','#FFF8D9','#FFF3CC','#FFF0E0'],
-            // soft green group
-            ['#E8FFF0','#DFFFE6','#D1FFEA','#CCFFF0','#E6FFF5','#E8FFF7','#F0FFF7','#EAFEF5','#E0FFF0','#D8FFF0'],
-            // soft lavender/other pastels
-            ['#F0E8FF','#EDE8FF','#F5EAF7','#EDEFFB','#F3E8FF','#F6F0FF','#EEF0FF','#F0F2FF','#F7F0FF','#F2EAF7'],
+        // Build chart colors using 5 groups cycling by rank
+        // Group 0: soft blues, Group 1: soft purples/pinks, Group 2: soft yellows, Group 3: soft greens, Group 4: soft lavenders
+        $colorGroups = [
+            // Group 0: soft blues/teals (indices 0-9)
+            ['#E8F6FF', '#DAF2FF', '#D1F0FF', '#C7EEFF', '#BDEBFF', '#DFF7F0', '#E6FBF5', '#F0FEF9', '#EAF7FF', '#E8F0FF'],
+            // Group 1: soft purples/pinks (indices 10-19)
+            ['#F5E8FF', '#F0E1FF', '#EBD9FF', '#E6D1FF', '#F6EAF9', '#FFF0F6', '#FFEFF8', '#FCEFF5', '#F8E6FF', '#F3DFFF'],
+            // Group 2: soft yellows/amber (indices 20-29)
+            ['#FFF9E6', '#FFF5D1', '#FFF0B8', '#FFF6DF', '#FFF7E6', '#FFFBE6', '#FFF6CC', '#FFF8D9', '#FFF3CC', '#FFF0E0'],
+            // Group 3: soft greens (indices 30-39)
+            ['#E8FFF0', '#DFFFE6', '#D1FFEA', '#CCFFF0', '#E6FFF5', '#E8FFF7', '#F0FFF7', '#EAFEF5', '#E0FFF0', '#D8FFF0'],
+            // Group 4: soft lavenders/pastels (indices 40-49)
+            ['#F0E8FF', '#EDE8FF', '#F5EAF7', '#EDEFFB', '#F3E8FF', '#F6F0FF', '#EEF0FF', '#F0F2FF', '#F7F0FF', '#F2EAF7'],
         ];
 
+        // Map each tag to a color based on its rank
+        // Rank 0,5,10,15... → blue group
+        // Rank 1,6,11,16... → purple group
+        // Rank 2,7,12,17... → yellow group
+        // Rank 3,8,13,18... → green group
+        // Rank 4,9,14,19... → lavender group
         $chartColors = [];
-        foreach ($tagStats as $index => $t) {
-            $rank = $index; // 0-based rank (0 = most used)
-            $group = $rank % 5; // group index (0..4)
-            $shade = (int) floor($rank / 5) % 10; // shade index 0..9
-            $chartColors[] = $paletteGroups[$group][$shade];
+        foreach ($tagStats as $rank => $tag) {
+            $groupIndex = $rank % 5;  // Which color group (0-4)
+            $shadeIndex = (int) floor($rank / 5) % 10;  // Which shade within the group (0-9)
+            $chartColors[] = $colorGroups[$groupIndex][$shadeIndex];
         }
 
         // Filter problems based on selected tags

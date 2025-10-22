@@ -18,6 +18,9 @@
         </div>
     @endif
 
+    <!-- Filters -->
+    <x-problem-filters :tags="$tags" :selectedTags="$selectedTags" :showStarred="$showStarred" />
+
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <x-table :headers="['Title', 'Rating', 'Tags', 'Solved', 'Stars', 'Popularity', 'Link']" :paginator="$problems">

@@ -127,19 +127,56 @@ class UserProblemController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing user-problem status
      */
-    public function edit(string $id)
+    public function edit(Problem $problem, $user)
     {
-        //
+        // Verify the user is viewing/editing their own record or is an admin
+        if (auth()->id() != $user && auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $user = \App\Models\User::findOrFail($user);
+        $userProblem = $problem->getUserStatus($user->user_id);
+
+        return view('userProblem.edit', compact('problem', 'user', 'userProblem'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update user-problem status and redirect back to problem
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Problem $problem, $user)
     {
-        //
+        // Verify the user is updating their own record or is an admin
+        if (auth()->id() != $user && auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:unsolved,trying,solved',
+            'notes' => 'nullable|string|max:1000',
+            'submission_link' => 'nullable|url',
+        ]);
+
+        $data = [
+            'status' => $request->status,
+            'notes' => $request->notes,
+            'submission_link' => $request->submission_link,
+        ];
+
+        if ($request->status === 'solved') {
+            $data['solved_at'] = now();
+        }
+
+        UserProblem::updateOrCreate(
+            [
+                'user_id' => $user,
+                'problem_id' => $problem->problem_id,
+            ],
+            $data
+        );
+
+        return redirect()->route('problem.show', $problem)->with('success', 'Your problem status has been updated!');
     }
 
     /**

@@ -89,4 +89,30 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Editorial::class, 'author_id', 'user_id');
     }
+
+    /**
+     * Relationship: User has many UserProblems (tracks progress on problems)
+     */
+    public function userProblems()
+    {
+        return $this->hasMany(UserProblem::class, 'user_id', 'user_id');
+    }
+
+    /**
+     * Get user's solved problems
+     */
+    public function solvedProblems()
+    {
+        return $this->hasMany(UserProblem::class, 'user_id', 'user_id')
+                    ->where('status', 'solved');
+    }
+
+    /**
+     * Get user's starred problems
+     */
+    public function starredProblems()
+    {
+        return $this->hasMany(UserProblem::class, 'user_id', 'user_id')
+                    ->where('is_starred', true);
+    }
 }

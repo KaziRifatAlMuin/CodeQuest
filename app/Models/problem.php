@@ -114,4 +114,14 @@ class Problem extends Model
     {
         return $this->hasMany(ProblemTag::class, 'problem_id', 'problem_id');
     }
+
+    /**
+     * Get user-specific problem status
+     */
+    public function getUserStatus($userId)
+    {
+        return $this->userProblems()
+                    ->where('user_id', $userId)
+                    ->first();
+    }
 }
