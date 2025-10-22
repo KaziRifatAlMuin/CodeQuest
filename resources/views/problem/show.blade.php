@@ -125,6 +125,12 @@
                 </a>
                 
                 @auth
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-tachometer-alt"></i> Go to Admin Dashboard
+                        </a>
+                    @endif
+                    
                     @if(in_array(auth()->user()->role, ['moderator', 'admin']))
                         <a href="{{ route('problem.edit', $problem) }}" class="btn btn-warning">
                             <i class="fas fa-edit"></i> Edit Problem

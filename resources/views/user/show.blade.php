@@ -211,6 +211,15 @@
                 <a href="{{ route('user.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Users
                 </a>
+                
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-tachometer-alt"></i> Go to Admin Dashboard
+                        </a>
+                    @endif
+                @endauth
+                
                 <a href="{{ route('user.edit', $user) }}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Edit User
                 </a>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'CodeQuest' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
@@ -1294,6 +1295,12 @@
                             <a class="dropdown-item" href="{{ route('account.editProfile') }}">
                                 <i class="fas fa-edit"></i> Edit Profile
                             </a>
+                            <!-- Admin Dashboard Button - Only for Admins -->
+                            @if(Auth::user()->role === 'admin')
+                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+                                </a>
+                            @endif
                             <div class="dropdown-divider"></div>
                             <form action="{{ route('account.logout') }}" method="POST" style="display: inline;">
                                 @csrf

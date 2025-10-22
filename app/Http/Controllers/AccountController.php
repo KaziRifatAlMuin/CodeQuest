@@ -320,5 +320,42 @@ class AccountController extends Controller
         return redirect()->route('home')
             ->with('success', 'You have been logged out successfully.');
     }
+
+    // Admin Dashboard
+    public function adminDashboard()
+    {
+        // Fetch users sorted by role first (admin, moderator, user), then by rating descending
+        // Using raw SQL for custom role ordering
+        $users = User::orderByRaw("
+            CASE 
+                WHEN role = 'admin' THEN 1
+                WHEN role = 'moderator' THEN 2
+                WHEN role = 'user' THEN 3
+                ELSE 4
+            END
+        ")
+        ->orderBy('cf_max_rating', 'desc')
+        ->paginate(30);
+
+        return view('account.adminDashboard', compact('users'));
+    }
+
+    // Update user role (Admin only)
+    public function updateUserRole(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'role' => 'required|in:user,moderator,admin'
+        ]);
+
+        $user->update([
+            'role' => strtolower($validated['role'])
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Role updated successfully',
+            'role' => $user->role
+        ]);
+    }
 }
 

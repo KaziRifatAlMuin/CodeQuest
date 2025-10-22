@@ -16,6 +16,7 @@ Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::get('/home', [SiteController::class, 'home'])->name('home.index');
 Route::get('/about', [SiteController::class, 'about'])->name('about');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
+Route::get('/leaderboard', [UserController::class, 'leaderboard'])->name('leaderboard');
 
 // Guest Only Routes - Only for non-authenticated users
 Route::middleware('guest')->group(function () {
@@ -60,9 +61,6 @@ Route::middleware('auth')->group(function () {
         // Utility Routes
         Route::get('/name/{nameValue}', [SiteController::class, 'showName'])->name('name.show');
         Route::get('/problem/{problem}/{tag}/{problem_no}', [SiteController::class, 'showProblem'])->name('problem.utility');
-        
-        // Users Routes (Public within auth)
-        Route::get('/leaderboard', [DatabaseController::class, 'showLeaderboard'])->name('leaderboard');
         
         // User Management Routes
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
@@ -119,18 +117,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/editorials', [DatabaseController::class, 'showEditorialsList'])->name('editorials.index');
         Route::get('/editorials/{id}', [DatabaseController::class, 'showEditorialshow'])->name('editorials.show');
         
-        // JSON Data Routes (for debugging/API)
-        Route::get('/json_users', [DatabaseController::class, 'showUsers'])->name('json.users');
-        Route::get('/json_problems', [DatabaseController::class, 'showProblems'])->name('json.problems');
-        Route::get('/json_tags', [DatabaseController::class, 'showTags'])->name('json.tags');
-        Route::get('/json_problemtags', [DatabaseController::class, 'showProblemTags'])->name('json.problemtags');
-        Route::get('/json_userproblems', [DatabaseController::class, 'showUserProblems'])->name('json.userproblems');
-        Route::get('/json_friends', [DatabaseController::class, 'showFriends'])->name('json.friends');
-        Route::get('/json_editorials', [DatabaseController::class, 'showEditorials'])->name('json.editorials');
-        
         // Admin Routes - Only for admins
         Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
-            Route::get('/dashboard', [DatabaseController::class, 'adminDashboard'])->name('admin.dashboard');
+            Route::get('/dashboard', [AccountController::class, 'adminDashboard'])->name('admin.dashboard');
+            Route::post('/users/{user}/update-role', [AccountController::class, 'updateUserRole'])->name('admin.updateUserRole');
         });
     });
 });

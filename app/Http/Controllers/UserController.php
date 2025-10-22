@@ -126,4 +126,16 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('user.index')->with('success', 'User deleted successfully.');
     }
+
+    /**
+     * Display leaderboard - accessible to everyone (guests and authenticated users)
+     */
+    public function leaderboard()
+    {
+        // Fetch users sorted by cf_max_rating (descending)
+        $users = User::orderBy('cf_max_rating', 'desc')
+            ->paginate(50);
+        
+        return view('user.leaderboard', compact('users'));
+    }
 }
