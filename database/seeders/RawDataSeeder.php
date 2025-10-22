@@ -9,76 +9,34 @@ class RawDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // Path to your SQL file
-        $sqlFile = database_path('SQL/2_insert_data.sql');
-        
-        if (!file_exists($sqlFile)) {
-            $this->command->error("SQL file not found at: {$sqlFile}");
-            return;
-        }
-
-        $this->command->info("Reading SQL file...");
-        
-        // Read the SQL file
-        $sql = file_get_contents($sqlFile);
-        
-        // Extract and execute each INSERT statement
-        $this->command->info("Processing SQL statements...");
+        $this->command->info("Reading JSON files...");
         
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         
-        // Extract users INSERT
-        if (preg_match('/INSERT INTO `users`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting users...");
-            $usersInsert = "INSERT INTO users (name,email,password,role,cf_handle,cf_max_rating,solved_problems_count,average_problem_rating,profile_picture,bio,country,university,followers_count,created_at,updated_at) VALUES " . $matches[1];
-            DB::unprepared($usersInsert);
-        }
+        // Seed Users
+        $this->seedFromJson('users', 'users.json');
         
-        // Extract problems INSERT
-        if (preg_match('/INSERT INTO `problems`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting problems...");
-            $problemsInsert = "INSERT INTO problems (title,problem_link,rating,solved_count,stars,popularity,created_at,updated_at) VALUES " . $matches[1];
-            DB::unprepared($problemsInsert);
-        }
+        // Seed Problems
+        $this->seedFromJson('problems', 'problems.json');
         
-        // Extract tags INSERT
-        if (preg_match('/INSERT INTO `tags`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting tags...");
-            $tagsInsert = "INSERT INTO tags (tag_name) VALUES " . $matches[1];
-            DB::unprepared($tagsInsert);
-        }
+        // Seed Tags
+        $this->seedFromJson('tags', 'tags.json');
         
-        // Extract problemtags INSERT
-        if (preg_match('/INSERT INTO `problemtags`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting problem tags...");
-            $problemTagsInsert = "INSERT INTO problemtags (problem_id,tag_id) VALUES " . $matches[1];
-            DB::unprepared($problemTagsInsert);
-        }
+        // Seed Problem Tags
+        $this->seedFromJson('problemtags', 'problemtags.json');
         
-        // Extract userproblems INSERT
-        if (preg_match('/INSERT INTO `userproblems`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting user problems...");
-            $userProblemsInsert = "INSERT INTO userproblems (user_id,problem_id,status,is_starred,solved_at,submission_link,notes) VALUES " . $matches[1];
-            DB::unprepared($userProblemsInsert);
-        }
+        // Seed User Problems
+        $this->seedFromJson('userproblems', 'userproblems.json');
         
-        // Extract editorials INSERT
-        if (preg_match('/INSERT INTO `editorials`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting editorials...");
-            $editorialsInsert = "INSERT INTO editorials (problem_id,author_id,solution,code,upvotes,downvotes,created_at,updated_at) VALUES " . $matches[1];
-            DB::unprepared($editorialsInsert);
-        }
+        // Seed Editorials
+        $this->seedFromJson('editorials', 'editorials.json');
         
-        // Extract friends INSERT
-        if (preg_match('/INSERT INTO `friends`.*?VALUES\s*(.*?);/s', $sql, $matches)) {
-            $this->command->info("Inserting friends...");
-            $friendsInsert = "INSERT INTO friends (user_id,friend_id,is_friend,created_at,updated_at) VALUES " . $matches[1];
-            DB::unprepared($friendsInsert);
-        }
+        // Seed Friends
+        $this->seedFromJson('friends', 'friends.json');
         
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
         
-        $this->command->info("Database seeding completed!");
+        $this->command->info("\nDatabase seeding completed!");
         $this->command->info("Users: " . DB::table('users')->count());
         $this->command->info("Problems: " . DB::table('problems')->count());
         $this->command->info("Tags: " . DB::table('tags')->count());
@@ -86,5 +44,41 @@ class RawDataSeeder extends Seeder
         $this->command->info("User Problems: " . DB::table('userproblems')->count());
         $this->command->info("Editorials: " . DB::table('editorials')->count());
         $this->command->info("Friends: " . DB::table('friends')->count());
+    }
+    
+    private function seedFromJson(string $table, string $filename): void
+    {
+        $jsonPath = database_path("json/{$filename}");
+        
+        if (!file_exists($jsonPath)) {
+            $this->command->warn("JSON file not found: {$filename}");
+            return;
+        }
+        
+        $this->command->info("Seeding {$table} from {$filename}...");
+        
+        $json = file_get_contents($jsonPath);
+        $data = json_decode($json, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->command->error("JSON decode error in {$filename}: " . json_last_error_msg());
+            return;
+        }
+        
+        if (empty($data)) {
+            $this->command->warn("No data found in {$filename}");
+            return;
+        }
+        
+        // Insert data in chunks to avoid memory issues
+        $chunks = array_chunk($data, 100);
+        $totalInserted = 0;
+        
+        foreach ($chunks as $chunk) {
+            DB::table($table)->insert($chunk);
+            $totalInserted += count($chunk);
+        }
+        
+        $this->command->info("✓ Inserted {$totalInserted} records into {$table}");
     }
 }

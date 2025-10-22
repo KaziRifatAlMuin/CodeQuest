@@ -15,4 +15,6 @@ class DatabaseSeeder extends Seeder
             RawDataSeeder::class,
         ]);
     }
+
+    // php artisan migrate:fresh --seed
 }
