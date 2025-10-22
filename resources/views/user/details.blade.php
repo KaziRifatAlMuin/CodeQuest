@@ -18,7 +18,7 @@
                     
                     <div class="mb-3">
                         <small class="text-muted">User ID</small>
-                        <h4>{{ $user->id ?? $user->user_id }}</h4>
+                        <h4>{{ $user->user_id }}</h4>
                     </div>
 
                     <div class="mb-3">
@@ -103,11 +103,14 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body text-center">
-                    <a href="/users" class="btn btn-primary btn-block">
+                    <a href="{{ route('users.index') }}" class="btn btn-primary btn-block">
                         <i class="fas fa-arrow-left"></i> Back to Users
                     </a>
-                    <a href="/leaderboard" class="btn btn-outline-warning btn-block mt-2">
+                    <a href="{{ route('leaderboard') }}" class="btn btn-outline-warning btn-block mt-2">
                         <i class="fas fa-trophy"></i> View Leaderboard
+                    </a>
+                    <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-secondary btn-block mt-2">
+                        <i class="fas fa-edit"></i> Edit User
                     </a>
                 </div>
             </div>

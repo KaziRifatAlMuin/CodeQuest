@@ -12,7 +12,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::orderBy('user_id', 'desc')->get();
+        return view('user.index', compact('users'));
     }
 
     /**
@@ -20,7 +21,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('user.create');
     }
 
     /**
@@ -28,38 +29,77 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate incoming request data
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+            'cf_handle' => 'required|string|max:255|unique:users,cf_handle',
+            'profile_picture' => 'nullable|string|max:255',
+            'bio' => 'nullable|string|max:1000',
+            'country' => 'nullable|string|max:255',
+            'university' => 'nullable|string|max:255',
+        ]);
+
+        // Hash the password
+        $data['password'] = bcrypt($data['password']);
+
+        // Create new user
+        User::create($data);
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        return view('user.details', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+        return view('user.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        //
+        // Validate incoming request data
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->user_id . ',user_id',
+            'password' => 'nullable|string|min:8',
+            'cf_handle' => 'required|string|max:255|unique:users,cf_handle,' . $user->user_id . ',user_id',
+            'profile_picture' => 'nullable|string|max:255',
+            'bio' => 'nullable|string|max:1000',
+            'country' => 'nullable|string|max:255',
+            'university' => 'nullable|string|max:255',
+        ]);
+
+        // Hash the password if provided
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        // Update user
+        $user->update($data);
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }

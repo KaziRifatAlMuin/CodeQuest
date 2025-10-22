@@ -6,6 +6,7 @@ use App\Http\Controllers\myController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\SingleActionController;
 use App\Http\Controllers\DatabaseController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', [SiteController::class, 'home']);
 Route::get('/home', [SiteController::class, 'home']);
@@ -28,9 +29,7 @@ Route::group(['prefix' => 'account'], function(){
     Route::get('/logout', [AccountController::class, 'logout']);
 });
 
-// Users Routes
-Route::get('/users', [DatabaseController::class, 'showUsersList'])->name('users.index');
-Route::get('/users/{id}', [DatabaseController::class, 'showUserDetails'])->name('users.details');
+// Users Routes (Public)
 Route::get('/leaderboard', [DatabaseController::class, 'showLeaderboard'])->name('leaderboard');
 
 // Show problems list (redirect to problemset)
@@ -95,3 +94,13 @@ Route::prefix('admin')->group(function () {
     Route::put('/tags/{id}', [DatabaseController::class, 'adminTagsUpdate'])->name('admin.tags.update');
     Route::delete('/tags/{id}', [DatabaseController::class, 'adminTagsDestroy'])->name('admin.tags.destroy');
 });
+
+
+// User Management Routes (CRUD) - Handled by UserController (Resource Controller)
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
