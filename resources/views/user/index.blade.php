@@ -22,9 +22,9 @@
         <div class="card-body p-0">
             <x-table :headers="['Name', 'Email', 'CF Handle', 'Total Solved', 'CF Max Rating', 'University']" :paginator="$users">
                 @forelse($users as $user)
-                <tr onclick="window.location='{{ route('users.show', $user) }}'">
+                <tr onclick="window.location='{{ route('user.show', $user) }}'">
                     <td>
-                        <a href="{{ route('users.show', $user) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
+                        <a href="{{ route('user.show', $user) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
                             {{ $user->name }}
                         </a>
                     </td>
@@ -62,7 +62,7 @@
 
     <div class="d-flex justify-content-between align-items-center mt-4">
         <div>
-            <a href="{{ route('users.create') }}" class="btn btn-primary">
+            <a href="{{ route('user.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Add New User
             </a>
         </div>

@@ -24,7 +24,7 @@
 				<div class="card-body">
 					<h5 class="card-title">Problems</h5>
 					<div class="h2">{{ $problemsCount }}</div>
-					<a href="{{ url('admin/problems') }}" class="btn btn-outline-primary btn-sm mt-2">Manage</a>
+					<a href="{{ route('problem.index') }}" class="btn btn-outline-primary btn-sm mt-2">Manage</a>
 				</div>
 			</div>
 		</div>
@@ -33,7 +33,7 @@
 				<div class="card-body">
 					<h5 class="card-title">Users</h5>
 					<div class="h2">{{ $usersCount }}</div>
-					<a href="{{ url('admin/users') }}" class="btn btn-outline-primary btn-sm mt-2">Manage</a>
+					<a href="{{ route('user.index') }}" class="btn btn-outline-primary btn-sm mt-2">Manage</a>
 				</div>
 			</div>
 		</div>
@@ -84,7 +84,7 @@
 										<span class="badge" style="background: {{ $ratingColor }}; color: white;">{{ $rating }}</span>
 									</td>
 									<td>
-										<a href="{{ url('admin/problems/' . $p->problem_id . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
+										<a href="{{ route('problem.edit', $p->problem_id) }}" class="btn btn-sm btn-primary">Edit</a>
 									</td>
 								</tr>
 							@empty
@@ -118,7 +118,7 @@
 									<td>{{ $u->name ?? 'User' }}</td>
 									<td>{{ $u->email ?? '-' }}</td>
 										<td>
-											<a href="{{ route('users.edit', $u->user_id) }}" class="btn btn-sm btn-primary">Edit</a>
+											<a href="{{ route('user.edit', $u->user_id) }}" class="btn btn-sm btn-primary">Edit</a>
 											</td>
 								</tr>
 							@empty

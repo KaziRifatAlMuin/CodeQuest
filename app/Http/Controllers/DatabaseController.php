@@ -56,39 +56,7 @@ class DatabaseController extends Controller
         return response()->json($editorials); // Return as JSON
     }
 
-    // Show problems in problemset view
-    public function showProblemset()
-    {
-        $problems = DB::table('problems')->get();
-        return view('Problems.index', ['problems' => $problems]);
-    }
 
-    // Show single problem details
-    public function showProblemDetails($id)
-    {
-        $problem = DB::table('problems')->where('problem_id', $id)->first();
-        if (!$problem) {
-            return response()->json(['message' => 'Problem not found'], 404);
-        }
-        return view('Problems.details', ['problem' => $problem]);
-    }
-
-    // Show users list view
-    public function showUsersList()
-    {
-        $users = DB::table('users')->get();
-        return view('Users.index', ['users' => $users]);
-    }
-
-    // Show single user details view
-    public function showUserDetails($id)
-    {
-        $user = DB::table('users')->where('user_id', $id)->first();
-        if (!$user) {
-            abort(404, 'User not found');
-        }
-        return view('Users.details', ['user' => $user]);
-    }
 
     // Show leaderboard view
     public function showLeaderboard()
@@ -183,87 +151,7 @@ class DatabaseController extends Controller
         ]);
     }
     
-    // Admin Problems List
-    public function adminProblemsList()
-    {
-        $problems = DB::table('problems')->get();
-        return view('Admin.problems_index', ['problems' => $problems]);
-    }
-    
-    // Admin Problems Create (placeholder for now)
-    public function adminProblemsCreate()
-    {
-        return view('Admin.problem_edit', ['problem' => null]);
-    }
-    
-    // Admin Problems Edit
-    public function adminProblemsEdit($id)
-    {
-        $problem = DB::table('problems')->where('problem_id', $id)->first();
-        return view('Admin.problem_edit', ['problem' => $problem]);
-    }
-    
-    // Admin Problems Store (placeholder for controller logic later)
-    public function adminProblemsStore(Request $request)
-    {
-        // TODO: Add validation and store logic
-        return redirect()->route('admin.problems.index')->with('success', 'Problem created successfully');
-    }
-    
-    // Admin Problems Update (placeholder for controller logic later)
-    public function adminProblemsUpdate(Request $request, $id)
-    {
-        // TODO: Add validation and update logic
-        return redirect()->route('admin.problems.index')->with('success', 'Problem updated successfully');
-    }
-    
-    // Admin Problems Delete (placeholder for controller logic later)
-    public function adminProblemsDestroy($id)
-    {
-        // TODO: Add delete logic
-        return redirect()->route('admin.problems.index')->with('success', 'Problem deleted successfully');
-    }
-    
-    // Admin Users List
-    public function adminUsersList()
-    {
-        $users = DB::table('users')->get();
-        return view('Admin.users_index', ['users' => $users]);
-    }
-    
-    // Admin Users Create (placeholder for now)
-    public function adminUsersCreate()
-    {
-        return view('Admin.user_edit', ['user' => null]);
-    }
-    
-    // Admin Users Edit
-    public function adminUsersEdit($id)
-    {
-        $user = DB::table('users')->where('user_id', $id)->first();
-        return view('Admin.user_edit', ['user' => $user]);
-    }
-    
-    // Admin Users Store (placeholder for controller logic later)
-    public function adminUsersStore(Request $request)
-    {
-        // TODO: Add validation and store logic
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully');
-    }
-    
-    // Admin Users Update (placeholder for controller logic later)
-    public function adminUsersUpdate(Request $request, $id)
-    {
-        // TODO: Add validation and update logic
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully');
-    }
-    
-    // Admin Users Delete (placeholder for controller logic later)
-    public function adminUsersDestroy($id)
-    {
-        // TODO: Add delete logic
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
-    }
+
     
     // Admin Editorials List
     public function adminEditorialsList()

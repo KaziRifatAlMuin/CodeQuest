@@ -147,7 +147,7 @@ class RatingHelper
         } elseif ($rating >= 1200) {
             return '#008000'; // Green - Pupil
         } else {
-            return '#808080'; // Gray - Newbie
+            return '#000000'; // Black - Newbie
         }
     }
 
@@ -178,7 +178,7 @@ class RatingHelper
         } elseif ($rating >= 1200) {
             return 'rgba(0, 128, 0, 0.1)';
         } else {
-            return 'rgba(128, 128, 128, 0.1)';
+            return 'rgba(0, 0, 0, 0.1)';
         }
     }
 

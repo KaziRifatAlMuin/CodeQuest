@@ -22,7 +22,7 @@
                         $ratingDotClass = \App\Helpers\RatingHelper::getRatingDotClass($r);
                     @endphp
 
-                    <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor: pointer;" onclick="window.location='{{ route('users.show', $user->user_id) }}'">
+                    <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor: pointer;" onclick="window.location='{{ route('user.show', $user->user_id) }}'">
                         <div class="d-flex align-items-center">
                             <span class="rating-dot {{ $ratingDotClass }}"></span>
                             <div>

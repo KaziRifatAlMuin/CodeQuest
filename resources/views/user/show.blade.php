@@ -182,13 +182,13 @@
     <div class="row mt-4 pt-4" style="border-top: 2px solid #dee2e6;">
         <div class="col-12">
             <div class="d-flex gap-2">
-                <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                <a href="{{ route('user.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Users
                 </a>
-                <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">
+                <a href="{{ route('user.edit', $user) }}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Edit User
                 </a>
-                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline;">
+                <form action="{{ route('user.destroy', $user) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">

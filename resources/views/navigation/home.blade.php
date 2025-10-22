@@ -9,7 +9,7 @@
             <p class="lead mb-4">Master coding through intelligent practice and community-driven learning</p>
             <hr class="my-4" style="border-color: var(--border); max-width: 600px; margin: 2rem auto;">
             <p class="mb-4">Start your journey today and level up your programming skills.</p>
-            <a class="btn btn-primary btn-lg mr-2 mb-2 cta-btn" href="{{ route('problems.index') }}" role="button">
+            <a class="btn btn-primary btn-lg mr-2 mb-2 cta-btn" href="{{ route('problem.index') }}" role="button">
                 <i class="fas fa-play"></i> Get Started
             </a>
             <a class="btn btn-success btn-lg mb-2 cta-btn" href="{{ route('leaderboard') }}" role="button">

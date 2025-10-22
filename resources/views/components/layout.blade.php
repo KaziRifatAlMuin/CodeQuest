@@ -940,7 +940,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('problems.index') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
+                <a href="{{ route('problem.index') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-code"></i>
                     <span>Problems</span>
                 </a>
@@ -952,7 +952,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
+                <a href="{{ route('user.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-users"></i>
                     <span>Users</span>
                 </a>
@@ -992,13 +992,13 @@
                     <a class="nav-link" href="{{ route('contact') }}">Contact</a>
                 </li>
                 <li class="nav-item {{ request()->is('problems*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('problems.index') }}">Problems</a>
+                    <a class="nav-link" href="{{ route('problem.index') }}">Problems</a>
                 </li>
                 <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
                 </li>
                 <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('users.index') }}">Users</a>
+                    <a class="nav-link" href="{{ route('user.index') }}">Users</a>
                 </li>
                 <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('editorials.index') }}">Editorials</a>

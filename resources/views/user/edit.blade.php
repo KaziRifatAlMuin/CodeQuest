@@ -27,7 +27,7 @@
         <div class="col-lg-8 mx-auto">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form action="{{ route('users.update', $user->user_id) }}" method="POST">
+                    <form action="{{ route('user.update', $user->user_id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -87,7 +87,7 @@
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-save"></i> Update User
                             </button>
-                            <a href="{{ route('users.index') }}" class="btn btn-secondary btn-lg">
+                            <a href="{{ route('user.index') }}" class="btn btn-secondary btn-lg">
                                 <i class="fas fa-times"></i> Cancel
                             </a>
                         </div>
