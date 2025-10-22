@@ -15,7 +15,7 @@
 		<div class="col-md-8">
 			<div class="card">
 				<div class="card-body">
-					<form action="{{ url('admin/users/' . ($user->user_id ?? '')) }}" method="POST">
+						<form action="{{ route('users.update', $user->user_id ?? '') }}" method="POST">
 						@csrf
 						@if(!empty($user))
 							@method('PUT')

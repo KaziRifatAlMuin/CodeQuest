@@ -12,7 +12,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('user_id', 'desc')->get();
+        // Order users by registration date (newest first)
+        $users = User::orderBy('created_at', 'desc')->paginate(15);
         return view('user.index', compact('users'));
     }
 

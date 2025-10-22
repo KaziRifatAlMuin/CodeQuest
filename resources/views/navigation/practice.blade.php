@@ -5,9 +5,9 @@
     <p>Welcome to the practice section of CodeQuest. Here you can find various coding problems to solve and improve your skills.</p>
     
     <div class="mb-4">
-        <a href="{{ url('welcome') }}" class="btn btn-primary mr-2">Welcome</a>
-        <a href="{{ url('about') }}" class="btn btn-secondary mr-2">About</a>
-        <a href="{{ url('contact') }}" class="btn btn-info mr-2">Contact</a>
-        <a href="{{ url('/') }}" class="btn btn-success">Home</a>
+        <a href="{{ route('welcome') }}" class="btn btn-primary mr-2">Welcome</a>
+        <a href="{{ route('about') }}" class="btn btn-secondary mr-2">About</a>
+        <a href="{{ route('contact') }}" class="btn btn-info mr-2">Contact</a>
+        <a href="{{ route('home') }}" class="btn btn-success">Home</a>
     </div>
 </x-layout>

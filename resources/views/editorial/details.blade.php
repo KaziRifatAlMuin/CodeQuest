@@ -26,9 +26,10 @@
                             @if($editorial->problem_rating)
                             <b>Rating:</b> 
                             @php
-                                $ratingBgClass = \App\Helpers\RatingHelper::getRatingBgClass((int)$editorial->problem_rating);
+                                $rating = (int) $editorial->problem_rating;
+                                $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
                             @endphp
-                            <span class="badge {{ $ratingBgClass }}">{{ $editorial->problem_rating }}</span>
+                            <span class="badge" style="background: {{ $ratingColor }}; color: white;">{{ $editorial->problem_rating }}</span>
                             <br>
                             @endif
                             @if($editorial->problem_link)

@@ -12,51 +12,37 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Problem</th>
-                            <th>Author</th>
-                            <th>Language</th>
-                            <th>Votes</th>
-                            <th>Created</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($editorials as $editorial)
-                            <tr style="cursor: pointer;" onclick="window.location='{{ route('editorials.details', $editorial->editorial_id) }}'">
-                                <td>{{ $editorial->editorial_id }}</td>
-                                <td>
-                                    <b>{{ $editorial->problem_title }}</b>
-                                    <br>
-                                    <small class="text-muted">Problem ID: {{ $editorial->problem_id }}</small>
-                                </td>
-                                <td>{{ $editorial->author_name }}</td>
-                                <td>
-                                    <span class="badge badge-secondary">{{ strtoupper($editorial->language ?? 'N/A') }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-thumbs-up"></i> {{ $editorial->upvotes ?? 0 }}
-                                    </span>
-                                    <span class="badge badge-danger">
-                                        <i class="fas fa-thumbs-down"></i> {{ $editorial->downvotes ?? 0 }}
-                                    </span>
-                                </td>
-                                <td>{{ \Carbon\Carbon::parse($editorial->created_at)->format('M d, Y') }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">
-                                    No editorials found. Be the first to contribute!
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            <x-table :headers="['ID', 'Problem', 'Author', 'Language', 'Votes', 'Created']">
+                @forelse ($editorials as $editorial)
+                    <tr onclick="window.location='{{ route('editorials.details', $editorial->editorial_id) }}'">
+                        <td>{{ $editorial->editorial_id }}</td>
+                        <td>
+                            <b>{{ $editorial->problem_title }}</b>
+                            <br>
+                            <small class="text-muted">Problem ID: {{ $editorial->problem_id }}</small>
+                        </td>
+                        <td>{{ $editorial->author_name }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ strtoupper($editorial->language ?? 'N/A') }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">
+                                <i class="fas fa-thumbs-up"></i> {{ $editorial->upvotes ?? 0 }}
+                            </span>
+                            <span class="badge bg-danger">
+                                <i class="fas fa-thumbs-down"></i> {{ $editorial->downvotes ?? 0 }}
+                            </span>
+                        </td>
+                        <td>{{ \Carbon\Carbon::parse($editorial->created_at)->format('M d, Y') }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            No editorials found. Be the first to contribute!
+                        </td>
+                    </tr>
+                @endforelse
+            </x-table>
         </div>
     </div>
 </x-layout>

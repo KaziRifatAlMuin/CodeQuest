@@ -18,52 +18,55 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body p-0">
-                    <table class="table mb-0">
-                        <thead>
+                    <x-table :headers="['Name', 'Email', 'CF Handle', 'Total Solved', 'CF Max Rating', 'Role', 'Actions']">
+                        @forelse($users as $user)
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Rating</th>
-                                <th>Role</th>
-                                <th>Actions</th>
+                                <td>{{ $user->name ?? 'Unknown' }}</td>
+                                <td>{{ $user->email ?? '-' }}</td>
+                                <td>
+                                    @if($user->cf_handle)
+                                        <a href="https://codeforces.com/profile/{{ $user->cf_handle }}" target="_blank" style="text-decoration: none; color: {{ \App\Helpers\RatingHelper::getRatingColor((int)($user->cf_max_rating ?? 0)) }}; font-weight: 600;">
+                                            {{ $user->cf_handle }}
+                                        </a>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>{{ number_format($user->solved_problems_count ?? 0) }}</td>
+                                <td>
+                                    @php
+                                        $rating = (int) ($user->cf_max_rating ?? 0);
+                                        $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
+                                    @endphp
+                                    <span class="badge" style="background: {{ $ratingColor }}; color: white;">{{ $rating }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ ($user->role ?? '') == 'admin' ? 'bg-danger' : 'bg-secondary' }}">
+                                        {{ ucfirst($user->role ?? 'user') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('users.show', $user->user_id) }}" class="btn btn-sm btn-info" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('users.edit', $user->user_id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('users.destroy', $user->user_id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($users as $user)
-                                <tr>
-                                    <td>{{ $user->user_id }}</td>
-                                    <td>{{ $user->name ?? 'Unknown' }}</td>
-                                    <td>{{ $user->email ?? '-' }}</td>
-                                    <td>{{ $user->cf_max_rating ?? '-' }}</td>
-                                    <td>
-                                        <span class="badge {{ ($user->role ?? '') == 'admin' ? 'badge-danger' : 'badge-secondary' }}">
-                                            {{ ucfirst($user->role ?? 'user') }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="{{ url('users/' . $user->user_id) }}" class="btn btn-sm btn-info" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ url('admin/users/' . $user->user_id . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ url('admin/users/' . $user->user_id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center p-4">No users found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center p-4">No users found.</td>
+                            </tr>
+                        @endforelse
+                    </x-table>
                 </div>
             </div>
         </div>

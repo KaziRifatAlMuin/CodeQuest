@@ -51,6 +51,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The attributes that should have default values.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'role' => 'user',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -61,5 +70,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the role attribute with default value.
+     */
+    public function getRoleAttribute($value)
+    {
+        return $value ?? 'user';
     }
 }

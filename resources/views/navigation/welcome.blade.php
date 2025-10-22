@@ -12,10 +12,10 @@
     <p class="lead">Your journey to mastering coding starts here.</p>
     
     <div class="mb-4">
-        <a href="{{ url('about') }}" class="btn btn-primary mr-2">About</a>
-        <a href="{{ url('contact') }}" class="btn btn-secondary mr-2">Contact</a>
-        <a href="{{ url('practice') }}" class="btn btn-success mr-2">Practice</a>
-        <a href="{{ url('/') }}" class="btn btn-info">Home</a>
+        <a href="{{ route('about') }}" class="btn btn-primary mr-2">About</a>
+        <a href="{{ route('contact') }}" class="btn btn-secondary mr-2">Contact</a>
+        <a href="{{ route('practice') }}" class="btn btn-success mr-2">Practice</a>
+        <a href="{{ route('home') }}" class="btn btn-info">Home</a>
     </div>
 
     <div class="card shadow-sm">

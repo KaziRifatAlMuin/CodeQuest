@@ -2,35 +2,42 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
-use App\Http\Controllers\myController;
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\SingleActionController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\UserController;
 
-Route::get('/', [SiteController::class, 'home']);
-Route::get('/home', [SiteController::class, 'home']);
-Route::get('/about', [SiteController::class, 'about']);
-Route::get('/contact', [SiteController::class, 'contact']);
-Route::get('/welcome', [SiteController::class, 'welcome']);
-Route::get('/practice', [SiteController::class, 'practice']);
+Route::get('/', [SiteController::class, 'home'])->name('home');
+Route::get('/home', [SiteController::class, 'home'])->name('home.index');
+Route::get('/about', [SiteController::class, 'about'])->name('about');
+Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
+Route::get('/welcome', [SiteController::class, 'welcome'])->name('welcome');
+Route::get('/practice', [SiteController::class, 'practice'])->name('practice');
 
+// Utility Routes
+Route::get('/name/{nameValue}', [SiteController::class, 'showName'])->name('name.show');
+Route::get('/problem/{problem}/{tag}/{problem_no}', [SiteController::class, 'showProblem'])->name('problem.show');
 
-Route::get('/name/{nameValue}', [myController::class, 'showName']);
-Route::get('/problem/{problem}/{tag}/{problem_no}', [myController::class, 'showProblem']);
-
-// Routing Groups
+// Account Routes Group
 Route::group(['prefix' => 'account'], function(){
-    Route::get('/profile', [AccountController::class, 'profile']);
-    Route::get('/login', [AccountController::class, 'login']);
-    Route::get('/register', [AccountController::class, 'register']);
-    Route::get('/updateProfile', [AccountController::class, 'updateProfile']);
-    Route::get('/forgot-password', [AccountController::class, 'forgotPassword']);
-    Route::get('/logout', [AccountController::class, 'logout']);
+    Route::get('/profile', [SiteController::class, 'profile'])->name('account.profile');
+    Route::get('/login', [SiteController::class, 'login'])->name('account.login');
+    Route::get('/register', [SiteController::class, 'register'])->name('account.register');
+    Route::get('/updateProfile', [SiteController::class, 'updateProfile'])->name('account.updateProfile');
+    Route::get('/forgot-password', [SiteController::class, 'forgotPassword'])->name('account.forgotPassword');
+    Route::get('/logout', [SiteController::class, 'logout'])->name('account.logout');
 });
 
 // Users Routes (Public)
 Route::get('/leaderboard', [DatabaseController::class, 'showLeaderboard'])->name('leaderboard');
+
+// User Management Routes (CRUD) - Handled by UserController (Resource Controller)
+// IMPORTANT: Specific routes like /create must come BEFORE {user} to avoid conflicts
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
 // Show problems list (redirect to problemset)
 Route::get('/problems', [DatabaseController::class, 'showProblemset'])->name('problems.index');
@@ -39,17 +46,16 @@ Route::get('/problems', [DatabaseController::class, 'showProblemset'])->name('pr
 Route::get('/tags', [DatabaseController::class, 'showTagsList'])->name('tags.index');
 
 // Show all json data from database tables
-
-Route::get('/json_users', [DatabaseController::class, 'showUsers']);
-Route::get('/json_problems', [DatabaseController::class, 'showProblems']);
-Route::get('/json_tags', [DatabaseController::class, 'showTags']);
-Route::get('/json_problemtags', [DatabaseController::class, 'showProblemTags']);
-Route::get('/json_userproblems', [DatabaseController::class, 'showUserProblems']);
-Route::get('/json_friends', [DatabaseController::class, 'showFriends']);
-Route::get('/json_editorials', [DatabaseController::class, 'showEditorials']);
+Route::get('/json_users', [DatabaseController::class, 'showUsers'])->name('json.users');
+Route::get('/json_problems', [DatabaseController::class, 'showProblems'])->name('json.problems');
+Route::get('/json_tags', [DatabaseController::class, 'showTags'])->name('json.tags');
+Route::get('/json_problemtags', [DatabaseController::class, 'showProblemTags'])->name('json.problemtags');
+Route::get('/json_userproblems', [DatabaseController::class, 'showUserProblems'])->name('json.userproblems');
+Route::get('/json_friends', [DatabaseController::class, 'showFriends'])->name('json.friends');
+Route::get('/json_editorials', [DatabaseController::class, 'showEditorials'])->name('json.editorials');
 
 // Show problemset view (alternative route)
-Route::get('/problemset', [DatabaseController::class, 'showProblemset']);
+Route::get('/problemset', [DatabaseController::class, 'showProblemset'])->name('problemset');
 // Show single problem details
 Route::get('/problems/{id}', [DatabaseController::class, 'showProblemDetails'])->name('problems.details');
 
@@ -94,13 +100,3 @@ Route::prefix('admin')->group(function () {
     Route::put('/tags/{id}', [DatabaseController::class, 'adminTagsUpdate'])->name('admin.tags.update');
     Route::delete('/tags/{id}', [DatabaseController::class, 'adminTagsDestroy'])->name('admin.tags.destroy');
 });
-
-
-// User Management Routes (CRUD) - Handled by UserController (Resource Controller)
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

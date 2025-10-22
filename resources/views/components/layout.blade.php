@@ -922,49 +922,49 @@
         </div>
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ url('/') }}" class="{{ request()->is('/') || request()->is('home') ? 'active' : '' }}">
+                <a href="{{ route('home') }}" class="{{ request()->is('/') || request()->is('home') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-home"></i>
                     <span>Home</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('about') }}" class="{{ request()->is('about') ? 'active' : '' }}">
+                <a href="{{ route('about') }}" class="{{ request()->is('about') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-info-circle"></i>
                     <span>About</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">
+                <a href="{{ route('contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-envelope"></i>
                     <span>Contact</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('problems') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
+                <a href="{{ route('problems.index') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-code"></i>
                     <span>Problems</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('leaderboard') }}" class="{{ request()->is('leaderboard') ? 'active' : '' }}">
+                <a href="{{ route('leaderboard') }}" class="{{ request()->is('leaderboard') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-list-ol"></i>
                     <span>Leaderboard</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('users') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
+                <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-users"></i>
                     <span>Users</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('editorials') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
+                <a href="{{ route('editorials.index') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-book"></i>
                     <span>Editorials</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url('tags') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
+                <a href="{{ route('tags.index') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
                     <i class="menu-icon fas fa-tags"></i>
                     <span>Tags</span>
                 </a>
@@ -977,34 +977,34 @@
         <button class="hamburger" id="hamburger">
             <i class="fas fa-bars"></i>
         </button>
-        <a class="navbar-brand font-weight-bold" href="{{ url('/') }}">
+        <a class="navbar-brand font-weight-bold" href="{{ route('home') }}">
             <span class="text-primary">Code</span><span class="text-warning">Quest</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item {{ request()->is('/') || request()->is('home') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('/') }}">Home</a>
+                    <a class="nav-link" href="{{ route('home') }}">Home</a>
                 </li>
                 <li class="nav-item {{ request()->is('about') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('about') }}">About</a>
+                    <a class="nav-link" href="{{ route('about') }}">About</a>
                 </li>
                 <li class="nav-item {{ request()->is('contact') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('contact') }}">Contact</a>
+                    <a class="nav-link" href="{{ route('contact') }}">Contact</a>
                 </li>
                 <li class="nav-item {{ request()->is('problems*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('problems') }}">Problems</a>
+                    <a class="nav-link" href="{{ route('problems.index') }}">Problems</a>
                 </li>
                 <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('leaderboard') }}">Leaderboard</a>
+                    <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
                 </li>
                 <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('users') }}">Users</a>
+                    <a class="nav-link" href="{{ route('users.index') }}">Users</a>
                 </li>
                 <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('editorials') }}">Editorials</a>
+                    <a class="nav-link" href="{{ route('editorials.index') }}">Editorials</a>
                 </li>
                 <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('tags') }}">Tags</a>
+                    <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
                 </li>
             </ul>
         </div>
@@ -1020,7 +1020,7 @@
         <div class="text-center p-3">
             Copyright &copy; 2025 CodeQuest | Developed by <a href="https://github.com/kazirifatalmuin">Kazi Rifat Al Muin</a>. All rights reserved.
             <br>
-            <a href="{{ url('admin/dashboard') }}" class="mt-2 d-inline-block">
+            <a href="{{ route('admin.dashboard') }}" class="mt-2 d-inline-block">
                 <i class="fas fa-user-shield"></i> Admin Panel
             </a>
         </div>

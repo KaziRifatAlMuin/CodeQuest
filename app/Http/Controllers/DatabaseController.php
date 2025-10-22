@@ -164,12 +164,12 @@ class DatabaseController extends Controller
         $tagsCount = DB::table('tags')->count();
         
         $recentProblems = DB::table('problems')
-            ->orderBy('problem_id', 'desc')
+            ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
             
         $recentUsers = DB::table('users')
-            ->orderBy('user_id', 'desc')
+            ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
         

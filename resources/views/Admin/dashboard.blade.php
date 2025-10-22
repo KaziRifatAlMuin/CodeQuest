@@ -76,7 +76,13 @@
 							@forelse($recentProblems as $p)
 								<tr>
 									<td>{{ $p->title ?? 'Untitled' }}</td>
-									<td><span class="badge">{{ $p->rating ?? 'N/A' }}</span></td>
+									<td>
+										@php
+											$rating = (int) ($p->rating ?? 0);
+											$ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
+										@endphp
+										<span class="badge" style="background: {{ $ratingColor }}; color: white;">{{ $rating }}</span>
+									</td>
 									<td>
 										<a href="{{ url('admin/problems/' . $p->problem_id . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
 									</td>
@@ -111,9 +117,9 @@
 								<tr>
 									<td>{{ $u->name ?? 'User' }}</td>
 									<td>{{ $u->email ?? '-' }}</td>
-									<td>
-										<a href="{{ url('admin/users/' . $u->user_id . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
-									</td>
+										<td>
+											<a href="{{ route('users.edit', $u->user_id) }}" class="btn btn-sm btn-primary">Edit</a>
+											</td>
 								</tr>
 							@empty
 								<tr>
