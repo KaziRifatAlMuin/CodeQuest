@@ -97,6 +97,23 @@
             transition: width 0.3s ease;
         }
 
+        /* Dropdown toggle (username/profile): hide underline when idle, but show on hover/focus like other nav links */
+        .nav-link.dropdown-toggle::after,
+        .nav-item.dropdown .nav-link::after {
+            display: block; /* keep pseudo-element available */
+            width: 0;
+            opacity: 0;
+            transition: width 0.25s ease, opacity 0.15s ease;
+        }
+
+        .nav-link.dropdown-toggle:hover::after,
+        .nav-link.dropdown-toggle:focus::after,
+        .nav-item.dropdown .nav-link:hover::after,
+        .nav-item.dropdown .nav-link:focus::after {
+            width: 80%;
+            opacity: 0.5;
+        }
+
         /* Desktop nav: keep hover minimal - only underline (no box/overlay) */
         .nav-link:hover {
             color: #ffffff !important;

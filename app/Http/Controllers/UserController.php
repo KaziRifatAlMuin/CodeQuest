@@ -12,9 +12,35 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Order users by registration date (newest first)
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
-        return view('user.index', compact('users'));
+        // Sorting: allow certain columns and directions via query params
+        $allowedSorts = [
+            'name' => 'name',
+            'created' => 'created_at',
+            'rating' => 'cf_max_rating',
+            'solved' => 'solved_problems_count',
+        ];
+
+        $sort = request()->get('sort', 'created');
+        $direction = strtolower(request()->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        $orderBy = $allowedSorts[$sort] ?? $allowedSorts['created'];
+
+        // Eager-load or compute solved_problems_count if needed
+        $query = User::query();
+
+        // If sorting by solved, ensure the column exists or use withCount
+        if ($orderBy === 'solved_problems_count') {
+            // If the raw column exists, order by it; otherwise use a subquery count
+            if (!
+                in_array('solved_problems_count', (new User)->getFillable())
+            ) {
+                $query->withCount(['solvedProblems as solved_problems_count']);
+            }
+        }
+
+        $users = $query->orderBy($orderBy, $direction)->paginate(25)->appends(request()->query());
+
+        return view('user.index', compact('users', 'sort', 'direction'));
     }
 
     /**

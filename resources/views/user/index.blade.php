@@ -19,7 +19,29 @@
     @endif
 
     <div class="card shadow-sm">
-        <div class="card-body p-0">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <!-- Sorting form -->
+                    <form method="GET" class="d-flex align-items-center" id="sortForm">
+                        <label class="me-2 mb-0 text-muted">Sort by</label>
+                        <select name="sort" class="form-select form-select-sm me-2" style="width: 180px;" onchange="document.getElementById('sortForm').submit();">
+                            <option value="created" {{ (isset($sort) && $sort === 'created') ? 'selected' : '' }}>Registration Date</option>
+                            <option value="name" {{ (isset($sort) && $sort === 'name') ? 'selected' : '' }}>Name</option>
+                            <option value="rating" {{ (isset($sort) && $sort === 'rating') ? 'selected' : '' }}>CF Max Rating</option>
+                            <option value="solved" {{ (isset($sort) && $sort === 'solved') ? 'selected' : '' }}>Total Solved</option>
+                        </select>
+
+                        <select name="direction" class="form-select form-select-sm" style="width: 140px;" onchange="document.getElementById('sortForm').submit();">
+                            <option value="desc" {{ (isset($direction) && $direction === 'desc') ? 'selected' : '' }}>Descending</option>
+                            <option value="asc" {{ (isset($direction) && $direction === 'asc') ? 'selected' : '' }}>Ascending</option>
+                        </select>
+                    </form>
+                </div>
+                <div>
+                    <small class="text-muted">Showing {{ $users->total() }} users</small>
+                </div>
+            </div>
             <x-table :headers="['Name', 'Email', 'CF Handle', 'Total Solved', 'CF Max Rating', 'University']" :paginator="$users">
                 @forelse($users as $user)
                 <tr onclick="window.location='{{ route('user.show', $user) }}'">
