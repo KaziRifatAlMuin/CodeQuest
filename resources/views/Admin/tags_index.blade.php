@@ -31,20 +31,20 @@
                         <tbody>
                             @forelse($tags as $tag)
                                 <tr>
-                                    <td>{{ $tag->id ?? $tag['id'] ?? '-' }}</td>
+                                    <td>{{ $tag->tag_id }}</td>
                                     <td>
-                                        <span class="badge">{{ $tag->name ?? $tag['name'] ?? 'Unnamed' }}</span>
+                                        <span class="badge">{{ $tag->tag_name ?? 'Unnamed' }}</span>
                                     </td>
-                                    <td>{{ Str::limit($tag->description ?? $tag['description'] ?? '-', 50) }}</td>
-                                    <td>{{ $tag->problems_count ?? $tag['problems_count'] ?? 0 }}</td>
+                                    <td>{{ Str::limit($tag->description ?? '-', 50) }}</td>
+                                    <td>{{ $tag->problems_count ?? 0 }}</td>
                                     <td>
-                                        <a href="{{ url('tags/' . ($tag->id ?? $tag['id'] ?? '#')) }}" class="btn btn-sm btn-info" title="View">
+                                        <a href="{{ url('tags/' . $tag->tag_id) }}" class="btn btn-sm btn-info" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ url('admin/tags/' . ($tag->id ?? $tag['id'] ?? '#') . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
+                                        <a href="{{ url('admin/tags/' . $tag->tag_id . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ url('admin/tags/' . ($tag->id ?? $tag['id'] ?? '#')) }}" method="POST" style="display:inline;">
+                                        <form action="{{ url('admin/tags/' . $tag->tag_id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">

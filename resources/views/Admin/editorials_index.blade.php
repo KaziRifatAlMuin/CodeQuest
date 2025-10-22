@@ -31,18 +31,18 @@
                         <tbody>
                             @forelse($editorials as $editorial)
                                 <tr>
-                                    <td>{{ $editorial->id ?? $editorial['id'] ?? '-' }}</td>
-                                    <td>{{ $editorial->title ?? $editorial['title'] ?? 'Untitled' }}</td>
-                                    <td>{{ $editorial->problem_id ?? $editorial['problem_id'] ?? '-' }}</td>
-                                    <td>{{ $editorial->author_id ?? $editorial['author_id'] ?? '-' }}</td>
+                                    <td>{{ $editorial->editorial_id }}</td>
+                                    <td>{{ $editorial->title ?? 'Untitled' }}</td>
+                                    <td>{{ $editorial->problem_id ?? '-' }}</td>
+                                    <td>{{ $editorial->author_id ?? '-' }}</td>
                                     <td>
-                                        <a href="{{ url('editorials/' . ($editorial->id ?? $editorial['id'] ?? '#')) }}" class="btn btn-sm btn-info" title="View">
+                                        <a href="{{ url('editorials/' . $editorial->editorial_id) }}" class="btn btn-sm btn-info" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ url('admin/editorials/' . ($editorial->id ?? $editorial['id'] ?? '#') . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
+                                        <a href="{{ url('admin/editorials/' . $editorial->editorial_id . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ url('admin/editorials/' . ($editorial->id ?? $editorial['id'] ?? '#')) }}" method="POST" style="display:inline;">
+                                        <form action="{{ url('admin/editorials/' . $editorial->editorial_id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">

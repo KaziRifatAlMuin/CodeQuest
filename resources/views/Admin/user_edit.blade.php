@@ -15,7 +15,7 @@
 		<div class="col-md-8">
 			<div class="card">
 				<div class="card-body">
-					<form action="{{ url('admin/users/' . ($user->id ?? $user['id'] ?? '')) }}" method="POST">
+					<form action="{{ url('admin/users/' . ($user->user_id ?? '')) }}" method="POST">
 						@csrf
 						@if(!empty($user))
 							@method('PUT')
@@ -23,19 +23,30 @@
 
 						<div class="mb-3">
 							<label class="form-label">Name</label>
-							<input type="text" name="name" class="form-control" value="{{ $user->name ?? $user['name'] ?? '' }}">
+							<input type="text" name="name" class="form-control" value="{{ $user->name ?? '' }}" required>
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label">Email</label>
-							<input type="email" name="email" class="form-control" value="{{ $user->email ?? $user['email'] ?? '' }}">
+							<input type="email" name="email" class="form-control" value="{{ $user->email ?? '' }}" required>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Codeforces Handle</label>
+							<input type="text" name="cf_handle" class="form-control" value="{{ $user->cf_handle ?? '' }}">
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">CF Max Rating</label>
+							<input type="number" name="cf_max_rating" class="form-control" value="{{ $user->cf_max_rating ?? 0 }}" min="0">
 						</div>
 
 						<div class="mb-3">
 							<label class="form-label">Role</label>
 							<select name="role" class="form-select">
-								<option value="user" {{ ( ($user->role ?? $user['role'] ?? '') == 'user') ? 'selected' : '' }}>User</option>
-								<option value="admin" {{ ( ($user->role ?? $user['role'] ?? '') == 'admin') ? 'selected' : '' }}>Admin</option>
+								<option value="user" {{ (($user->role ?? '') == 'user') ? 'selected' : '' }}>User</option>
+								<option value="admin" {{ (($user->role ?? '') == 'admin') ? 'selected' : '' }}>Admin</option>
+								<option value="moderator" {{ (($user->role ?? '') == 'moderator') ? 'selected' : '' }}>Moderator</option>
 							</select>
 						</div>
 

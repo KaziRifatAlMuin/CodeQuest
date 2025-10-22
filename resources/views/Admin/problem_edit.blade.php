@@ -15,7 +15,7 @@
 		<div class="col-md-10">
 			<div class="card">
 				<div class="card-body">
-					<form action="{{ url('admin/problems/' . ($problem->id ?? $problem['id'] ?? '')) }}" method="POST">
+					<form action="{{ url('admin/problems/' . ($problem->problem_id ?? '')) }}" method="POST">
 						@csrf
 						@if(!empty($problem))
 							@method('PUT')
@@ -23,21 +23,27 @@
 
 						<div class="mb-3">
 							<label class="form-label">Title</label>
-							<input type="text" name="title" class="form-control" value="{{ $problem->title ?? $problem['title'] ?? '' }}">
+							<input type="text" name="title" class="form-control" value="{{ $problem->title ?? '' }}" required>
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label">Statement</label>
-							<textarea name="statement" rows="6" class="form-control">{{ $problem->statement ?? $problem['statement'] ?? '' }}</textarea>
+							<label class="form-label">Problem Link</label>
+							<input type="url" name="problem_link" class="form-control" value="{{ $problem->problem_link ?? '' }}" required>
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label">Difficulty</label>
-							<select name="difficulty" class="form-select">
-								<option value="easy" {{ (($problem->difficulty ?? $problem['difficulty'] ?? '') == 'easy') ? 'selected' : '' }}>Easy</option>
-								<option value="medium" {{ (($problem->difficulty ?? $problem['difficulty'] ?? '') == 'medium') ? 'selected' : '' }}>Medium</option>
-								<option value="hard" {{ (($problem->difficulty ?? $problem['difficulty'] ?? '') == 'hard') ? 'selected' : '' }}>Hard</option>
-							</select>
+							<label class="form-label">Rating</label>
+							<input type="number" name="rating" class="form-control" value="{{ $problem->rating ?? 800 }}" min="0">
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Solved Count</label>
+							<input type="number" name="solved_count" class="form-control" value="{{ $problem->solved_count ?? 0 }}" min="0">
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Stars</label>
+							<input type="number" name="stars" class="form-control" value="{{ $problem->stars ?? 0 }}" min="0">
 						</div>
 
 						<div class="d-flex gap-2">

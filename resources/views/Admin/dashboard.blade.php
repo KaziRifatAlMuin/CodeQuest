@@ -68,17 +68,17 @@
 						<thead>
 							<tr>
 								<th>Title</th>
-								<th>Difficulty</th>
+								<th>Rating</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							@forelse($recentProblems as $p)
 								<tr>
-									<td>{{ $p->title ?? $p['title'] ?? 'Untitled' }}</td>
-									<td><span class="badge">{{ $p->difficulty ?? $p['difficulty'] ?? 'N/A' }}</span></td>
+									<td>{{ $p->title ?? 'Untitled' }}</td>
+									<td><span class="badge">{{ $p->rating ?? 'N/A' }}</span></td>
 									<td>
-										<a href="{{ url('admin/problems/' . ($p->id ?? $p['id'] ?? '#') . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
+										<a href="{{ url('admin/problems/' . $p->problem_id . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
 									</td>
 								</tr>
 							@empty
@@ -109,10 +109,10 @@
 						<tbody>
 							@forelse($recentUsers as $u)
 								<tr>
-									<td>{{ $u->name ?? $u['name'] ?? 'User' }}</td>
-									<td>{{ $u->email ?? $u['email'] ?? '-' }}</td>
+									<td>{{ $u->name ?? 'User' }}</td>
+									<td>{{ $u->email ?? '-' }}</td>
 									<td>
-										<a href="{{ url('admin/users/' . ($u->id ?? $u['id'] ?? '#') . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
+										<a href="{{ url('admin/users/' . $u->user_id . '/edit') }}" class="btn btn-sm btn-primary">Edit</a>
 									</td>
 								</tr>
 							@empty

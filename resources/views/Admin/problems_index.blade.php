@@ -23,30 +23,26 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Title</th>
-                                <th>Difficulty</th>
                                 <th>Rating</th>
+                                <th>Solved Count</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($problems as $problem)
                                 <tr>
-                                    <td>{{ $problem->id ?? $problem['id'] ?? '-' }}</td>
-                                    <td>{{ $problem->title ?? $problem['title'] ?? 'Untitled' }}</td>
+                                    <td>{{ $problem->problem_id }}</td>
+                                    <td>{{ $problem->title ?? 'Untitled' }}</td>
+                                    <td><span class="badge">{{ $problem->rating ?? '-' }}</span></td>
+                                    <td>{{ $problem->solved_count ?? 0 }}</td>
                                     <td>
-                                        <span class="badge difficulty-{{ strtolower($problem->difficulty ?? $problem['difficulty'] ?? 'medium') }}">
-                                            {{ ucfirst($problem->difficulty ?? $problem['difficulty'] ?? 'N/A') }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $problem->rating ?? $problem['rating'] ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ url('problems/' . ($problem->id ?? $problem['id'] ?? '#')) }}" class="btn btn-sm btn-info" title="View">
+                                        <a href="{{ url('problems/' . $problem->problem_id) }}" class="btn btn-sm btn-info" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ url('admin/problems/' . ($problem->id ?? $problem['id'] ?? '#') . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
+                                        <a href="{{ url('admin/problems/' . $problem->problem_id . '/edit') }}" class="btn btn-sm btn-primary" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ url('admin/problems/' . ($problem->id ?? $problem['id'] ?? '#')) }}" method="POST" style="display:inline;">
+                                        <form action="{{ url('admin/problems/' . $problem->problem_id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">

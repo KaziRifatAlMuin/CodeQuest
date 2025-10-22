@@ -152,4 +152,205 @@ class DatabaseController extends Controller
             ->get();
         return view('tags', ['tags' => $tags]);
     }
+
+    // ==================== ADMIN METHODS ====================
+    
+    // Admin Dashboard
+    public function adminDashboard()
+    {
+        $problemsCount = DB::table('problems')->count();
+        $usersCount = DB::table('users')->count();
+        $editorialsCount = DB::table('editorials')->count();
+        $tagsCount = DB::table('tags')->count();
+        
+        $recentProblems = DB::table('problems')
+            ->orderBy('problem_id', 'desc')
+            ->limit(5)
+            ->get();
+            
+        $recentUsers = DB::table('users')
+            ->orderBy('user_id', 'desc')
+            ->limit(5)
+            ->get();
+        
+        return view('Admin.dashboard', [
+            'problemsCount' => $problemsCount,
+            'usersCount' => $usersCount,
+            'editorialsCount' => $editorialsCount,
+            'tagsCount' => $tagsCount,
+            'recentProblems' => $recentProblems,
+            'recentUsers' => $recentUsers
+        ]);
+    }
+    
+    // Admin Problems List
+    public function adminProblemsList()
+    {
+        $problems = DB::table('problems')->get();
+        return view('Admin.problems_index', ['problems' => $problems]);
+    }
+    
+    // Admin Problems Create (placeholder for now)
+    public function adminProblemsCreate()
+    {
+        return view('Admin.problem_edit', ['problem' => null]);
+    }
+    
+    // Admin Problems Edit
+    public function adminProblemsEdit($id)
+    {
+        $problem = DB::table('problems')->where('problem_id', $id)->first();
+        return view('Admin.problem_edit', ['problem' => $problem]);
+    }
+    
+    // Admin Problems Store (placeholder for controller logic later)
+    public function adminProblemsStore(Request $request)
+    {
+        // TODO: Add validation and store logic
+        return redirect()->route('admin.problems.index')->with('success', 'Problem created successfully');
+    }
+    
+    // Admin Problems Update (placeholder for controller logic later)
+    public function adminProblemsUpdate(Request $request, $id)
+    {
+        // TODO: Add validation and update logic
+        return redirect()->route('admin.problems.index')->with('success', 'Problem updated successfully');
+    }
+    
+    // Admin Problems Delete (placeholder for controller logic later)
+    public function adminProblemsDestroy($id)
+    {
+        // TODO: Add delete logic
+        return redirect()->route('admin.problems.index')->with('success', 'Problem deleted successfully');
+    }
+    
+    // Admin Users List
+    public function adminUsersList()
+    {
+        $users = DB::table('users')->get();
+        return view('Admin.users_index', ['users' => $users]);
+    }
+    
+    // Admin Users Create (placeholder for now)
+    public function adminUsersCreate()
+    {
+        return view('Admin.user_edit', ['user' => null]);
+    }
+    
+    // Admin Users Edit
+    public function adminUsersEdit($id)
+    {
+        $user = DB::table('users')->where('user_id', $id)->first();
+        return view('Admin.user_edit', ['user' => $user]);
+    }
+    
+    // Admin Users Store (placeholder for controller logic later)
+    public function adminUsersStore(Request $request)
+    {
+        // TODO: Add validation and store logic
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully');
+    }
+    
+    // Admin Users Update (placeholder for controller logic later)
+    public function adminUsersUpdate(Request $request, $id)
+    {
+        // TODO: Add validation and update logic
+        return redirect()->route('admin.users.index')->with('success', 'User updated successfully');
+    }
+    
+    // Admin Users Delete (placeholder for controller logic later)
+    public function adminUsersDestroy($id)
+    {
+        // TODO: Add delete logic
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
+    }
+    
+    // Admin Editorials List
+    public function adminEditorialsList()
+    {
+        $editorials = DB::table('editorials')->get();
+        return view('Admin.editorials_index', ['editorials' => $editorials]);
+    }
+    
+    // Admin Editorials Create (placeholder for now)
+    public function adminEditorialsCreate()
+    {
+        return view('Admin.editorial_edit', ['editorial' => null]);
+    }
+    
+    // Admin Editorials Edit
+    public function adminEditorialsEdit($id)
+    {
+        $editorial = DB::table('editorials')->where('editorial_id', $id)->first();
+        return view('Admin.editorial_edit', ['editorial' => $editorial]);
+    }
+    
+    // Admin Editorials Store (placeholder for controller logic later)
+    public function adminEditorialsStore(Request $request)
+    {
+        // TODO: Add validation and store logic
+        return redirect()->route('admin.editorials.index')->with('success', 'Editorial created successfully');
+    }
+    
+    // Admin Editorials Update (placeholder for controller logic later)
+    public function adminEditorialsUpdate(Request $request, $id)
+    {
+        // TODO: Add validation and update logic
+        return redirect()->route('admin.editorials.index')->with('success', 'Editorial updated successfully');
+    }
+    
+    // Admin Editorials Delete (placeholder for controller logic later)
+    public function adminEditorialsDestroy($id)
+    {
+        // TODO: Add delete logic
+        return redirect()->route('admin.editorials.index')->with('success', 'Editorial deleted successfully');
+    }
+    
+    // Admin Tags List
+    public function adminTagsList()
+    {
+        $tags = DB::table('tags')
+            ->leftJoin('problemtags', 'tags.tag_id', '=', 'problemtags.tag_id')
+            ->select(
+                'tags.*',
+                DB::raw('COUNT(problemtags.problem_id) as problems_count')
+            )
+            ->groupBy('tags.tag_id', 'tags.tag_name')
+            ->get();
+        return view('Admin.tags_index', ['tags' => $tags]);
+    }
+    
+    // Admin Tags Create (placeholder for now)
+    public function adminTagsCreate()
+    {
+        return view('Admin.tag_edit', ['tag' => null]);
+    }
+    
+    // Admin Tags Edit
+    public function adminTagsEdit($id)
+    {
+        $tag = DB::table('tags')->where('tag_id', $id)->first();
+        return view('Admin.tag_edit', ['tag' => $tag]);
+    }
+    
+    // Admin Tags Store (placeholder for controller logic later)
+    public function adminTagsStore(Request $request)
+    {
+        // TODO: Add validation and store logic
+        return redirect()->route('admin.tags.index')->with('success', 'Tag created successfully');
+    }
+    
+    // Admin Tags Update (placeholder for controller logic later)
+    public function adminTagsUpdate(Request $request, $id)
+    {
+        // TODO: Add validation and update logic
+        return redirect()->route('admin.tags.index')->with('success', 'Tag updated successfully');
+    }
+    
+    // Admin Tags Delete (placeholder for controller logic later)
+    public function adminTagsDestroy($id)
+    {
+        // TODO: Add delete logic
+        return redirect()->route('admin.tags.index')->with('success', 'Tag deleted successfully');
+    }
 }
