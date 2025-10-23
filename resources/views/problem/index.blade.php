@@ -49,7 +49,8 @@
                         </td>
                         <td>{{ number_format($problem->solved_count ?? 0) }}</td>
                         <td>{{ number_format($problem->stars ?? 0) }}</td>
-                        <td>{{ number_format($problem->popularity ?? 0, 2) }}</td>
+                                                <td>{{ $problem->popularity_percentage }}%</td>
+                        <td>
                         <td onclick="event.stopPropagation();">
                             <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary">
                                 <i class="fas fa-external-link-alt"></i> Solve

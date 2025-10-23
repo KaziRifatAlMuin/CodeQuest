@@ -76,7 +76,8 @@
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">{{ $p->title }}</h5>
-                            <p class="card-text small text-muted">Solved: {{ $p->solved_count ?? 0 }} • Popularity: {{ $p->popularity ?? 0 }}</p>
+                                                        <p class="card-text small text-muted">Solved: {{ $p->solved_count ?? 0 }} • Popularity: {{ $p->popularity_percentage }}%</p>
+                        </div>
                             @if($p->problem_link)
                             <a href="{{ $p->problem_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Open Problem</a>
                             @endif

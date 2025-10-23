@@ -14,7 +14,13 @@ use App\Models\User;
 
 class AccountController extends Controller
 {
-    // Show login form
+    // ============================================
+    // AUTHENTICATION
+    // ============================================
+    
+    /**
+     * Show login form
+     */
     public function showLogin()
     {
         return view('account.login');
@@ -46,7 +52,9 @@ class AccountController extends Controller
         ])->onlyInput('email');
     }
 
-    // Show registration form
+    /**
+     * Show registration form
+     */
     public function showRegister()
     {
         return view('account.register');
@@ -78,7 +86,13 @@ class AccountController extends Controller
             ->with('success', 'Registration successful! Please verify your Codeforces handle.');
     }
 
-    // Show handle verification form
+    // ============================================
+    // HANDLE VERIFICATION
+    // ============================================
+    
+    /**
+     * Show handle verification form
+     */
     public function showHandleVerification()
     {
         if (Auth::user()->handle_verified_at) {
@@ -125,7 +139,13 @@ class AccountController extends Controller
         }
     }
 
-    // Show email verification notice
+    // ============================================
+    // EMAIL VERIFICATION
+    // ============================================
+    
+    /**
+     * Show email verification notice
+     */
     public function showEmailVerification()
     {
         if (Auth::user()->hasVerifiedEmail()) {
@@ -174,7 +194,13 @@ class AccountController extends Controller
             ->with('success', 'Email verified successfully! Welcome to CodeQuest.');
     }
 
-    // Show forgot password form
+    // ============================================
+    // PASSWORD RESET
+    // ============================================
+    
+    /**
+     * Show forgot password form
+     */
     public function showForgotPassword()
     {
         return view('account.forget_password');
@@ -247,7 +273,13 @@ class AccountController extends Controller
             : back()->withErrors(['email' => [__($status)]]);
     }
 
-    // Show profile
+    // ============================================
+    // PROFILE MANAGEMENT
+    // ============================================
+    
+    /**
+     * Show profile
+     */
     public function showProfile()
     {
         return view('account.profile', [
@@ -321,7 +353,13 @@ class AccountController extends Controller
             ->with('success', 'You have been logged out successfully.');
     }
 
-    // Admin Dashboard
+    // ============================================
+    // ADMIN FUNCTIONS
+    // ============================================
+    
+    /**
+     * Admin Dashboard
+     */
     public function adminDashboard()
     {
         // Fetch users sorted by role first (admin, moderator, user), then by rating descending

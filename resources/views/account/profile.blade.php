@@ -322,7 +322,7 @@
                                                     <small class="text-muted">
                                                         <i class="far fa-clock"></i> {{ $editorial->updated_at->diffForHumans() }}
                                                     </small>
-                                                    <a href="{{ route('editorials.show', $editorial->editorial_id) }}" class="btn btn-sm btn-outline-warning">
+                                                    <a href="{{ route('editorial.show', $editorial->editorial_id) }}" class="btn btn-sm btn-outline-warning">
                                                         <i class="fas fa-eye"></i> Read
                                                     </a>
                                                 </div>

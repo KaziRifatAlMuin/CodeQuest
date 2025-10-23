@@ -94,7 +94,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-2"><strong>Popularity</strong></div>
-                                        <div class="text-success h4">{{ number_format($problem->popularity ?? 0, 3) }}</div>
+                                        <div class="text-success h4">{{ $problem->popularity_percentage }}%</div>
                                     </div>
                                 </div>
                                 <small class="text-muted d-block mt-2">

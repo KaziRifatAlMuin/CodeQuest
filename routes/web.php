@@ -2,26 +2,28 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
-use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\UserProblemController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EditorialController;
 use App\Http\Controllers\FriendController;
-use App\Http\Middleware\ValidUser;
+use App\Http\Controllers\TagController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
 
-// Public Routes - Accessible to everyone
+// ============================================
+// PUBLIC ROUTES (Accessible to everyone)
+// ============================================
 Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::get('/home', [SiteController::class, 'home'])->name('home.index');
 Route::get('/about', [SiteController::class, 'about'])->name('about');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::get('/leaderboard', [UserController::class, 'leaderboard'])->name('leaderboard');
 
-// Guest Only Routes - Only for non-authenticated users
-Route::middleware('guest')->group(function () {
+// ============================================
+// GUEST ROUTES (Non-authenticated users only)
+// ============================================
+Route::middleware(['guest','setUserTimezone'])->group(function () {
     Route::get('/account/login', [AccountController::class, 'showLogin'])->name('account.login');
     Route::post('/account/login', [AccountController::class, 'login']);
     Route::get('/account/register', [AccountController::class, 'showRegister'])->name('account.register');
@@ -32,148 +34,94 @@ Route::middleware('guest')->group(function () {
     Route::post('/account/reset-password', [AccountController::class, 'resetPassword'])->name('password.update');
 });
 
-// Authenticated Routes - Requires login
-Route::middleware('auth')->group(function () {
-    // Handle Verification (required before email verification)
+// ============================================
+// AUTHENTICATED ROUTES
+// ============================================
+Route::middleware(['auth','setUserTimezone'])->group(function () {
+    
+    // ---- Account Management ----
     Route::get('/account/handle-verification', [AccountController::class, 'showHandleVerification'])->name('account.handleVerification');
     Route::post('/account/handle-verification', [AccountController::class, 'verifyHandle'])->name('account.verifyHandle');
-    
-    // Email Verification Routes
     Route::get('/email/verify', [AccountController::class, 'showEmailVerification'])->name('verification.notice');
-    Route::post('/email/verification-notification', [AccountController::class, 'resendEmailVerification'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
+    Route::post('/email/verification-notification', [AccountController::class, 'resendEmailVerification'])->middleware('throttle:6,1')->name('verification.send');
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
         return redirect()->route('home')->with('success', 'Email verified successfully!');
     })->middleware('signed')->name('verification.verify');
-    
-    // Profile and Logout
     Route::get('/account/profile', [AccountController::class, 'showProfile'])->name('account.profile');
     Route::get('/account/edit-profile', [AccountController::class, 'showEditProfile'])->name('account.editProfile');
     Route::post('/account/update-profile', [AccountController::class, 'updateProfile'])->name('account.updateProfile');
     Route::delete('/account/delete-profile-picture', [AccountController::class, 'deleteProfilePicture'])->name('account.deleteProfilePicture');
     Route::post('/account/logout', [AccountController::class, 'logout'])->name('account.logout');
     
-    // Protected Routes - Requires verified email and handle
+    // ============================================
+    // VERIFIED USER ROUTES (Email + Handle verified)
+    // ============================================
     Route::middleware(['verified'])->group(function () {
+        
+        // ---- Static Pages ----
         Route::get('/welcome', [SiteController::class, 'welcome'])->name('welcome');
         Route::get('/practice', [SiteController::class, 'practice'])->name('practice');
+        // (Removed unused utility routes: name.show, problem.utility)
         
-        // Utility Routes
-        Route::get('/name/{nameValue}', [SiteController::class, 'showName'])->name('name.show');
-        Route::get('/problem/{problem}/{tag}/{problem_no}', [SiteController::class, 'showProblem'])->name('problem.utility');
-        
-        // User Management Routes
+        // ---- User Routes ----
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
-        
-        // User Create - Moderators and Admins only (MUST come before {user} route)
-        Route::middleware(['checkRole:moderator,admin'])->group(function () {
-            Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
-            Route::post('/users', [UserController::class, 'store'])->name('user.store');
-        });
-        
+        Route::get('/users/create', [UserController::class, 'create'])->name('user.create')->middleware('checkRole:moderator,admin');
+        Route::post('/users', [UserController::class, 'store'])->name('user.store')->middleware('checkRole:moderator,admin');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('user.show');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('checkRole:moderator,admin');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('user.update')->middleware('checkRole:moderator,admin');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy')->middleware('checkRole:admin');
         
-        // User Edit/Update - Moderators and Admins only
-        Route::middleware(['checkRole:moderator,admin'])->group(function () {
-            Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
-            Route::put('/users/{user}', [UserController::class, 'update'])->name('user.update');
-        });
-        
-        // User Delete - Admins only
-        Route::middleware(['checkRole:admin'])->group(function () {
-            Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
-        });
-        
-        // Friend/Following Routes - All authenticated users
+        // ---- Friend Routes ----
         Route::get('/users/{user}/followers', [FriendController::class, 'followers'])->name('friend.followers');
         Route::get('/users/{user}/following', [FriendController::class, 'followings'])->name('friend.following');
-    Route::post('/users/{user}/follow', [FriendController::class, 'follow'])->name('friend.follow');
-    // Accept both POST and DELETE methods for unfollow for backward-compatibility
-    Route::match(['post', 'delete'], '/users/{user}/unfollow', [FriendController::class, 'unfollow'])->name('friend.unfollow');
+        Route::post('/users/{user}/follow', [FriendController::class, 'follow'])->name('friend.follow');
+        Route::match(['post', 'delete'], '/users/{user}/unfollow', [FriendController::class, 'unfollow'])->name('friend.unfollow');
         
-        // Problem Management Routes
+        // ---- Problem Routes ----
         Route::get('/problems', [ProblemController::class, 'index'])->name('problem.index');
         Route::get('/problemset', [ProblemController::class, 'index'])->name('problemset');
-        
-        // Problem Create - All authenticated users can create (MUST come before {problem} route)
         Route::get('/problems/create', [ProblemController::class, 'create'])->name('problem.create');
         Route::post('/problems', [ProblemController::class, 'store'])->name('problem.store');
-        
         Route::get('/problems/{problem}', [ProblemController::class, 'show'])->name('problem.show');
+        Route::get('/problems/{problem}/edit', [ProblemController::class, 'edit'])->name('problem.edit')->middleware('checkRole:moderator,admin');
+        Route::put('/problems/{problem}', [ProblemController::class, 'update'])->name('problem.update')->middleware('checkRole:moderator,admin');
+        Route::delete('/problems/{problem}', [ProblemController::class, 'destroy'])->name('problem.destroy')->middleware('checkRole:admin');
         
-        // Problem Edit/Update - Moderators and Admins only
-        Route::middleware(['checkRole:moderator,admin'])->group(function () {
-            Route::get('/problems/{problem}/edit', [ProblemController::class, 'edit'])->name('problem.edit');
-            Route::put('/problems/{problem}', [ProblemController::class, 'update'])->name('problem.update');
-        });
-        
-        // Problem Delete - Admins only
-        Route::middleware(['checkRole:admin'])->group(function () {
-            Route::delete('/problems/{problem}', [ProblemController::class, 'destroy'])->name('problem.destroy');
-        });
-        
-        // User-Problem Interaction Routes
+        // ---- User-Problem Interaction ----
         Route::post('/problems/{problem}/mark-solved', [UserProblemController::class, 'markSolved'])->name('problem.markSolved');
         Route::post('/problems/{problem}/toggle-star', [UserProblemController::class, 'toggleStar'])->name('problem.toggleStar');
         Route::post('/problems/{problem}/update-status', [UserProblemController::class, 'updateStatus'])->name('problem.updateStatus');
-        
-        // User-Problem Edit/Update
         Route::get('/problems/{problem}/user/{user}/edit', [UserProblemController::class, 'edit'])->name('userProblem.edit');
         Route::put('/problems/{problem}/user/{user}', [UserProblemController::class, 'update'])->name('userProblem.update');
         
-        // Tag Management Routes
-        Route::get('/tags', [\App\Http\Controllers\TagController::class, 'index'])->name('tag.index');
+        // ---- Tag Routes ----
+        Route::get('/tags', [TagController::class, 'index'])->name('tag.index');
+        Route::get('/tags/create', [TagController::class, 'create'])->name('tag.create')->middleware('checkRole:moderator,admin');
+        Route::post('/tags', [TagController::class, 'store'])->name('tag.store')->middleware('checkRole:moderator,admin');
+        Route::get('/tags/{tag}', [TagController::class, 'show'])->name('tag.show');
+        Route::get('/tags/{tag}/edit', [TagController::class, 'edit'])->name('tag.edit')->middleware('checkRole:moderator,admin');
+        Route::put('/tags/{tag}', [TagController::class, 'update'])->name('tag.update')->middleware('checkRole:moderator,admin');
+        Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->name('tag.destroy')->middleware('checkRole:admin');
         
-        // Tag Create - Moderators and Admins only
-        Route::middleware(['checkRole:moderator,admin'])->group(function () {
-            Route::get('/tags/create', [\App\Http\Controllers\TagController::class, 'create'])->name('tag.create');
-            Route::post('/tags', [\App\Http\Controllers\TagController::class, 'store'])->name('tag.store');
-            Route::get('/tags/{tag}/edit', [\App\Http\Controllers\TagController::class, 'edit'])->name('tag.edit');
-            Route::put('/tags/{tag}', [\App\Http\Controllers\TagController::class, 'update'])->name('tag.update');
-        });
+        // ---- Editorial Routes ----
+        Route::get('/editorials', [EditorialController::class, 'index'])->name('editorial.index');
+        Route::get('/editorials/create', [EditorialController::class, 'create'])->name('editorial.create');
+        Route::post('/editorials', [EditorialController::class, 'store'])->name('editorial.store');
+        Route::get('/editorials/{editorial}', [EditorialController::class, 'show'])->name('editorial.show');
+        Route::post('/editorials/{editorial}/upvote', [EditorialController::class, 'upvote'])->name('editorial.upvote');
+        Route::post('/editorials/{editorial}/downvote', [EditorialController::class, 'downvote'])->name('editorial.downvote');
+        Route::get('/editorials/{editorial}/edit', [EditorialController::class, 'edit'])->name('editorial.edit')->middleware('editorialOwner');
+        Route::put('/editorials/{editorial}', [EditorialController::class, 'update'])->name('editorial.update')->middleware('editorialOwner');
+        Route::delete('/editorials/{editorial}', [EditorialController::class, 'destroy'])->name('editorial.destroy')->middleware('checkRole:admin');
         
-        // Tag Delete - Admins only
-        Route::middleware(['checkRole:admin'])->group(function () {
-            Route::delete('/tags/{tag}', [\App\Http\Controllers\TagController::class, 'destroy'])->name('tag.destroy');
-        });
-        
-        Route::get('/tags/{tag}', [\App\Http\Controllers\TagController::class, 'show'])->name('tag.show');
-        
-        // Editorial Routes
-        // Public editorial viewing
-        Route::get('/editorials', [EditorialController::class, 'index'])->name('editorials.index');
-        
-        // Creating editorials - all authenticated users (MUST come before /{editorial} route)
-        Route::get('/editorials/create', [EditorialController::class, 'create'])->name('editorials.create');
-        Route::post('/editorials', [EditorialController::class, 'store'])->name('editorials.store');
-        
-        // Show specific editorial (MUST come after /create route)
-        Route::get('/editorials/{editorial}', [EditorialController::class, 'show'])->name('editorials.show');
-        
-        // Voting on editorials - all authenticated users
-        Route::post('/editorials/{editorial}/upvote', [EditorialController::class, 'upvote'])->name('editorials.upvote');
-        Route::post('/editorials/{editorial}/downvote', [EditorialController::class, 'downvote'])->name('editorials.downvote');
-        
-        // Editing editorials - only author or admin
-        Route::middleware(['editorialOwner'])->group(function () {
-            Route::get('/editorials/{editorial}/edit', [EditorialController::class, 'edit'])->name('editorials.edit');
-            Route::put('/editorials/{editorial}', [EditorialController::class, 'update'])->name('editorials.update');
-        });
-        
-        // Deleting editorials - admins only
-        Route::middleware(['checkRole:admin'])->group(function () {
-            Route::delete('/editorials/{editorial}', [EditorialController::class, 'destroy'])->name('editorials.destroy');
-        });
-        
-        // Admin Routes - Only for admins
-        Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
+        // ---- Admin Routes ----
+        Route::prefix('admin')->middleware('checkRole:admin')->group(function () {
             Route::get('/dashboard', [AccountController::class, 'adminDashboard'])->name('admin.dashboard');
             Route::post('/users/{user}/update-role', [AccountController::class, 'updateUserRole'])->name('admin.updateUserRole');
-            // Admin tag management (accessible from admin dashboard)
-            Route::get('/tags', [\App\Http\Controllers\TagController::class, 'adminIndex'])->name('admin.tags.index');
-            Route::get('/tags/{tag}/manage', [\App\Http\Controllers\TagController::class, 'manage'])->name('admin.tags.manage');
+            Route::get('/tags', [TagController::class, 'adminIndex'])->name('admin.tags.index');
+            Route::get('/tags/{tag}/manage', [TagController::class, 'manage'])->name('admin.tags.manage');
         });
     });
 });

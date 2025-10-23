@@ -59,7 +59,7 @@
                         <i class="fas fa-newspaper fa-3x text-dark mb-3"></i>
                         <h5 class="card-title">Manage Editorials</h5>
                         <p class="text-muted small mb-3">Review and moderate editorials</p>
-                        <a href="{{ route('editorials.index') }}" class="btn btn-dark btn-sm text-white">
+                        <a href="{{ route('editorial.index') }}" class="btn btn-dark btn-sm text-white">
                             <i class="fas fa-arrow-right"></i> Go to Editorials
                         </a>
                     </div>
@@ -119,7 +119,7 @@
                         <i class="fas fa-pen-fancy fa-3x text-success mb-3"></i>
                         <h5 class="card-title">Create Editorial</h5>
                         <p class="text-muted small mb-3">Write a new editorial for a problem</p>
-                        <a href="{{ route('editorials.create') }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('editorial.create') }}" class="btn btn-success btn-sm">
                             <i class="fas fa-plus"></i> Create Editorial
                         </a>
                     </div>

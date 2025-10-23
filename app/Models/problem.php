@@ -82,13 +82,40 @@ class Problem extends Model
     }
 
     /**
-     * Update all dynamic fields
+     * Update all dynamic fields efficiently in a single query
      */
     public function updateDynamicFields()
     {
-        $this->updateSolvedCount();
-        $this->updateStarsCount();
-        $this->updatePopularity();
+        // Count solved users
+        $solvedCount = $this->solvedByUsers()->count();
+        
+        // Count starred users
+        $starsCount = $this->starredByUsers()->count();
+        
+        // Calculate popularity (stars / max stars across all problems)
+        // Get the maximum stars count from all problems
+        $maxStars = \DB::table('problems')->max('stars') ?? 1;
+        
+        $popularity = 0;
+        if ($maxStars > 0) {
+            // Store as decimal (0.0 to 1.0), will be displayed as percentage
+            $popularity = round($starsCount / $maxStars, 4);
+        }
+        
+        // Update all fields in a single query (more efficient)
+        $this->update([
+            'solved_count' => $solvedCount,
+            'stars' => $starsCount,
+            'popularity' => $popularity,
+        ]);
+    }
+
+    /**
+     * Get popularity as percentage with 2 decimal places (0.00-100.00)
+     */
+    public function getPopularityPercentageAttribute()
+    {
+        return number_format($this->popularity * 100, 2);
     }
 
     /**

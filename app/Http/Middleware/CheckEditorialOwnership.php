@@ -10,8 +10,8 @@ use App\Models\Editorial;
 class CheckEditorialOwnership
 {
     /**
-     * Handle an incoming request.
-     * Checks if user is the author of the editorial or an admin
+     * Check if user is the editorial author or an admin
+     * Allows only the author or admin to edit their editorial
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

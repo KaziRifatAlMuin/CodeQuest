@@ -11,11 +11,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Dedicated middleware alias list (framework + app)
+        // Add framework/common middleware first, then app-specific aliases below.
         $middleware->alias([
-            'isAuth' => \App\Http\Middleware\CheckAuthentication::class,
+            // Framework / common middleware
+            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
+            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+
+            // Application specific middleware
             'checkRole' => \App\Http\Middleware\CheckUserRole::class,
             'editorialOwner' => \App\Http\Middleware\CheckEditorialOwnership::class,
+            'setUserTimezone' => \App\Http\Middleware\SetUserTimezone::class,
         ]);
     })
 

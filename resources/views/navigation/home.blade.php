@@ -63,7 +63,7 @@
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <div class="ms-2 me-auto">
                                 <div class="fw-bold">{{ $problem->title }}</div>
-                                <small class="text-muted">Solved: {{ $problem->solved_count ?? 0 }} • Popularity: {{ $problem->popularity ?? 0 }}</small>
+                                <small class="text-muted">Solved: {{ $problem->solved_count ?? 0 }} • Popularity: {{ $problem->popularity_percentage }}%</small>
                             </div>
                             @if($problem->problem_link)
                             <a href="{{ $problem->problem_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">Open</a>

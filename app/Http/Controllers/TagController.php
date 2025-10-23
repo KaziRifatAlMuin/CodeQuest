@@ -90,7 +90,7 @@ class TagController extends Controller
     {
         // Only admins should reach here (route middleware enforces it)
         $tags = Tag::withCount('problems')->orderByDesc('problems_count')->paginate(30);
-        return view('admin.tags.index', compact('tags'));
+        return view('tag.admin_index', compact('tags'));
     }
 
     /**
@@ -104,27 +104,19 @@ class TagController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     * Authorization: checkRole middleware
      */
     public function create()
     {
-        // Check if user is admin or moderator
-        if (!in_array(auth()->user()->role, ['admin', 'moderator'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
         return view('tag.create');
     }
 
     /**
      * Store a newly created resource in storage.
+     * Authorization: checkRole middleware
      */
     public function store(Request $request)
     {
-        // Check if user is admin or moderator
-        if (!in_array(auth()->user()->role, ['admin', 'moderator'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $data = $request->validate([
             'tag_name' => 'required|string|max:255|unique:tags,tag_name',
         ]);
@@ -145,27 +137,19 @@ class TagController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * Authorization: checkRole middleware
      */
     public function edit(Tag $tag)
     {
-        // Check if user is admin or moderator
-        if (!in_array(auth()->user()->role, ['admin', 'moderator'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
         return view('tag.edit', compact('tag'));
     }
 
     /**
      * Update the specified resource in storage.
+     * Authorization: checkRole middleware
      */
     public function update(Request $request, Tag $tag)
     {
-        // Check if user is admin or moderator
-        if (!in_array(auth()->user()->role, ['admin', 'moderator'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $data = $request->validate([
             'tag_name' => 'required|string|max:255|unique:tags,tag_name,' . $tag->tag_id,
         ]);
@@ -177,17 +161,11 @@ class TagController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Authorization: checkRole middleware
      */
     public function destroy(Tag $tag)
     {
-        // Only admins can delete tags
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Delete the tag (problems will show null tags, not cascade delete)
         $tag->delete();
-
         return redirect()->route('tag.index')->with('success', 'Tag deleted successfully.');
     }
 }

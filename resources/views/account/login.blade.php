@@ -55,10 +55,11 @@
                 @enderror
             </div>
 
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                <label class="form-check-label" for="remember">Remember me</label>
-            </div>
+            {{-- <div class="form-group form-check d-flex align-items-center gap-2">
+                <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
+                <label class="form-check-label mb-0" for="remember">Remember me</label>
+                <small class="text-muted">Keeps you signed in on this device</small>
+            </div> --}}
 
             <button type="submit" class="btn btn-auth">
                 <i class="fas fa-sign-in-alt"></i> Login

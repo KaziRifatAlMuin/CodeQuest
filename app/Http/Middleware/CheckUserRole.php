@@ -9,7 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckUserRole
 {
     /**
-     * Handle an incoming request.
+     * Check if authenticated user has required role
+     * 
+     * Usage: Route::get('/admin', ...)->middleware('checkRole:admin');
+     * Usage: Route::get('/manage', ...)->middleware('checkRole:admin,moderator');
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      * @param  string  ...$roles

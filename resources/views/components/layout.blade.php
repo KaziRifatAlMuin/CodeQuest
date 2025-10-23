@@ -12,6 +12,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Set user's timezone in cookie (used server-side). Defaults to Asia/Dhaka when not available -->
+    <script>
+        (function(){
+            try {
+                var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Dhaka';
+            } catch (e) {
+                var tz = 'Asia/Dhaka';
+            }
+
+            // Set cookie for 30 days
+            var d = new Date();
+            d.setTime(d.getTime() + (30*24*60*60*1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = 'user_timezone=' + encodeURIComponent(tz) + ';' + expires + ';path=/';
+        })();
+    </script>
     
     <style>
     <style>
@@ -1195,7 +1211,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('editorials.index') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
+                    <a href="{{ route('editorial.index') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
                         <i class="menu-icon fas fa-book"></i>
                         <span>Editorials</span>
                     </a>
@@ -1277,7 +1293,7 @@
                         <a class="nav-link" href="{{ route('user.index') }}">Users</a>
                     </li>
                     <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('editorials.index') }}">Editorials</a>
+                        <a class="nav-link" href="{{ route('editorial.index') }}">Editorials</a>
                     </li>
                     <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('tag.index') }}">Tags</a>

@@ -408,7 +408,7 @@
                                                 <small class="text-muted">
                                                     <i class="far fa-clock"></i> {{ $editorial->updated_at->diffForHumans() }}
                                                 </small>
-                                                <a href="{{ route('editorials.show', $editorial->editorial_id) }}" 
+                                                <a href="{{ route('editorial.show', $editorial->editorial_id) }}" 
                                                    class="btn btn-sm" 
                                                    style="background: {{ $problemThemeColor }}; color: white;">
                                                     <i class="fas fa-eye"></i> Read

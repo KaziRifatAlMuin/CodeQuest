@@ -16,7 +16,7 @@ class EditorialController extends Controller
         $editorials = Editorial::with(['problem', 'author'])
             ->orderBy('updated_at', 'desc')
             ->paginate(20);
-        return view('editorials.index', compact('editorials'));
+        return view('editorial.index', compact('editorials'));
     }
 
     /**
@@ -31,7 +31,7 @@ class EditorialController extends Controller
             $problem = Problem::findOrFail($problemId);
         }
         
-        return view('editorials.create', compact('problem'));
+        return view('editorial.create', compact('problem'));
     }
 
     /**
@@ -73,7 +73,7 @@ class EditorialController extends Controller
     public function show(Editorial $editorial)
     {
         $editorial->load(['problem', 'author']);
-        return view('editorials.show', compact('editorial'));
+        return view('editorial.show', compact('editorial'));
     }
 
     /**
@@ -82,7 +82,7 @@ class EditorialController extends Controller
     public function edit(Editorial $editorial)
     {
         $editorial->load('problem');
-        return view('editorials.edit', compact('editorial'));
+        return view('editorial.edit', compact('editorial'));
     }
 
     /**
@@ -97,7 +97,7 @@ class EditorialController extends Controller
         
         $editorial->update($data);
         
-        return redirect()->route('editorials.show', $editorial->editorial_id)
+        return redirect()->route('editorial.show', $editorial->editorial_id)
             ->with('success', 'Editorial updated successfully.');
     }
 

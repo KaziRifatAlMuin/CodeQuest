@@ -95,43 +95,11 @@ class UserProblemController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing user-problem status
+     * Authorization: User can only edit their own status or admin can edit any
      */
     public function edit(Problem $problem, $user)
     {
-        // Verify the user is viewing/editing their own record or is an admin
         if (auth()->id() != $user && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
@@ -139,15 +107,15 @@ class UserProblemController extends Controller
         $user = \App\Models\User::findOrFail($user);
         $userProblem = $problem->getUserStatus($user->user_id);
 
-        return view('userProblem.edit', compact('problem', 'user', 'userProblem'));
+        return view('userproblem.edit', compact('problem', 'user', 'userProblem'));
     }
 
     /**
      * Update user-problem status and redirect back to problem
+     * Authorization: User can only update their own status or admin can update any
      */
     public function update(Request $request, Problem $problem, $user)
     {
-        // Verify the user is updating their own record or is an admin
         if (auth()->id() != $user && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
@@ -179,13 +147,5 @@ class UserProblemController extends Controller
         );
 
         return redirect()->route('problem.show', $problem)->with('success', 'Your problem status has been updated!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

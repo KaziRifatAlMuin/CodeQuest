@@ -73,7 +73,7 @@
                     <div class="card h-100 shadow-sm" style="border-top: 4px solid #212529;">
                         <div class="card-body text-center">
                             <i class="fas fa-fire" style="font-size: 2.5rem; color: #212529; margin-bottom: 10px;"></i>
-                            <h2 class="mb-0" style="color: #212529; font-weight: 700;">{{ number_format($problem->popularity ?? 0, 2) }}</h2>
+                            <h2 class="mb-0" style="color: #212529; font-weight: 700;">{{ $problem->popularity_percentage }}%</h2>
                             <small class="text-muted">Popularity</small>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                 </a>
                 
                 @auth
-                    <a href="{{ route('editorials.create', ['problem_id' => $problem->problem_id]) }}" 
+                    <a href="{{ route('editorial.create', ['problem_id' => $problem->problem_id]) }}" 
                        class="btn btn-primary">
                         <i class="fas fa-pen"></i> Write Editorial
                     </a>
@@ -223,7 +223,7 @@
                                                 <small class="text-muted">
                                                     <i class="far fa-clock"></i> {{ $editorial->updated_at->diffForHumans() }}
                                                 </small>
-                                                <a href="{{ route('editorials.show', $editorial->editorial_id) }}" 
+                                                <a href="{{ route('editorial.show', $editorial->editorial_id) }}" 
                                                    class="btn btn-sm" 
                                                    style="background: {{ $themeColor }}; color: white;">
                                                     <i class="fas fa-eye"></i> Read
