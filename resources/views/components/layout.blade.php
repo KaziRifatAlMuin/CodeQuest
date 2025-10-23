@@ -894,6 +894,48 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1366px) {
+            /* Smaller laptop adjustments */
+            body {
+                font-size: 0.85rem;
+            }
+
+            .container {
+                padding-top: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            h1, .display-3 {
+                font-size: 1.6rem !important;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            h3 {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 0.45rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .navbar {
+                padding: 0.7rem 1.5rem;
+            }
+
+            .list-group-item {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
         @media (max-width: 991px) {
             .navbar-brand {
                 font-size: 1.2rem;
