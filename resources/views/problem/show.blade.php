@@ -261,7 +261,6 @@
                                         <th>Rating</th>
                                         <th>Solved At</th>
                                         <th>Submission</th>
-                                        <th>Notes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -314,15 +313,7 @@
                                                     <span class="text-muted">—</span>
                                                 @endif
                                             </td>
-                                            <td>
-                                                @if($submission->notes)
-                                                    <small class="text-muted" title="{{ $submission->notes }}">
-                                                        {{ Str::limit($submission->notes, 30) }}
-                                                    </small>
-                                                @else
-                                                    <span class="text-muted">—</span>
-                                                @endif
-                                            </td>
+                                            <!-- Notes column intentionally hidden from submission history for privacy -->
                                         </tr>
                                     @endforeach
                                 </tbody>

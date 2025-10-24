@@ -9,6 +9,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EditorialController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\QuestController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // ============================================
@@ -112,10 +113,14 @@ Route::middleware(['auth','setUserTimezone'])->group(function () {
         Route::delete('/editorials/{editorial}', [EditorialController::class, 'destroy'])->name('editorial.destroy')->middleware('checkRole:admin');
         
         // ---- Advanced SQL Features ----
-    Route::get('/advanced/statistics', [\App\Http\Controllers\StatisticsController::class, 'index'])->name('advanced.statistics');
-    Route::get('/advanced/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('advanced.analytics');
-    Route::get('/advanced/activity', [\App\Http\Controllers\ActivityController::class, 'index'])->name('advanced.activity');
+        Route::get('/advanced/statistics', [\App\Http\Controllers\StatisticsController::class, 'index'])->name('advanced.statistics');
+        Route::get('/advanced/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('advanced.analytics');
+        Route::get('/advanced/activity', [\App\Http\Controllers\ActivityController::class, 'index'])->name('advanced.activity');
         Route::get('/advanced/tag-masters', [\App\Http\Controllers\TagMasterController::class, 'index'])->name('advanced.tagMasters');
+        
+        // ---- SQL Quest Routes ----
+        Route::get('/quest', [QuestController::class, 'index'])->name('quest.index');
+        Route::post('/quest/execute', [QuestController::class, 'executeQuery'])->name('quest.execute');
         
         // ---- Admin Routes ----
         Route::prefix('admin')->middleware('checkRole:admin')->group(function () {
