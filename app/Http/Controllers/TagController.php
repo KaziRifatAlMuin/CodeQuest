@@ -14,17 +14,30 @@ class TagController extends Controller
      */
     public function index(Request $request)
     {
+        // Get sorting parameters
+        $sort = $request->input('sort', 'name');
+        $direction = $request->input('direction', 'asc');
+        
         // Get all tags with their problem counts using raw SQL with flexible pagination
         $tagsPerPage = \App\Helpers\SearchHelper::getPerPage($request->input('tags_per_page', 50));
         $tagsPage = $request->get('tags_page', 1);
         $tagsOffset = ($tagsPage - 1) * $tagsPerPage;
+        
+        // Validate and set ORDER BY clause
+        $validSorts = [
+            'name' => 't.tag_name',
+            'problems' => 'problems_count'
+        ];
+        
+        $orderColumn = $validSorts[$sort] ?? 't.tag_name';
+        $orderDirection = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
         
         $tagsData = \DB::select("
             SELECT t.*, COUNT(pt.problem_id) as problems_count
             FROM tags t
             LEFT JOIN problemtags pt ON t.tag_id = pt.tag_id
             GROUP BY t.tag_id, t.tag_name
-            ORDER BY t.tag_name ASC
+            ORDER BY $orderColumn $orderDirection
             LIMIT ? OFFSET ?
         ", [$tagsPerPage, $tagsOffset]);
         
@@ -131,7 +144,7 @@ class TagController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('tag.index', compact('tags', 'tagsPaginator', 'tagStats', 'problems', 'selectedTags', 'filterMode', 'filterLogic', 'showTags', 'chartColors'));
+        return view('tag.index', compact('tags', 'tagsPaginator', 'tagStats', 'problems', 'selectedTags', 'filterMode', 'filterLogic', 'showTags', 'chartColors', 'sort', 'direction'));
     }
 
     /**

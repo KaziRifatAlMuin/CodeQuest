@@ -16,6 +16,10 @@ class ProblemController extends Controller
         $tagsData = \DB::select('SELECT * FROM tags ORDER BY tag_name ASC');
         $tags = \App\Models\Tag::hydrate($tagsData);
 
+    // Get sorting parameters (default to created date)
+    $sort = $request->input('sort', 'created');
+        $direction = $request->input('direction', 'desc');
+        
         // Build SQL query with filters
         $selectedTags = $request->input('tags', []);
         $minRating = $request->input('min_rating');
@@ -65,6 +69,19 @@ class ProblemController extends Controller
         
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
+        // Validate and set ORDER BY clause
+        $validSorts = [
+            'title' => 'p.title',
+            'rating' => 'p.rating',
+            'solved' => 'p.solved_count',
+            'stars' => 'p.stars',
+            'popularity' => 'p.popularity',
+            'created' => 'p.created_at'
+        ];
+        
+        $orderColumn = $validSorts[$sort] ?? 'p.popularity';
+        $orderDirection = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        
         // Get total count for pagination using scalar subquery
         $totalCount = \DB::select("SELECT COUNT(*) as total FROM problems p $whereClause", $params)[0]->total;
         
@@ -77,7 +94,7 @@ class ProblemController extends Controller
         $problemsData = \DB::select("
             SELECT DISTINCT p.* FROM problems p
             $whereClause
-            ORDER BY p.popularity DESC, p.solved_count DESC, p.created_at DESC
+            ORDER BY $orderColumn $orderDirection
             LIMIT ? OFFSET ?
         ", array_merge($params, [$perPage, $offset]));
         
@@ -103,7 +120,7 @@ class ProblemController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('problem.index', compact('problems', 'tags', 'selectedTags', 'showStarred', 'search'));
+        return view('problem.index', compact('problems', 'tags', 'selectedTags', 'showStarred', 'search', 'sort', 'direction'));
     }
 
     /**
@@ -166,7 +183,23 @@ class ProblemController extends Controller
         ', [$problem->problem_id]);
         $problem->setRelation('tags', \App\Models\Tag::hydrate($problemTags));
         
-        return view('problem.show', compact('problem'));
+        // Get submission history - all users who solved this problem
+        $submissions = \DB::select('
+            SELECT 
+                up.user_id,
+                up.solved_at,
+                up.submission_link,
+                up.notes,
+                u.name as user_name,
+                u.cf_handle,
+                u.cf_max_rating
+            FROM userproblems up
+            INNER JOIN users u ON up.user_id = u.user_id
+            WHERE up.problem_id = ? AND up.status = "solved" AND up.solved_at IS NOT NULL
+            ORDER BY up.solved_at ASC
+        ', [$problem->problem_id]);
+        
+        return view('problem.show', compact('problem', 'submissions'));
     }
 
     /**

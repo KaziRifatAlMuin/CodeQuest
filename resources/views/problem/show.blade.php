@@ -239,4 +239,98 @@
             </div>
         </div>
     @endif
+
+    <!-- Submission History Section -->
+    @if(count($submissions) > 0)
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header" style="background: {{ $themeBg }}; border-bottom: 2px solid {{ $themeColor }};">
+                        <h4 class="mb-0" style="color: {{ $themeColor }};">
+                            <i class="fas fa-history"></i> Submission History ({{ count($submissions) }} solvers)
+                        </h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>User</th>
+                                        <th>CF Handle</th>
+                                        <th>Rating</th>
+                                        <th>Solved At</th>
+                                        <th>Submission</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($submissions as $index => $submission)
+                                        @php
+                                            $userRating = (int) ($submission->cf_max_rating ?? 0);
+                                            $userRatingColor = \App\Helpers\RatingHelper::getRatingColor($userRating);
+                                        @endphp
+                                        <tr>
+                                            <td class="text-muted">{{ $index + 1 }}</td>
+                                            <td>
+                                                <a href="{{ route('user.show', $submission->user_id) }}" 
+                                                   class="text-decoration-none fw-bold" 
+                                                   style="color: {{ $userRatingColor }};">
+                                                    {{ $submission->user_name }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @if($submission->cf_handle)
+                                                    <a href="https://codeforces.com/profile/{{ $submission->cf_handle }}" 
+                                                       target="_blank" 
+                                                       class="text-decoration-none" 
+                                                       style="color: {{ $userRatingColor }};">
+                                                        {{ $submission->cf_handle }}
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="background: {{ $userRatingColor }}; color: white;">
+                                                    {{ $userRating }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    <i class="far fa-clock"></i>
+                                                    {{ \Carbon\Carbon::parse($submission->solved_at)->format('M d, Y') }}
+                                                    <span class="text-muted" style="font-size: 0.8rem;">
+                                                        ({{ \Carbon\Carbon::parse($submission->solved_at)->diffForHumans() }})
+                                                    </span>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                @if($submission->submission_link)
+                                                    <a href="{{ $submission->submission_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-code"></i> View
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($submission->notes)
+                                                    <small class="text-muted" title="{{ $submission->notes }}">
+                                                        {{ Str::limit($submission->notes, 30) }}
+                                                    </small>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </x-layout>

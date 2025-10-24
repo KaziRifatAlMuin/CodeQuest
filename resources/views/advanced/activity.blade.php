@@ -21,7 +21,25 @@
                         @else
                             <span class="{{ $userClass }}">{{ $activity->user_name ?? 'Anonymous' }}</span>
                         @endif
-                        <span class="text-muted">{{ ucfirst($activity->activity_type ?? 'activity') }}</span>
+
+                        @php
+                            // Map activity type to modern rounded-pill badge classes
+                            $atype = strtolower($activity->activity_type ?? 'activity');
+                            if ($atype === 'solved') {
+                                $atypeClass = 'bg-success text-white';
+                                $atypeLabel = 'Solved';
+                            } elseif ($atype === 'editorial') {
+                                $atypeClass = 'bg-primary text-white';
+                                $atypeLabel = 'Editorial';
+                            } else {
+                                $atypeClass = 'bg-secondary text-white';
+                                $atypeLabel = ucfirst($atype);
+                            }
+                        @endphp
+
+                        <span class="badge rounded-pill px-3 py-1 {{ $atypeClass }}" style="font-size:0.85rem;letter-spacing:0.3px;">
+                            {{ $atypeLabel }}
+                        </span>
                         @if(!empty($activity->problem_id))
                             <a href="{{ route('problem.show', $activity->problem_id) }}" class="text-decoration-none {{ $problemClass }}">
                                 {{ $activity->problem_title ?? 'Problem' }}

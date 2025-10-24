@@ -55,31 +55,88 @@
                     @php
                         $rating = (int) ($problem->rating ?? 0);
                         $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
+                        // Determine user-specific data
+                        $userProblem = null;
+                        if (auth()->check()) {
+                            $userProblemData = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [auth()->id(), $problem->problem_id]);
+                            if (!empty($userProblemData)) $userProblem = $userProblemData[0];
+                        }
+                        $isStarred = $userProblem && ($userProblem->is_starred ?? false);
+                        $currentStatus = $userProblem ? ($userProblem->status ?? 'unsolved') : 'unsolved';
                     @endphp
-                    <tr onclick="window.location='{{ route('problem.show', $problem) }}'">
-                        <td>
+                    <tr>
+                        <!-- Star Column -->
+                        <td onclick="event.stopPropagation();" class="text-center" style="width: 60px;">
+                            @auth
+                                <form action="{{ route('problem.toggleStar', $problem) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                                    <button type="submit" class="btn btn-sm p-0 border-0" style="background: transparent; font-size: 1.3rem;">
+                                        @if($isStarred)
+                                            <i class="fas fa-star text-warning"></i>
+                                        @else
+                                            <i class="far fa-star text-muted"></i>
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                <i class="far fa-star text-muted" style="font-size: 1.3rem;"></i>
+                            @endauth
+                        </td>
+
+                        <!-- Title -->
+                        <td onclick="window.location='{{ route('problem.show', $problem) }}'">
                             <a href="{{ route('problem.show', $problem) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
                                 {{ $problem->title }}
                             </a>
                         </td>
-                        <td>
+
+                        <td onclick="window.location='{{ route('problem.show', $problem) }}'">
                             <span class="badge" style="background: {{ $ratingColor }}; color: white;">{{ $rating }}</span>
                         </td>
-                        <td>
+
+                        <td onclick="window.location='{{ route('problem.show', $problem) }}'">
                             @if($problem->tags->count() > 0)
-                                    @foreach($problem->tags as $ptag)
+                                @foreach($problem->tags as $ptag)
                                     <x-tag-badge :tagName="$ptag->tag_name" :tagId="$ptag->tag_id" />
                                 @endforeach
                             @else
                                 <span class="text-muted" style="font-size: 0.85rem;">No tags</span>
                             @endif
                         </td>
-                        <td>{{ number_format($problem->solved_count ?? 0) }}</td>
-                        <td>{{ number_format($problem->stars ?? 0) }}</td>
-                        <td onclick="event.stopPropagation();">
-                            <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary">
-                                <i class="fas fa-external-link-alt"></i> Solve
-                            </a>
+
+                        <td onclick="window.location='{{ route('problem.show', $problem) }}'">{{ number_format($problem->solved_count ?? 0) }}</td>
+                        <td onclick="window.location='{{ route('problem.show', $problem) }}'">{{ number_format($problem->stars ?? 0) }}</td>
+
+                        <!-- Status & Link -->
+                        <td onclick="event.stopPropagation();" style="width: 200px;">
+                            @php
+                                $statusClass = 'secondary';
+                                if ($currentStatus === 'solved') $statusClass = 'success';
+                                elseif ($currentStatus === 'attempting' || $currentStatus === 'trying') $statusClass = 'warning';
+                                $selectClass = 'bg-' . $statusClass . ' text-white';
+                            @endphp
+                            @auth
+                                <div class="d-flex align-items-center gap-2 flex-nowrap" style="white-space: nowrap;">
+                                    <form action="{{ route('problem.updateStatus', $problem) }}" method="POST" style="display:inline; margin:0;">
+                                        @csrf
+                                        <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                                        <select name="status" class="form-select form-select-sm {{ $selectClass }}" onchange="this.form.submit();" style="display: inline-block; font-size: 0.75rem; padding: 0.18rem 0.4rem; width: 110px; max-width: 110px;">
+                                            <option value="unsolved" {{ $currentStatus === 'unsolved' ? 'selected' : '' }}>Unsolved</option>
+                                            <option value="attempting" {{ $currentStatus === 'attempting' || $currentStatus === 'trying' ? 'selected' : '' }}>Trying</option>
+                                            <option value="solved" {{ $currentStatus === 'solved' ? 'selected' : '' }}>Solved</option>
+                                        </select>
+                                    </form>
+
+                                    <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary" style="white-space: nowrap;">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </div>
+                            @else
+                                <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> Solve
+                                </a>
+                            @endauth
                         </td>
                     </tr>
                 @empty

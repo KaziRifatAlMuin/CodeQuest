@@ -107,9 +107,4 @@ class AnalyticsController extends Controller
             'dailyActivity' => $dailyActivity,
         ]);
     }
-
-    public function leaderboard(Request $request)
-    {
-        return redirect()->route('leaderboard');
-    }
 }

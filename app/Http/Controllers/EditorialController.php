@@ -13,6 +13,10 @@ class EditorialController extends Controller
      */
     public function index(Request $request)
     {
+        // Get sorting parameters
+        $sort = $request->input('sort', 'updated');
+        $direction = $request->input('direction', 'desc');
+        
         // Search functionality
         $search = $request->input('search', '');
         $whereConditions = [];
@@ -29,6 +33,19 @@ class EditorialController extends Controller
         
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
+        // Validate and set ORDER BY clause
+        $validSorts = [
+            'updated' => 'e.updated_at',
+            'created' => 'e.created_at',
+            'author' => 'u.name',
+            'problem' => 'p.title',
+            'upvotes' => 'e.upvotes',
+            'rating' => 'p.rating'
+        ];
+        
+        $orderColumn = $validSorts[$sort] ?? 'e.updated_at';
+        $orderDirection = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        
         // Get paginated editorials using raw SQL with flexible pagination
         $perPage = \App\Helpers\SearchHelper::getPerPage($request->input('per_page', 25));
         $page = $request->get('page', 1);
@@ -36,13 +53,13 @@ class EditorialController extends Controller
         
         $editorialsData = \DB::select("
             SELECT e.*, 
-                   p.title as problem_title, p.problem_link as problem_link,
+                   p.title as problem_title, p.problem_link as problem_link, p.rating as problem_rating,
                    u.name as author_name, u.user_id as author_user_id
             FROM editorials e
             INNER JOIN problems p ON e.problem_id = p.problem_id
             INNER JOIN users u ON e.author_id = u.user_id
             $whereClause
-            ORDER BY e.updated_at DESC
+            ORDER BY $orderColumn $orderDirection
             LIMIT ? OFFSET ?
         ", array_merge($params, [$perPage, $offset]));
         
@@ -77,7 +94,7 @@ class EditorialController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
         
-        return view('editorial.index', compact('editorials', 'search'));
+        return view('editorial.index', compact('editorials', 'search', 'sort', 'direction'));
     }
 
     /**

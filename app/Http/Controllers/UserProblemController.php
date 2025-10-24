@@ -31,7 +31,7 @@ class UserProblemController extends Controller
 
             if (!empty($existing)) {
                 // Update existing record
-                \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ?, updated_at = NOW() WHERE user_id = ? AND problem_id = ?', [
+                \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ? WHERE user_id = ? AND problem_id = ?', [
                     'solved',
                     $request->submission_link,
                     $request->notes,
@@ -40,7 +40,7 @@ class UserProblemController extends Controller
                 ]);
             } else {
                 // Insert new record
-                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred, created_at, updated_at) VALUES (?, ?, ?, NOW(), ?, ?, 0, NOW(), NOW())', [
+                    \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NOW(), ?, ?, 0)', [
                     $request->user_id,
                     $problem->problem_id,
                     'solved',
@@ -62,7 +62,7 @@ class UserProblemController extends Controller
                 \DB::statement('CALL update_user_statistics(?)', [$request->user_id]);
             } catch (\Exception $e) {
                 // Fallback: manual update
-                \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?), updated_at = NOW() WHERE user_id = ?', [
+                \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
                     $request->user_id, 'solved', $request->user_id
                 ]);
             }
@@ -101,7 +101,7 @@ class UserProblemController extends Controller
                 // Toggle the star
                 $currentStarred = $existing[0]->is_starred;
                 $newStarred = $currentStarred ? 0 : 1;
-                \DB::update('UPDATE userproblems SET is_starred = ?, updated_at = NOW() WHERE user_id = ? AND problem_id = ?', [
+                \DB::update('UPDATE userproblems SET is_starred = ? WHERE user_id = ? AND problem_id = ?', [
                     $newStarred,
                     $request->user_id,
                     $problem->problem_id
@@ -109,7 +109,7 @@ class UserProblemController extends Controller
                 $message = $newStarred ? 'Problem starred!' : 'Star removed!';
             } else {
                 // Insert new record with star
-                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, is_starred, solved_at, submission_link, notes, created_at, updated_at) VALUES (?, ?, ?, 1, NULL, NULL, NULL, NOW(), NOW())', [
+                    \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, is_starred, solved_at, submission_link, notes) VALUES (?, ?, ?, 1, NULL, NULL, NULL)', [
                     $request->user_id,
                     $problem->problem_id,
                     'unsolved'
@@ -197,9 +197,9 @@ class UserProblemController extends Controller
         
         // Manually update problem statistics and user counts
         $problem->updateDynamicFields();
-        \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
-            $request->user_id, 'solved', $request->user_id
-        ]);
+            \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
+                $request->user_id, 'solved', $request->user_id
+            ]);
 
         return redirect()->back()->with('success', 'Status updated successfully!');
     }

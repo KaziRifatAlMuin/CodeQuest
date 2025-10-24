@@ -20,6 +20,37 @@
     <!-- Search and Pagination Controls -->
     @include('components.search-pagination', ['paginator' => $editorials])
 
+    <!-- Sorting Controls -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body p-3">
+            <form method="GET" class="d-flex align-items-center justify-content-between flex-wrap gap-2" id="sortForm">
+                <input type="hidden" name="search" value="{{ request('search') }}">
+                <input type="hidden" name="per_page" value="{{ request('per_page', 25) }}">
+                
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0 text-muted fw-bold">Sort by:</label>
+                    <select name="sort" class="form-select form-select-sm" style="width: 160px;" onchange="document.getElementById('sortForm').submit();">
+                        <option value="updated" {{ ($sort ?? 'updated') === 'updated' ? 'selected' : '' }}>Last Updated</option>
+                        <option value="created" {{ ($sort ?? '') === 'created' ? 'selected' : '' }}>Date Created</option>
+                        <option value="upvotes" {{ ($sort ?? '') === 'upvotes' ? 'selected' : '' }}>Upvotes</option>
+                        <option value="author" {{ ($sort ?? '') === 'author' ? 'selected' : '' }}>Author Name</option>
+                        <option value="problem" {{ ($sort ?? '') === 'problem' ? 'selected' : '' }}>Problem Title</option>
+                        <option value="rating" {{ ($sort ?? '') === 'rating' ? 'selected' : '' }}>Problem Rating</option>
+                    </select>
+
+                    <select name="direction" class="form-select form-select-sm" style="width: 130px;" onchange="document.getElementById('sortForm').submit();">
+                        <option value="desc" {{ ($direction ?? 'desc') === 'desc' ? 'selected' : '' }}>Descending</option>
+                        <option value="asc" {{ ($direction ?? 'desc') === 'asc' ? 'selected' : '' }}>Ascending</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <small class="text-muted">Showing {{ $editorials->total() }} editorials</small>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @if($editorials->isEmpty())
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i> No editorials found{{ request('search') ? ' for "' . request('search') . '"' : '' }}. Be the first to write one!

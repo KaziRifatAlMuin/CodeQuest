@@ -47,19 +47,26 @@
                     <small class="text-muted">Showing {{ $users->total() }} users</small>
                 </div>
             </div>
-            <x-table :headers="['Name', 'Email', 'CF Handle', 'Total Solved', 'CF Max Rating', 'University']" :paginator="$users">
+            <x-table :headers="['Name', 'Email', 'CF Handle', 'Total Solved', 'CF Max Rating', 'University', 'Follow']" :paginator="$users">
                 @forelse($users as $user)
                 @php
                     $search = request('search', '');
+                    
+                    // Check if current user follows this user
+                    $isFollowing = false;
+                    if (auth()->check() && auth()->id() !== $user->user_id) {
+                        $friendshipData = \DB::select('SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND is_friend = 1 LIMIT 1', [auth()->id(), $user->user_id]);
+                        $isFollowing = !empty($friendshipData);
+                    }
                 @endphp
-                <tr onclick="window.location='{{ route('user.show', $user) }}'">
-                    <td>
+                <tr>
+                    <td onclick="window.location='{{ route('user.show', $user) }}'">
                         <a href="{{ route('user.show', $user) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
                             {!! \App\Helpers\SearchHelper::highlight($user->name, $search) !!}
                         </a>
                     </td>
-                    <td>{!! \App\Helpers\SearchHelper::highlight($user->email, $search) !!}</td>
-                    <td>
+                    <td onclick="window.location='{{ route('user.show', $user) }}'">{!! \App\Helpers\SearchHelper::highlight($user->email, $search) !!}</td>
+                    <td onclick="window.location='{{ route('user.show', $user) }}'">
                         @if($user->cf_handle)
                             <a href="https://codeforces.com/profile/{{ $user->cf_handle }}" target="_blank" style="text-decoration: none; color: {{ \App\Helpers\RatingHelper::getRatingColor((int)($user->cf_max_rating ?? 0)) }}; font-weight: 600;">
                                 {!! \App\Helpers\SearchHelper::highlight($user->cf_handle, $search) !!}
@@ -68,19 +75,44 @@
                             <span class="text-muted">-</span>
                         @endif
                     </td>
-                    <td>{{ number_format($user->solved_problems_count ?? 0) }}</td>
-                    <td>
+                    <td onclick="window.location='{{ route('user.show', $user) }}'">{{ number_format($user->solved_problems_count ?? 0) }}</td>
+                    <td onclick="window.location='{{ route('user.show', $user) }}'">
                         @php
                             $rating = (int) ($user->cf_max_rating ?? 0);
                             $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
                         @endphp
                         <span class="badge" style="background: {{ $ratingColor }}; color: white;">{{ $rating }}</span>
                     </td>
-                    <td>{{ $user->university ?? 'N/A' }}</td>
+                    <td onclick="window.location='{{ route('user.show', $user) }}'">{{ $user->university ?? 'N/A' }}</td>
+                    
+                    <!-- Follow/Unfollow Button -->
+                    <td onclick="event.stopPropagation();" style="width: 120px;">
+                        @auth
+                            @if(auth()->id() === $user->user_id)
+                                <span class="badge bg-secondary">You</span>
+                            @else
+                                <form action="{{ route('friend.' . ($isFollowing ? 'unfollow' : 'follow'), $user) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @if($isFollowing)
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-user-minus"></i> Unfollow
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-user-plus"></i> Follow
+                                        </button>
+                                    @endif
+                                </form>
+                            @endif
+                        @else
+                            <span class="text-muted">—</span>
+                        @endauth
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center p-4">
+                    <td colspan="7" class="text-center p-4">
                         <i class="fas fa-inbox" style="font-size: 2rem; color: var(--text-light); margin-right: 10px;"></i>
                         <p class="text-muted mb-0">No users found{{ request('search') ? ' for "' . request('search') . '"' : '' }}</p>
                     </td>

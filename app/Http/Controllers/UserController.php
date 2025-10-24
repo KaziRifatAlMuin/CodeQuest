@@ -220,6 +220,19 @@ class UserController extends Controller
      */
     public function leaderboard(Request $request)
     {
+        // Allow sorting on leaderboard via query params
+        $allowedSorts = [
+            'rating' => 'cf_max_rating',
+            'solved' => 'solved_problems_count',
+            'avg' => 'average_problem_rating',
+            'name' => 'name',
+            'created' => 'created_at'
+        ];
+
+        $sort = $request->get('sort', 'rating');
+        $direction = strtolower($request->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $orderBy = $allowedSorts[$sort] ?? $allowedSorts['rating'];
+
         // Search functionality
         $search = $request->input('search', '');
         $whereConditions = [];
@@ -249,10 +262,10 @@ class UserController extends Controller
         // Build base subquery that computes actual global rank for every user
         $baseSub = "SELECT u.*, RANK() OVER (ORDER BY u.cf_max_rating DESC, u.solved_problems_count DESC) as actual_rank FROM users u";
 
-        // Final paginated query: apply filters on the ranked subquery so actual_rank remains global
-        $finalSql = "SELECT * FROM ($baseSub) ranked $whereClause ORDER BY cf_max_rating DESC, solved_problems_count DESC LIMIT ? OFFSET ?";
+    // Final paginated query: apply filters on the ranked subquery and order by requested column
+    $finalSql = "SELECT * FROM ($baseSub) ranked $whereClause ORDER BY $orderBy $direction, cf_max_rating DESC LIMIT ? OFFSET ?";
 
-        $usersData = \DB::select($finalSql, array_merge($params, [$perPage, $offset]));
+    $usersData = \DB::select($finalSql, array_merge($params, [$perPage, $offset]));
 
         // Total count must be calculated from the same ranked subquery with the same where clause
         $countSql = "SELECT COUNT(*) as total FROM ($baseSub) ranked " . ($whereClause ? " $whereClause" : '');
@@ -268,6 +281,6 @@ class UserController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
         
-        return view('user.leaderboard', compact('users', 'search'));
+        return view('user.leaderboard', compact('users', 'search', 'sort', 'direction'));
     }
 }

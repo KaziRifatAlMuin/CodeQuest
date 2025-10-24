@@ -13,8 +13,34 @@
         <!-- Search and Pagination Controls -->
         @include('components.search-pagination', ['paginator' => $users])
 
+        <!-- Sorting Controls for Leaderboard -->
+        <div class="card mb-3">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <form method="GET" id="leaderboardSortForm" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="per_page" value="{{ request('per_page', 50) }}">
+                    <label class="mb-0 text-muted fw-bold">Sort by:</label>
+                    <select name="sort" class="form-select form-select-sm" style="width: 180px;" onchange="document.getElementById('leaderboardSortForm').submit();">
+                        <option value="rating" {{ ($sort ?? 'rating') === 'rating' ? 'selected' : '' }}>Max CF Rating</option>
+                        <option value="solved" {{ ($sort ?? '') === 'solved' ? 'selected' : '' }}>Total Solved</option>
+                        <option value="avg" {{ ($sort ?? '') === 'avg' ? 'selected' : '' }}>Average Problem Rating</option>
+                        <option value="name" {{ ($sort ?? '') === 'name' ? 'selected' : '' }}>Name</option>
+                        <option value="created" {{ ($sort ?? '') === 'created' ? 'selected' : '' }}>Registration Date</option>
+                    </select>
+
+                    <select name="direction" class="form-select form-select-sm" style="width: 140px;" onchange="document.getElementById('leaderboardSortForm').submit();">
+                        <option value="desc" {{ ($direction ?? 'desc') === 'desc' ? 'selected' : '' }}>Descending</option>
+                        <option value="asc" {{ ($direction ?? 'desc') === 'asc' ? 'selected' : '' }}>Ascending</option>
+                    </select>
+                </form>
+                <div>
+                    <small class="text-muted">Showing {{ $users->total() }} users</small>
+                </div>
+            </div>
+        </div>
+
         <!-- Leaderboard Table using component -->
-        <x-table :headers="['Rank', 'Name', 'CF Handle', 'MAX CF Rating', 'Total Solved', 'Avg Rating']" :paginator="$users">
+        <x-table :headers="['Rank', 'Name', 'CF Handle', 'MAX CF Rating', 'Total Solved', 'Avg Rating', 'Follow']" :paginator="$users">
             @forelse($users as $index => $user)
                 @php
                     $rating = (int) ($user->cf_max_rating ?? 0);
@@ -23,12 +49,19 @@
                     $search = request('search', '');
                     // Use actual_rank if available, otherwise calculate from firstItem
                     $displayRank = $user->actual_rank ?? ($users->firstItem() + $index);
+                    
+                    // Check if current user follows this user
+                    $isFollowing = false;
+                    if (auth()->check() && auth()->id() !== $user->user_id) {
+                        $friendshipData = \DB::select('SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND is_friend = 1 LIMIT 1', [auth()->id(), $user->user_id]);
+                        $isFollowing = !empty($friendshipData);
+                    }
                 @endphp
                 <tr style="border-bottom: 1px solid #f0f0f0;">
                     <td class="fw-bold text-center" style="color: {{ $themeColor }}; font-size: 1rem; width: 8%;">
                         #{!! \App\Helpers\SearchHelper::highlight($displayRank, $search) !!}
                     </td>
-                    <td style="width: 25%;">
+                    <td style="width: 22%;">
                         <div class="d-flex align-items-center">
                             @if($user->profile_picture)
                                 <img src="{{ asset('images/profile/' . $user->profile_picture) }}" 
@@ -44,7 +77,7 @@
                             <span class="fw-500">{!! \App\Helpers\SearchHelper::highlight($user->name, $search) !!}</span>
                         </div>
                     </td>
-                    <td style="width: 20%;">
+                    <td style="width: 18%;">
                         <span style="color: {{ $themeColor }}; font-weight: 600;">
                             @if($user->cf_handle)
                                 {!! \App\Helpers\SearchHelper::highlight($user->cf_handle, $search) !!}
@@ -56,27 +89,52 @@
                             <i class="fas fa-check-circle text-success ms-2" style="font-size: 0.85rem;" title="Verified"></i>
                         @endif
                     </td>
-                    <td class="text-center" style="width: 15%;">
+                    <td class="text-center" style="width: 14%;">
                         <span class="badge" style="background: {{ $themeColor }}; font-size: 0.8rem; padding: 0.5rem 0.8rem;">
                             {{ number_format($rating) }}
                         </span>
                         <br>
                         <small class="text-muted d-block mt-1" style="font-size: 0.8rem;">{{ $themeName }}</small>
                     </td>
-                    <td class="text-center" style="width: 16%;">
+                    <td class="text-center" style="width: 13%;">
                         <span style="font-size: 0.8rem; padding: 0.5rem 0.8rem;">
                             {{ $user->solved_problems_count ?? 0 }}
                         </span>
                     </td>
-                    <td class="text-center" style="width: 16%;">
+                    <td class="text-center" style="width: 13%;">
                         <span style="font-size: 0.8rem; padding: 0.5rem 0.8rem;">
                             {{ number_format($user->average_problem_rating ?? 0, 0) }}
                         </span>
                     </td>
+                    
+                    <!-- Follow/Unfollow Button -->
+                    <td onclick="event.stopPropagation();" class="text-center" style="width: 12%;">
+                        @auth
+                            @if(auth()->id() === $user->user_id)
+                                <span class="badge bg-secondary">You</span>
+                            @else
+                                <form action="{{ route('friend.' . ($isFollowing ? 'unfollow' : 'follow'), $user) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @if($isFollowing)
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-user-minus"></i>
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-user-plus"></i>
+                                        </button>
+                                    @endif
+                                </form>
+                            @endif
+                        @else
+                            <span class="text-muted">—</span>
+                        @endauth
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center py-5">
+                    <td colspan="7" class="text-center py-5">
                         <i class="fas fa-inbox text-muted" style="font-size: 2.5rem; display: block; margin-bottom: 1rem;"></i>
                         <p class="text-muted mb-0">No users found{{ request('search') ? ' for "' . request('search') . '"' : '' }}</p>
                     </td>
