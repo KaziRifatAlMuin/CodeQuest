@@ -4,7 +4,7 @@
 -- This file contains: Views, Stored Procedures, Functions, Triggers, and Cursors
 -- Run this after basic table setup and data insertion
 
-USE codequest;
+USE codequest_db;
 
 -- ===============================================
 -- SECTION 1: VIEWS

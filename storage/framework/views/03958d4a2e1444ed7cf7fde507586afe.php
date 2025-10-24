@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'CodeQuest' }}</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo e($title ?? 'CodeQuest'); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1215,92 +1215,92 @@
         </div>
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ route('home') }}" class="{{ request()->is('/') || request()->is('home') ? 'active' : '' }}">
+                <a href="<?php echo e(route('home')); ?>" class="<?php echo e(request()->is('/') || request()->is('home') ? 'active' : ''); ?>">
                     <i class="menu-icon fas fa-home"></i>
                     <span>Home</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('about') }}" class="{{ request()->is('about') ? 'active' : '' }}">
+                <a href="<?php echo e(route('about')); ?>" class="<?php echo e(request()->is('about') ? 'active' : ''); ?>">
                     <i class="menu-icon fas fa-info-circle"></i>
                     <span>About</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">
+                <a href="<?php echo e(route('contact')); ?>" class="<?php echo e(request()->is('contact') ? 'active' : ''); ?>">
                     <i class="menu-icon fas fa-envelope"></i>
                     <span>Contact</span>
                 </a>
             </li>
             
-            @auth
+            <?php if(auth()->guard()->check()): ?>
                 <li>
-                    <a href="{{ route('problem.index') }}" class="{{ request()->is('problems*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('problem.index')); ?>" class="<?php echo e(request()->is('problems*') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-code"></i>
                         <span>Problems</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('leaderboard') }}" class="{{ request()->is('leaderboard') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('leaderboard')); ?>" class="<?php echo e(request()->is('leaderboard') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-list-ol"></i>
                         <span>Leaderboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('user.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('user.index')); ?>" class="<?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-users"></i>
                         <span>Users</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('editorial.index') }}" class="{{ request()->is('editorials*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('editorial.index')); ?>" class="<?php echo e(request()->is('editorials*') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-book"></i>
                         <span>Editorials</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('tag.index') }}" class="{{ request()->is('tags*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('tag.index')); ?>" class="<?php echo e(request()->is('tags*') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-tags"></i>
                         <span>Tags</span>
                     </a>
                 </li>
                 <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
-                    <a href="{{ route('account.profile') }}" class="{{ request()->is('account/profile') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('account.profile')); ?>" class="<?php echo e(request()->is('account/profile') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-user-circle"></i>
                         <span>My Profile</span>
                     </a>
                 </li>
-                @if(Auth::user()->role === 'admin')
+                <?php if(Auth::user()->role === 'admin'): ?>
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->is('admin*') ? 'active' : ''); ?>">
                         <i class="menu-icon fas fa-tachometer-alt"></i>
                         <span>Admin Dashboard</span>
                     </a>
                 </li>
-                @endif
+                <?php endif; ?>
                 <li>
-                    <form action="{{ route('account.logout') }}" method="POST" style="margin: 0;">
-                        @csrf
+                    <form action="<?php echo e(route('account.logout')); ?>" method="POST" style="margin: 0;">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" style="background: none; border: none; color: rgba(255,255,255,0.95); width: 100%; text-align: left; padding: 12px 20px; cursor: pointer; display: flex; align-items: center; font-size: 0.9rem;">
                             <i class="menu-icon fas fa-sign-out-alt" style="width: 24px; margin-right: 15px;"></i>
                             <span>Logout</span>
                         </button>
                     </form>
                 </li>
-            @else
+            <?php else: ?>
                 <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px;">
-                    <a href="{{ route('account.login') }}">
+                    <a href="<?php echo e(route('account.login')); ?>">
                         <i class="menu-icon fas fa-sign-in-alt"></i>
                         <span>Login</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('account.register') }}">
+                    <a href="<?php echo e(route('account.register')); ?>">
                         <i class="menu-icon fas fa-user-plus"></i>
                         <span>Register</span>
                     </a>
                 </li>
-            @endauth
+            <?php endif; ?>
         </ul>
     </div>
 
@@ -1309,36 +1309,36 @@
         <button class="hamburger" id="hamburger">
             <i class="fas fa-bars"></i>
         </button>
-        <a class="navbar-brand font-weight-bold" href="{{ route('home') }}">
+        <a class="navbar-brand font-weight-bold" href="<?php echo e(route('home')); ?>">
             <span class="text-primary">Code</span><span class="text-warning">Quest</span>
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item {{ request()->is('/') || request()->is('home') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('home') }}">Home</a>
+                <li class="nav-item <?php echo e(request()->is('/') || request()->is('home') ? 'active' : ''); ?>">
+                    <a class="nav-link" href="<?php echo e(route('home')); ?>">Home</a>
                 </li>
-                <li class="nav-item {{ request()->is('about') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('about') }}">About</a>
+                <li class="nav-item <?php echo e(request()->is('about') ? 'active' : ''); ?>">
+                    <a class="nav-link" href="<?php echo e(route('about')); ?>">About</a>
                 </li>
-                <li class="nav-item {{ request()->is('contact') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('contact') }}">Contact</a>
+                <li class="nav-item <?php echo e(request()->is('contact') ? 'active' : ''); ?>">
+                    <a class="nav-link" href="<?php echo e(route('contact')); ?>">Contact</a>
                 </li>
                 
-                <li class="nav-item {{ request()->is('leaderboard') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('leaderboard') }}">Leaderboard</a>
+                <li class="nav-item <?php echo e(request()->is('leaderboard') ? 'active' : ''); ?>">
+                    <a class="nav-link" href="<?php echo e(route('leaderboard')); ?>">Leaderboard</a>
                 </li>
-                @auth
-                    <li class="nav-item {{ request()->is('problems*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('problem.index') }}">Problems</a>
+                <?php if(auth()->guard()->check()): ?>
+                    <li class="nav-item <?php echo e(request()->is('problems*') ? 'active' : ''); ?>">
+                        <a class="nav-link" href="<?php echo e(route('problem.index')); ?>">Problems</a>
                     </li>
-                    <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('user.index') }}">Users</a>
+                    <li class="nav-item <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+                        <a class="nav-link" href="<?php echo e(route('user.index')); ?>">Users</a>
                     </li>
-                    <li class="nav-item {{ request()->is('editorials*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('editorial.index') }}">Editorials</a>
+                    <li class="nav-item <?php echo e(request()->is('editorials*') ? 'active' : ''); ?>">
+                        <a class="nav-link" href="<?php echo e(route('editorial.index')); ?>">Editorials</a>
                     </li>
-                    <li class="nav-item {{ request()->is('tags*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('tag.index') }}">Tags</a>
+                    <li class="nav-item <?php echo e(request()->is('tags*') ? 'active' : ''); ?>">
+                        <a class="nav-link" href="<?php echo e(route('tag.index')); ?>">Tags</a>
                     </li>
                     
                     <!-- Advanced SQL Features -->
@@ -1347,86 +1347,86 @@
                             <i class="fas fa-database"></i> Advanced SQL
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ route('advanced.statistics') }}">
+                            <a class="dropdown-item" href="<?php echo e(route('advanced.statistics')); ?>">
                                 <i class="fas fa-chart-pie text-primary"></i> Statistics
                             </a>
-                            <a class="dropdown-item" href="{{ route('advanced.analytics') }}">
+                            <a class="dropdown-item" href="<?php echo e(route('advanced.analytics')); ?>">
                                 <i class="fas fa-chart-line text-success"></i> Analytics
                             </a>
-                            <a class="dropdown-item" href="{{ route('advanced.activity') }}">
+                            <a class="dropdown-item" href="<?php echo e(route('advanced.activity')); ?>">
                                 <i class="fas fa-stream text-info"></i> Activity
                             </a>
-                            <a class="dropdown-item" href="{{ route('advanced.tagMasters') }}">
+                            <a class="dropdown-item" href="<?php echo e(route('advanced.tagMasters')); ?>">
                                 <i class="fas fa-star text-danger"></i> Tag Masters
                             </a>
                         </div>
                     </li>
-                @endauth
+                <?php endif; ?>
             </ul>
             
             <!-- Right Side: Auth Buttons or Profile -->
             <ul class="navbar-nav ms-auto">
-                @auth
-                    @php
+                <?php if(auth()->guard()->check()): ?>
+                    <?php
                         $rating = (int) (Auth::user()->cf_max_rating ?? 0);
                         $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
-                    @endphp
+                    ?>
                     
                     <!-- User Profile Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user-circle me-2" style="font-size: 1.8rem; color: {{ $ratingColor }};"></i>
-                            <span style="color: white;">{{ Auth::user()->name }}</span>
+                            <i class="fas fa-user-circle me-2" style="font-size: 1.8rem; color: <?php echo e($ratingColor); ?>;"></i>
+                            <span style="color: white;"><?php echo e(Auth::user()->name); ?></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <div class="dropdown-header d-flex align-items-center" style="border-bottom: 2px solid {{ $ratingColor }};">
-                                @if(Auth::user()->profile_picture)
-                                    <img src="{{ asset('images/profile/' . Auth::user()->profile_picture) }}" 
-                                         alt="{{ Auth::user()->name }}" 
+                            <div class="dropdown-header d-flex align-items-center" style="border-bottom: 2px solid <?php echo e($ratingColor); ?>;">
+                                <?php if(Auth::user()->profile_picture): ?>
+                                    <img src="<?php echo e(asset('images/profile/' . Auth::user()->profile_picture)); ?>" 
+                                         alt="<?php echo e(Auth::user()->name); ?>" 
                                          class="rounded-circle me-2" 
-                                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid {{ $ratingColor }};">
-                                @else
-                                    <i class="fas fa-user-circle me-2" style="font-size: 2.5rem; color: {{ $ratingColor }};"></i>
-                                @endif
+                                         style="width: 40px; height: 40px; object-fit: cover; border: 2px solid <?php echo e($ratingColor); ?>;">
+                                <?php else: ?>
+                                    <i class="fas fa-user-circle me-2" style="font-size: 2.5rem; color: <?php echo e($ratingColor); ?>;"></i>
+                                <?php endif; ?>
                                 <div>
-                                    <strong style="color: {{ $ratingColor }};">{{ Auth::user()->name }}</strong><br>
-                                    <small class="text-muted">{{ Auth::user()->cf_handle }} ({{ $rating }})</small>
+                                    <strong style="color: <?php echo e($ratingColor); ?>;"><?php echo e(Auth::user()->name); ?></strong><br>
+                                    <small class="text-muted"><?php echo e(Auth::user()->cf_handle); ?> (<?php echo e($rating); ?>)</small>
                                 </div>
                             </div>
-                            <a class="dropdown-item" href="{{ route('account.profile') }}">
+                            <a class="dropdown-item" href="<?php echo e(route('account.profile')); ?>">
                                 <i class="fas fa-user"></i> My Profile
                             </a>
-                            <a class="dropdown-item" href="{{ route('account.editProfile') }}">
+                            <a class="dropdown-item" href="<?php echo e(route('account.editProfile')); ?>">
                                 <i class="fas fa-edit"></i> Edit Profile
                             </a>
                             <!-- Admin Dashboard Button - Only for Admins -->
-                            @if(Auth::user()->role === 'admin')
-                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                            <?php if(Auth::user()->role === 'admin'): ?>
+                                <a class="dropdown-item" href="<?php echo e(route('admin.dashboard')); ?>">
                                     <i class="fas fa-tachometer-alt"></i> Admin Dashboard
                                 </a>
-                            @endif
+                            <?php endif; ?>
                             <div class="dropdown-divider"></div>
-                            <form action="{{ route('account.logout') }}" method="POST" style="display: inline;">
-                                @csrf
+                            <form action="<?php echo e(route('account.logout')); ?>" method="POST" style="display: inline;">
+                                <?php echo csrf_field(); ?>
                                 <button type="submit" class="dropdown-item text-danger">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </button>
                             </form>
                         </div>
                     </li>
-                @else
+                <?php else: ?>
                     <!-- Guest User Buttons -->
                     <li class="nav-item">
-                        <a class="nav-link btn-login-nav" href="{{ route('account.login') }}">
+                        <a class="nav-link btn-login-nav" href="<?php echo e(route('account.login')); ?>">
                             <i class="fas fa-sign-in-alt"></i> Login
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-register-nav" href="{{ route('account.register') }}">
+                        <a class="nav-link btn-register-nav" href="<?php echo e(route('account.register')); ?>">
                             <i class="fas fa-user-plus"></i> Register
                         </a>
                     </li>
-                @endauth
+                <?php endif; ?>
             </ul>
         </div>
     </nav>
@@ -1434,35 +1434,40 @@
     <!-- Main Content -->
     <div class="container mt-4">
         <!-- Global Alert Messages -->
-        @if(session()->has('error'))
+        <?php if(session()->has('error')): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> {{ session('error') }}
+                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <?php echo e(session('error')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session()->has('success'))
+        <?php if(session()->has('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle"></i> <strong>Success:</strong> {{ session('success') }}
+                <i class="fas fa-check-circle"></i> <strong>Success:</strong> <?php echo e(session('success')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session()->has('warning'))
+        <?php if(session()->has('warning')): ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> {{ session('warning') }}
+                <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> <?php echo e(session('warning')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session()->has('info'))
+        <?php if(session()->has('info')): ?>
             <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <i class="fas fa-info-circle"></i> <strong>Info:</strong> {{ session('info') }}
+                <i class="fas fa-info-circle"></i> <strong>Info:</strong> <?php echo e(session('info')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        {{ $slot }}
+        <?php echo e($slot); ?>
+
     </div>
 
     <!-- Footer -->
@@ -1532,3 +1537,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\xampp\htdocs\CodeQuest\resources\views/components/layout.blade.php ENDPATH**/ ?>

@@ -9,7 +9,7 @@ use App\Models\Problem;
 class UserProblemController extends Controller
 {
     /**
-     * Mark a problem as solved
+     * Mark a problem as solved using TRANSACTION for atomicity
      */
     public function markSolved(Request $request, Problem $problem)
     {
@@ -19,43 +19,67 @@ class UserProblemController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        // Check if record exists
-        $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
-            $request->user_id,
-            $problem->problem_id
-        ]);
-
-        if (!empty($existing)) {
-            // Update existing record
-            \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ? WHERE user_id = ? AND problem_id = ?', [
-                'solved',
-                $request->submission_link,
-                $request->notes,
+        // Use database transaction to ensure data consistency
+        \DB::beginTransaction();
+        
+        try {
+            // Check if record exists
+            $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
                 $request->user_id,
                 $problem->problem_id
             ]);
-        } else {
-            // Insert new record
-            \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NOW(), ?, ?, 0)', [
-                $request->user_id,
-                $problem->problem_id,
-                'solved',
-                $request->submission_link,
-                $request->notes
-            ]);
-        }
-        
-        // Manually update problem statistics and user counts
-        $problem->updateDynamicFields();
-        \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
-            $request->user_id, 'solved', $request->user_id
-        ]);
 
-        return redirect()->back()->with('success', 'Problem marked as solved!');
+            if (!empty($existing)) {
+                // Update existing record
+                \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ?, updated_at = NOW() WHERE user_id = ? AND problem_id = ?', [
+                    'solved',
+                    $request->submission_link,
+                    $request->notes,
+                    $request->user_id,
+                    $problem->problem_id
+                ]);
+            } else {
+                // Insert new record
+                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred, created_at, updated_at) VALUES (?, ?, ?, NOW(), ?, ?, 0, NOW(), NOW())', [
+                    $request->user_id,
+                    $problem->problem_id,
+                    'solved',
+                    $request->submission_link,
+                    $request->notes
+                ]);
+            }
+            
+            // Update problem statistics using stored procedure
+            try {
+                \DB::statement('CALL update_problem_statistics(?)', [$problem->problem_id]);
+            } catch (\Exception $e) {
+                // Fallback: manually update if procedure not available
+                $problem->updateDynamicFields();
+            }
+            
+            // Update user statistics using stored procedure
+            try {
+                \DB::statement('CALL update_user_statistics(?)', [$request->user_id]);
+            } catch (\Exception $e) {
+                // Fallback: manual update
+                \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?), updated_at = NOW() WHERE user_id = ?', [
+                    $request->user_id, 'solved', $request->user_id
+                ]);
+            }
+
+            // Commit transaction if all successful
+            \DB::commit();
+            return redirect()->back()->with('success', 'Problem marked as solved!');
+            
+        } catch (\Exception $e) {
+            // Rollback transaction on any error
+            \DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to mark problem as solved: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Toggle star on a problem
+     * Toggle star on a problem using TRANSACTION
      */
     public function toggleStar(Request $request, Problem $problem)
     {
@@ -63,36 +87,52 @@ class UserProblemController extends Controller
             'user_id' => 'required|exists:users,user_id',
         ]);
 
-        // Check if record exists
-        $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
-            $request->user_id,
-            $problem->problem_id
-        ]);
-
-        if (!empty($existing)) {
-            // Toggle the star
-            $currentStarred = $existing[0]->is_starred;
-            $newStarred = $currentStarred ? 0 : 1;
-            \DB::update('UPDATE userproblems SET is_starred = ? WHERE user_id = ? AND problem_id = ?', [
-                $newStarred,
+        // Use database transaction
+        \DB::beginTransaction();
+        
+        try {
+            // Check if record exists
+            $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
                 $request->user_id,
                 $problem->problem_id
             ]);
-            $message = $newStarred ? 'Problem starred!' : 'Star removed!';
-        } else {
-            // Insert new record with star
-            \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, is_starred, solved_at, submission_link, notes) VALUES (?, ?, ?, 1, NULL, NULL, NULL)', [
-                $request->user_id,
-                $problem->problem_id,
-                'unsolved'
-            ]);
-            $message = 'Problem starred!';
-        }
-        
-        // Manually update problem statistics (stars and popularity)
-        $problem->updateDynamicFields();
 
-        return redirect()->back()->with('success', $message);
+            if (!empty($existing)) {
+                // Toggle the star
+                $currentStarred = $existing[0]->is_starred;
+                $newStarred = $currentStarred ? 0 : 1;
+                \DB::update('UPDATE userproblems SET is_starred = ?, updated_at = NOW() WHERE user_id = ? AND problem_id = ?', [
+                    $newStarred,
+                    $request->user_id,
+                    $problem->problem_id
+                ]);
+                $message = $newStarred ? 'Problem starred!' : 'Star removed!';
+            } else {
+                // Insert new record with star
+                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, is_starred, solved_at, submission_link, notes, created_at, updated_at) VALUES (?, ?, ?, 1, NULL, NULL, NULL, NOW(), NOW())', [
+                    $request->user_id,
+                    $problem->problem_id,
+                    'unsolved'
+                ]);
+                $message = 'Problem starred!';
+            }
+            
+            // Update problem statistics using stored procedure
+            try {
+                \DB::statement('CALL update_problem_statistics(?)', [$problem->problem_id]);
+            } catch (\Exception $e) {
+                $problem->updateDynamicFields();
+            }
+
+            // Commit transaction
+            \DB::commit();
+            return redirect()->back()->with('success', $message);
+            
+        } catch (\Exception $e) {
+            // Rollback on error
+            \DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to toggle star: ' . $e->getMessage());
+        }
     }
 
     /**

@@ -111,6 +111,12 @@ Route::middleware(['auth','setUserTimezone'])->group(function () {
         Route::put('/editorials/{editorial}', [EditorialController::class, 'update'])->name('editorial.update')->middleware('editorialOwner');
         Route::delete('/editorials/{editorial}', [EditorialController::class, 'destroy'])->name('editorial.destroy')->middleware('checkRole:admin');
         
+        // ---- Advanced SQL Features ----
+    Route::get('/advanced/statistics', [\App\Http\Controllers\StatisticsController::class, 'index'])->name('advanced.statistics');
+    Route::get('/advanced/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('advanced.analytics');
+    Route::get('/advanced/activity', [\App\Http\Controllers\ActivityController::class, 'index'])->name('advanced.activity');
+        Route::get('/advanced/tag-masters', [\App\Http\Controllers\TagMasterController::class, 'index'])->name('advanced.tagMasters');
+        
         // ---- Admin Routes ----
         Route::prefix('admin')->middleware('checkRole:admin')->group(function () {
             Route::get('/dashboard', [AccountController::class, 'adminDashboard'])->name('admin.dashboard');
