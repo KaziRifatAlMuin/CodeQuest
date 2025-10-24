@@ -113,7 +113,7 @@ pseudo code here
                         </div>
 
                         <div class="mb-4">
-                            <label for="code" class="form-label">Code Implementation (Optional)</label>
+                            <label for="code" class="form-label">Code Implementation</label>
                             <small class="text-muted d-block mb-2">
                                 <i class="fas fa-code"></i> Paste your code solution here (will be displayed with syntax highlighting)
                             </small>

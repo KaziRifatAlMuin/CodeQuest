@@ -59,11 +59,6 @@ Route::middleware(['auth','setUserTimezone'])->group(function () {
     // ============================================
     Route::middleware(['verified'])->group(function () {
         
-        // ---- Static Pages ----
-        Route::get('/welcome', [SiteController::class, 'welcome'])->name('welcome');
-        Route::get('/practice', [SiteController::class, 'practice'])->name('practice');
-        // (Removed unused utility routes: name.show, problem.utility)
-        
         // ---- User Routes ----
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('user.create')->middleware('checkRole:moderator,admin');

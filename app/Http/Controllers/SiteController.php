@@ -56,29 +56,4 @@ class SiteController extends Controller
     {
         return view('navigation.contact');
     }
-    
-    // ============================================
-    // AUTHENTICATED USER PAGES
-    // ============================================
-    
-    /**
-     * Welcome page for verified users
-     */
-    public function welcome() 
-    {
-        return view('navigation.welcome');
-    }
-    
-    /**
-     * Practice page
-     */
-    public function practice() 
-    {
-        return view('navigation.practice');
-    }
-
-    // ============================================
-    // UTILITY ROUTES
-    // ============================================
-    // (Removed unused utility routes: showName, showProblem)
 }

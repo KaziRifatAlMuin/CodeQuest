@@ -55,7 +55,7 @@ class FriendController extends Controller
         Friend::create([
             'user_id' => $authUser->user_id,
             'friend_id' => $user->user_id,
-            'is_friend' => false,
+            'is_friend' => true,
         ]);
 
         // Update follower count
