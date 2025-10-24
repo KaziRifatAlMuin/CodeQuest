@@ -10,6 +10,9 @@
             <p class="text-muted mb-0">Rankings based on Codeforces maximum rating</p>
         </div>
 
+        <!-- Search and Pagination Controls -->
+        @include('components.search-pagination', ['paginator' => $users])
+
         <!-- Leaderboard Table using component -->
         <x-table :headers="['Rank', 'Name', 'CF Handle', 'MAX CF Rating', 'Total Solved', 'Avg Rating']" :paginator="$users">
             @forelse($users as $index => $user)
@@ -17,10 +20,13 @@
                     $rating = (int) ($user->cf_max_rating ?? 0);
                     $themeColor = \App\Helpers\RatingHelper::getRatingColor($rating);
                     $themeName = \App\Helpers\RatingHelper::getRatingTitle($rating);
+                    $search = request('search', '');
+                    // Use actual_rank if available, otherwise calculate from firstItem
+                    $displayRank = $user->actual_rank ?? ($users->firstItem() + $index);
                 @endphp
                 <tr style="border-bottom: 1px solid #f0f0f0;">
                     <td class="fw-bold text-center" style="color: {{ $themeColor }}; font-size: 1rem; width: 8%;">
-                        #{{ $users->firstItem() + $index }}
+                        #{!! \App\Helpers\SearchHelper::highlight($displayRank, $search) !!}
                     </td>
                     <td style="width: 25%;">
                         <div class="d-flex align-items-center">
@@ -35,12 +41,16 @@
                                     <i class="fas fa-user text-secondary"></i>
                                 </div>
                             @endif
-                            <span class="fw-500">{{ $user->name }}</span>
+                            <span class="fw-500">{!! \App\Helpers\SearchHelper::highlight($user->name, $search) !!}</span>
                         </div>
                     </td>
                     <td style="width: 20%;">
                         <span style="color: {{ $themeColor }}; font-weight: 600;">
-                            {{ $user->cf_handle ?? '—' }}
+                            @if($user->cf_handle)
+                                {!! \App\Helpers\SearchHelper::highlight($user->cf_handle, $search) !!}
+                            @else
+                                —
+                            @endif
                         </span>
                         @if($user->cf_handle && $user->handle_verified_at)
                             <i class="fas fa-check-circle text-success ms-2" style="font-size: 0.85rem;" title="Verified"></i>
@@ -68,7 +78,7 @@
                 <tr>
                     <td colspan="6" class="text-center py-5">
                         <i class="fas fa-inbox text-muted" style="font-size: 2.5rem; display: block; margin-bottom: 1rem;"></i>
-                        <p class="text-muted mb-0">No users on leaderboard yet</p>
+                        <p class="text-muted mb-0">No users found{{ request('search') ? ' for "' . request('search') . '"' : '' }}</p>
                     </td>
                 </tr>
             @endforelse

@@ -17,9 +17,12 @@
         </div>
     @endif
 
+    <!-- Search and Pagination Controls -->
+    @include('components.search-pagination', ['paginator' => $editorials])
+
     @if($editorials->isEmpty())
         <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> No editorials found. Be the first to write one!
+            <i class="fas fa-info-circle"></i> No editorials found{{ request('search') ? ' for "' . request('search') . '"' : '' }}. Be the first to write one!
         </div>
     @else
         <div class="row">
@@ -29,6 +32,7 @@
                     $themeColor = \App\Helpers\RatingHelper::getRatingColor($rating);
                     $themeBg = \App\Helpers\RatingHelper::getRatingBgColor($rating);
                     $themeName = \App\Helpers\RatingHelper::getRatingTitle($rating);
+                    $search = request('search', '');
                 @endphp
                 
                 <div class="col-lg-6 mb-4">
@@ -38,7 +42,7 @@
                                 <h5 class="card-title mb-0">
                                     <a href="{{ route('problem.show', $editorial->problem->problem_id) }}" 
                                        style="color: {{ $themeColor }}; text-decoration: none; font-weight: 700;">
-                                        {{ $editorial->problem->title }}
+                                        {!! \App\Helpers\SearchHelper::highlight($editorial->problem->title, $search) !!}
                                     </a>
                                 </h5>
                                 <span class="badge" style="background: {{ $themeColor }};">
@@ -50,13 +54,13 @@
                                 <small>
                                     <i class="fas fa-user"></i> By 
                                     <a href="{{ route('user.show', $editorial->author->user_id) }}" class="text-decoration-none">
-                                        {{ $editorial->author->name }}
+                                        {!! \App\Helpers\SearchHelper::highlight($editorial->author->name, $search) !!}
                                     </a>
                                 </small>
                             </p>
                             
                             <p class="card-text text-muted">
-                                {{ Str::limit(strip_tags($editorial->solution), 150) }}
+                                {!! \App\Helpers\SearchHelper::highlight(Str::limit(strip_tags($editorial->solution), 150), $search) !!}
                             </p>
                             
                             <div class="d-flex justify-content-between align-items-center">

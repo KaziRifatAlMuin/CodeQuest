@@ -21,6 +21,9 @@
     <!-- Filters -->
     <x-problem-filters :tags="$tags" :selectedTags="$selectedTags" :showStarred="$showStarred" />
 
+    <!-- Search and Pagination Controls -->
+    @include('components.search-pagination', ['paginator' => $problems])
+
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <x-table :headers="['Title', 'Rating', 'Tags', 'Solved', 'Stars', 'Popularity', 'Link']" :paginator="$problems">
@@ -28,11 +31,12 @@
                     @php
                         $rating = (int) ($problem->rating ?? 0);
                         $ratingColor = \App\Helpers\RatingHelper::getRatingColor($rating);
+                        $search = request('search', '');
                     @endphp
                     <tr onclick="window.location='{{ route('problem.show', $problem) }}'">
                         <td>
                             <a href="{{ route('problem.show', $problem) }}" style="text-decoration: none; color: var(--primary); font-weight: 600;">
-                                {{ $problem->title }}
+                                {!! \App\Helpers\SearchHelper::highlight($problem->title, $search) !!}
                             </a>
                         </td>
                         <td>
@@ -49,8 +53,7 @@
                         </td>
                         <td>{{ number_format($problem->solved_count ?? 0) }}</td>
                         <td>{{ number_format($problem->stars ?? 0) }}</td>
-                                                <td>{{ $problem->popularity_percentage }}%</td>
-                        <td>
+                        <td>{{ $problem->popularity_percentage }}%</td>
                         <td onclick="event.stopPropagation();">
                             <a href="{{ $problem->problem_link }}" target="_blank" class="btn btn-sm btn-primary">
                                 <i class="fas fa-external-link-alt"></i> Solve
@@ -61,7 +64,7 @@
                     <tr>
                         <td colspan="7" class="text-center p-4">
                             <i class="fas fa-inbox" style="font-size: 2rem; color: var(--text-light); margin-right: 10px;"></i>
-                            <p class="text-muted mb-0">No problems found</p>
+                            <p class="text-muted mb-0">No problems found{{ request('search') ? ' for "' . request('search') . '"' : '' }}</p>
                         </td>
                     </tr>
                 @endforelse

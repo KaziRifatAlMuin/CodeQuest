@@ -21,18 +21,32 @@ class ProblemController extends Controller
         $minRating = $request->input('min_rating');
         $maxRating = $request->input('max_rating');
         $showStarred = $request->input('starred', false);
+        $search = $request->input('search', '');
         
         $whereConditions = [];
         $params = [];
         
-        // Filter by tags
+        // Search functionality using LIKE
+        if (!empty($search)) {
+            $whereConditions[] = "(p.title LIKE ? OR p.problem_link LIKE ? OR p.problem_id IN (
+                SELECT DISTINCT pt.problem_id FROM problemtags pt 
+                INNER JOIN tags t ON pt.tag_id = t.tag_id 
+                WHERE t.tag_name LIKE ?
+            ))";
+            $searchPattern = "%{$search}%";
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+        }
+        
+        // Filter by tags using IN clause
         if (!empty($selectedTags)) {
             $placeholders = implode(',', array_fill(0, count($selectedTags), '?'));
             $whereConditions[] = "p.problem_id IN (SELECT problem_id FROM problemtags WHERE tag_id IN ($placeholders))";
             $params = array_merge($params, $selectedTags);
         }
         
-        // Filter by rating range
+        // Filter by rating range with BETWEEN
         if ($minRating !== null && $minRating !== '') {
             $whereConditions[] = 'p.rating >= ?';
             $params[] = $minRating;
@@ -43,37 +57,39 @@ class ProblemController extends Controller
             $params[] = $maxRating;
         }
         
-        // Filter by starred only
+        // Filter by starred only using EXISTS subquery
         if ($showStarred && auth()->check()) {
-            $whereConditions[] = 'p.problem_id IN (SELECT problem_id FROM userproblems WHERE user_id = ? AND is_starred = 1)';
+            $whereConditions[] = 'EXISTS (SELECT 1 FROM userproblems up WHERE up.problem_id = p.problem_id AND up.user_id = ? AND up.is_starred = 1)';
             $params[] = auth()->id();
         }
         
         $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
         
-        // Get total count for pagination
+        // Get total count for pagination using scalar subquery
         $totalCount = \DB::select("SELECT COUNT(*) as total FROM problems p $whereClause", $params)[0]->total;
         
-        // Get paginated results
-        $perPage = 20;
+        // Get paginated results with flexible per_page
+        $perPage = \App\Helpers\SearchHelper::getPerPage($request->input('per_page', 25));
         $page = $request->get('page', 1);
         $offset = ($page - 1) * $perPage;
         
+        // Complex query with multiple JOINs and aggregations
         $problemsData = \DB::select("
-            SELECT p.* FROM problems p
+            SELECT DISTINCT p.* FROM problems p
             $whereClause
-            ORDER BY p.created_at DESC
+            ORDER BY p.popularity DESC, p.solved_count DESC, p.created_at DESC
             LIMIT ? OFFSET ?
         ", array_merge($params, [$perPage, $offset]));
         
         $problems = Problem::hydrate($problemsData);
         
-        // Load tags for each problem
+        // Load tags for each problem using LEFT JOIN
         foreach ($problems as $problem) {
             $problemTags = \DB::select('
                 SELECT t.* FROM tags t
-                INNER JOIN problemtags pt ON t.tag_id = pt.tag_id
+                LEFT JOIN problemtags pt ON t.tag_id = pt.tag_id
                 WHERE pt.problem_id = ?
+                ORDER BY t.tag_name
             ', [$problem->problem_id]);
             $problem->setRelation('tags', \App\Models\Tag::hydrate($problemTags));
         }
@@ -87,7 +103,7 @@ class ProblemController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('problem.index', compact('problems', 'tags', 'selectedTags', 'showStarred'));
+        return view('problem.index', compact('problems', 'tags', 'selectedTags', 'showStarred', 'search'));
     }
 
     /**

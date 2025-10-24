@@ -14,15 +14,35 @@ class TagController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all tags with their problem counts using raw SQL
-        $tagsData = \DB::select('
+        // Get all tags with their problem counts using raw SQL with flexible pagination
+        $tagsPerPage = \App\Helpers\SearchHelper::getPerPage($request->input('tags_per_page', 50));
+        $tagsPage = $request->get('tags_page', 1);
+        $tagsOffset = ($tagsPage - 1) * $tagsPerPage;
+        
+        $tagsData = \DB::select("
             SELECT t.*, COUNT(pt.problem_id) as problems_count
             FROM tags t
             LEFT JOIN problemtags pt ON t.tag_id = pt.tag_id
             GROUP BY t.tag_id, t.tag_name
             ORDER BY t.tag_name ASC
-        ');
+            LIMIT ? OFFSET ?
+        ", [$tagsPerPage, $tagsOffset]);
+        
+        $totalTags = \DB::select("
+            SELECT COUNT(DISTINCT t.tag_id) as total
+            FROM tags t
+        ")[0]->total;
+        
         $tags = Tag::hydrate($tagsData);
+        
+        // Create pagination for tags
+        $tagsPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $tags,
+            $totalTags,
+            $tagsPerPage,
+            $tagsPage,
+            ['path' => $request->url(), 'query' => $request->query(), 'pageName' => 'tags_page']
+        );
 
         // Get tag statistics for pie chart (ranked by problem_count desc)
         $tagStats = \DB::select('
@@ -78,8 +98,8 @@ class TagController extends Controller
         // Get total count for pagination
         $totalCount = \DB::select("SELECT COUNT(*) as total FROM problems p $whereClause", $params)[0]->total;
         
-        // Get paginated results
-        $perPage = 20;
+        // Get paginated results with flexible pagination
+        $perPage = \App\Helpers\SearchHelper::getPerPage($request->input('per_page', 25));
         $page = $request->get('page', 1);
         $offset = ($page - 1) * $perPage;
         
@@ -111,7 +131,7 @@ class TagController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('tag.index', compact('tags', 'tagStats', 'problems', 'selectedTags', 'filterMode', 'filterLogic', 'showTags', 'chartColors'));
+        return view('tag.index', compact('tags', 'tagsPaginator', 'tagStats', 'problems', 'selectedTags', 'filterMode', 'filterLogic', 'showTags', 'chartColors'));
     }
 
     /**

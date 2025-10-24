@@ -15,13 +15,28 @@ class SiteController extends Controller
     /**
      * Home page with top problems and users
      */
-    public function home() {
-        // Top 10 most popular problems (by popularity then solved_count) using raw SQL
-        $topProblemsData = \DB::select('
+    public function home(Request $request) {
+        // Search functionality
+        $search = $request->input('search', '');
+        $whereConditions = [];
+        $params = [];
+        
+        if (!empty($search)) {
+            $whereConditions[] = "(title LIKE ? OR problem_link LIKE ?)";
+            $searchPattern = "%{$search}%";
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+        }
+        
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        
+        // Top problems (by popularity then solved_count) using raw SQL with search
+        $topProblemsData = \DB::select("
             SELECT * FROM problems
+            $whereClause
             ORDER BY popularity DESC, solved_count DESC
             LIMIT 10
-        ');
+        ", $params);
         $topProblems = Problem::hydrate($topProblemsData);
 
         // Top 10 rated users (by cf_max_rating) using raw SQL
@@ -40,7 +55,7 @@ class SiteController extends Controller
         ');
         $topSolvers = User::hydrate($topSolversData);
 
-        return view('navigation.home', compact('topProblems', 'topRatedUsers', 'topSolvers'));
+        return view('navigation.home', compact('topProblems', 'topRatedUsers', 'topSolvers', 'search'));
     }
     
     /**

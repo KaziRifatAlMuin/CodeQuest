@@ -11,11 +11,27 @@ class EditorialController extends Controller
     /**
      * Display a listing of the resource (sorted by last updated).
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get paginated editorials using raw SQL
-        $perPage = 20;
-        $page = request()->get('page', 1);
+        // Search functionality
+        $search = $request->input('search', '');
+        $whereConditions = [];
+        $params = [];
+        
+        if (!empty($search)) {
+            $whereConditions[] = "(e.solution LIKE ? OR e.code LIKE ? OR p.title LIKE ? OR u.name LIKE ?)";
+            $searchPattern = "%{$search}%";
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+        }
+        
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        
+        // Get paginated editorials using raw SQL with flexible pagination
+        $perPage = \App\Helpers\SearchHelper::getPerPage($request->input('per_page', 25));
+        $page = $request->get('page', 1);
         $offset = ($page - 1) * $perPage;
         
         $editorialsData = \DB::select("
@@ -25,11 +41,18 @@ class EditorialController extends Controller
             FROM editorials e
             INNER JOIN problems p ON e.problem_id = p.problem_id
             INNER JOIN users u ON e.author_id = u.user_id
+            $whereClause
             ORDER BY e.updated_at DESC
             LIMIT ? OFFSET ?
-        ", [$perPage, $offset]);
+        ", array_merge($params, [$perPage, $offset]));
         
-        $totalEditorials = \DB::select('SELECT COUNT(*) as total FROM editorials')[0]->total;
+        $totalEditorials = \DB::select("
+            SELECT COUNT(*) as total FROM editorials e
+            INNER JOIN problems p ON e.problem_id = p.problem_id
+            INNER JOIN users u ON e.author_id = u.user_id
+            $whereClause
+        ", $params)[0]->total;
+        
         $editorials = Editorial::hydrate($editorialsData);
         
         // Manually set relationships
@@ -51,10 +74,10 @@ class EditorialController extends Controller
             $totalEditorials,
             $perPage,
             $page,
-            ['path' => request()->url(), 'query' => request()->query()]
+            ['path' => $request->url(), 'query' => $request->query()]
         );
         
-        return view('editorial.index', compact('editorials'));
+        return view('editorial.index', compact('editorials', 'search'));
     }
 
     /**

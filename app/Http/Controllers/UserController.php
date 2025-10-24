@@ -10,7 +10,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Sorting: allow certain columns and directions via query params
         $allowedSorts = [
@@ -20,23 +20,39 @@ class UserController extends Controller
             'solved' => 'solved_problems_count',
         ];
 
-        $sort = request()->get('sort', 'created');
-        $direction = strtolower(request()->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $sort = $request->get('sort', 'created');
+        $direction = strtolower($request->get('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
 
         $orderBy = $allowedSorts[$sort] ?? $allowedSorts['created'];
+        
+        // Search functionality
+        $search = $request->input('search', '');
+        $whereConditions = [];
+        $params = [];
+        
+        if (!empty($search)) {
+            $whereConditions[] = "(name LIKE ? OR cf_handle LIKE ? OR email LIKE ?)";
+            $searchPattern = "%{$search}%";
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+        }
+        
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
 
-        // Get paginated users using raw SQL
-        $perPage = 25;
-        $page = request()->get('page', 1);
+        // Get paginated users using raw SQL with flexible pagination
+        $perPage = \App\Helpers\SearchHelper::getPerPage($request->input('per_page', 25));
+        $page = $request->get('page', 1);
         $offset = ($page - 1) * $perPage;
         
         $usersData = \DB::select("
             SELECT * FROM users
+            $whereClause
             ORDER BY $orderBy $direction
             LIMIT ? OFFSET ?
-        ", [$perPage, $offset]);
+        ", array_merge($params, [$perPage, $offset]));
         
-        $totalUsers = \DB::select('SELECT COUNT(*) as total FROM users')[0]->total;
+        $totalUsers = \DB::select("SELECT COUNT(*) as total FROM users $whereClause", $params)[0]->total;
         $users = User::hydrate($usersData);
         
         // Create pagination manually
@@ -45,10 +61,10 @@ class UserController extends Controller
             $totalUsers,
             $perPage,
             $page,
-            ['path' => request()->url(), 'query' => request()->query()]
+            ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('user.index', compact('users', 'sort', 'direction'));
+        return view('user.index', compact('users', 'sort', 'direction', 'search'));
     }
 
     /**
@@ -202,20 +218,45 @@ class UserController extends Controller
     /**
      * Display leaderboard - accessible to everyone (guests and authenticated users)
      */
-    public function leaderboard()
+    public function leaderboard(Request $request)
     {
-        // Fetch users sorted by cf_max_rating (descending) using raw SQL
-        $perPage = 50;
-        $page = request()->get('page', 1);
+        // Search functionality
+        $search = $request->input('search', '');
+        $whereConditions = [];
+        $params = [];
+        
+        if (!empty($search)) {
+            $searchPattern = "%{$search}%";
+            // text matches
+            $whereConditions[] = "(name LIKE ? OR cf_handle LIKE ? OR university LIKE ?)";
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            $params[] = $searchPattern;
+            // if search is numeric, also allow searching by actual global rank
+            if (is_numeric($search)) {
+                $whereConditions[] = "(actual_rank = ?)";
+                $params[] = intval($search);
+            }
+        }
+
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+
+        // Fetch users sorted by cf_max_rating (descending) using raw SQL with flexible pagination
+        $perPage = \App\Helpers\SearchHelper::getPerPage($request->input('per_page', 50));
+        $page = $request->get('page', 1);
         $offset = ($page - 1) * $perPage;
-        
-        $usersData = \DB::select("
-            SELECT * FROM users
-            ORDER BY cf_max_rating DESC
-            LIMIT ? OFFSET ?
-        ", [$perPage, $offset]);
-        
-        $totalUsers = \DB::select('SELECT COUNT(*) as total FROM users')[0]->total;
+
+        // Build base subquery that computes actual global rank for every user
+        $baseSub = "SELECT u.*, RANK() OVER (ORDER BY u.cf_max_rating DESC, u.solved_problems_count DESC) as actual_rank FROM users u";
+
+        // Final paginated query: apply filters on the ranked subquery so actual_rank remains global
+        $finalSql = "SELECT * FROM ($baseSub) ranked $whereClause ORDER BY cf_max_rating DESC, solved_problems_count DESC LIMIT ? OFFSET ?";
+
+        $usersData = \DB::select($finalSql, array_merge($params, [$perPage, $offset]));
+
+        // Total count must be calculated from the same ranked subquery with the same where clause
+        $countSql = "SELECT COUNT(*) as total FROM ($baseSub) ranked " . ($whereClause ? " $whereClause" : '');
+        $totalUsers = \DB::select($countSql, $params)[0]->total;
         $users = User::hydrate($usersData);
         
         // Create pagination manually
@@ -224,9 +265,9 @@ class UserController extends Controller
             $totalUsers,
             $perPage,
             $page,
-            ['path' => request()->url(), 'query' => request()->query()]
+            ['path' => $request->url(), 'query' => $request->query()]
         );
         
-        return view('user.leaderboard', compact('users'));
+        return view('user.leaderboard', compact('users', 'search'));
     }
 }

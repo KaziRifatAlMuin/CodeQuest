@@ -46,6 +46,10 @@
         </div>
         <div class="card-body">
             <form id="tagFilterForm" method="GET" action="{{ route('tag.index') }}">
+                <!-- Preserve pagination parameters -->
+                <input type="hidden" name="tags_per_page" value="{{ request('tags_per_page', 50) }}">
+                <input type="hidden" name="per_page" value="{{ request('per_page', 25) }}">
+                
                 <!-- Filter Options -->
                 <div class="row mb-3">
                     <div class="col-md-4">
@@ -97,11 +101,21 @@
                                     {{ in_array($tag->tag_id, $selectedTags) ? 'checked' : '' }}
                                 >
                                 <label class="form-check-label tag-label" for="tag_{{ $tag->tag_id }}" style="cursor: pointer;">
-                                    <x-tag-badge :tagName="$tag->tag_name" :tagId="$tag->tag_id" />
+                                    <span class="badge rounded-pill" style="background-color: #e9ecef; color: #495057; padding: 6px 12px; font-size: 0.875rem;">
+                                        {{ $tag->tag_name }}
+                                        <span class="badge bg-primary ms-1">{{ $tag->problems_count }}</span>
+                                    </span>
                                 </label>
                             </div>
                         @endforeach
                     </div>
+                    
+                    <!-- Tags Pagination -->
+                    @if($tagsPaginator->hasPages())
+                        <div class="mt-3">
+                            {{ $tagsPaginator->appends(request()->query())->links() }}
+                        </div>
+                    @endif
                 </div>
 
                 <div class="d-flex gap-2">
@@ -117,6 +131,29 @@
     </div>
 
     <!-- Filtered Problems List -->
+    <!-- Per-page selector for problems (pagination only, no search) -->
+    <div class="d-flex justify-content-end mb-2">
+        <form method="GET" action="{{ route('tag.index') }}" class="d-flex align-items-center">
+            {{-- Preserve filter and pagination state --}}
+            @foreach(request()->except(['per_page', 'page']) as $k => $v)
+                @if(is_array($v))
+                    @foreach($v as $item)
+                        <input type="hidden" name="{{ $k }}[]" value="{{ $item }}">
+                    @endforeach
+                @else
+                    <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                @endif
+            @endforeach
+
+            <label class="me-2 mb-0 text-muted">Per page</label>
+            <select name="per_page" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit();">
+                @foreach(\App\Helpers\SearchHelper::getPaginationOptions() as $option)
+                    <option value="{{ $option }}" {{ request('per_page', 25) == $option ? 'selected' : '' }}>{{ $option }}</option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+
     <div class="card shadow-sm">
         <div class="card-header">
             <h5 class="mb-0">

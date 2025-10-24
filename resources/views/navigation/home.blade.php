@@ -8,6 +8,21 @@
             </h1>
             <p class="mb-2" style="font-size: 0.95rem;">Master coding through intelligent practice and community-driven learning</p>
             <hr class="my-3" style="border-color: var(--border); max-width: 600px; margin: 1rem auto;">
+            
+            <!-- Search Box -->
+            <form method="GET" action="{{ route('home') }}" class="mb-3">
+                <div class="input-group mx-auto" style="max-width: 500px;">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Search popular problems...">
+                    @if(request('search'))
+                        <a href="{{ route('home') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+            
             <p class="mb-3" style="font-size: 0.9rem;">Start your journey today and level up your programming skills.</p>
             <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
                 <a class="btn btn-primary mr-sm-2 cta-btn" href="{{ route('account.register') }}" role="button">
@@ -59,12 +74,17 @@
             <div class="card h-100 shadow-sm">
                 <div class="card-body py-3">
                     <h5 class="card-title" style="font-size: 1rem;"><i class="fas fa-fire text-danger"></i> Most Popular Problems</h5>
-                    <p class="text-muted small mb-2">Top 10 problems by community popularity.</p>
+                    <p class="text-muted small mb-2">Top 10 problems by community popularity{{ request('search') ? ' matching "' . request('search') . '"' : '' }}.</p>
                     <ul class="list-group list-group-flush mt-2">
                         @forelse($topProblems ?? [] as $problem)
+                        @php
+                            $search = request('search', '');
+                        @endphp
                         <li class="list-group-item d-flex justify-content-between align-items-start py-2 px-2">
                             <div class="ms-1 me-auto" style="min-width: 0;">
-                                <div class="fw-bold text-truncate" style="font-size: 0.85rem;">{{ $problem->title }}</div>
+                                <div class="fw-bold text-truncate" style="font-size: 0.85rem;">
+                                    {!! \App\Helpers\SearchHelper::highlight($problem->title, $search) !!}
+                                </div>
                                 <small class="text-muted" style="font-size: 0.75rem;">Solved: {{ $problem->solved_count ?? 0 }} • Pop: {{ $problem->popularity_percentage }}%</small>
                             </div>
                             @if($problem->problem_link)
@@ -72,7 +92,7 @@
                             @endif
                         </li>
                         @empty
-                        <li class="list-group-item py-2">No problems to show.</li>
+                        <li class="list-group-item py-2">No problems found{{ request('search') ? ' for "' . request('search') . '"' : '' }}.</li>
                         @endforelse
                     </ul>
                 </div>
