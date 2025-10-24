@@ -51,8 +51,9 @@ class Problem extends Model
      */
     public function updateSolvedCount()
     {
-        $this->solved_count = $this->solvedByUsers()->count();
-        $this->save();
+        $count = \DB::select('SELECT COUNT(*) as total FROM userproblems WHERE problem_id = ? AND status = ?', [$this->problem_id, 'solved'])[0]->total;
+        \DB::update('UPDATE problems SET solved_count = ?, updated_at = NOW() WHERE problem_id = ?', [$count, $this->problem_id]);
+        $this->solved_count = $count;
     }
 
     /**
@@ -60,8 +61,9 @@ class Problem extends Model
      */
     public function updateStarsCount()
     {
-        $this->stars = $this->starredByUsers()->count();
-        $this->save();
+        $count = \DB::select('SELECT COUNT(*) as total FROM userproblems WHERE problem_id = ? AND is_starred = 1', [$this->problem_id])[0]->total;
+        \DB::update('UPDATE problems SET stars = ?, updated_at = NOW() WHERE problem_id = ?', [$count, $this->problem_id]);
+        $this->stars = $count;
     }
 
     /**
@@ -72,13 +74,13 @@ class Problem extends Model
         $solved = $this->solved_count ?? 0;
         $stars = $this->stars ?? 0;
         
+        $popularity = 0;
         if ($solved > 0) {
-            $this->popularity = round($stars / $solved, 3);
-        } else {
-            $this->popularity = 0;
+            $popularity = round($stars / $solved, 3);
         }
         
-        $this->save();
+        \DB::update('UPDATE problems SET popularity = ?, updated_at = NOW() WHERE problem_id = ?', [$popularity, $this->problem_id]);
+        $this->popularity = $popularity;
     }
 
     /**
@@ -87,14 +89,14 @@ class Problem extends Model
     public function updateDynamicFields()
     {
         // Count solved users
-        $solvedCount = $this->solvedByUsers()->count();
+        $solvedCount = \DB::select('SELECT COUNT(*) as total FROM userproblems WHERE problem_id = ? AND status = ?', [$this->problem_id, 'solved'])[0]->total;
         
         // Count starred users
-        $starsCount = $this->starredByUsers()->count();
+        $starsCount = \DB::select('SELECT COUNT(*) as total FROM userproblems WHERE problem_id = ? AND is_starred = 1', [$this->problem_id])[0]->total;
         
         // Calculate popularity (stars / max stars across all problems)
         // Get the maximum stars count from all problems
-        $maxStars = \DB::table('problems')->max('stars') ?? 1;
+        $maxStars = \DB::select('SELECT MAX(stars) as max_stars FROM problems')[0]->max_stars ?? 1;
         
         $popularity = 0;
         if ($maxStars > 0) {
@@ -103,11 +105,17 @@ class Problem extends Model
         }
         
         // Update all fields in a single query (more efficient)
-        $this->update([
-            'solved_count' => $solvedCount,
-            'stars' => $starsCount,
-            'popularity' => $popularity,
+        \DB::update('UPDATE problems SET solved_count = ?, stars = ?, popularity = ?, updated_at = NOW() WHERE problem_id = ?', [
+            $solvedCount,
+            $starsCount,
+            $popularity,
+            $this->problem_id
         ]);
+        
+        // Update local properties
+        $this->solved_count = $solvedCount;
+        $this->stars = $starsCount;
+        $this->popularity = $popularity;
     }
 
     /**
@@ -147,8 +155,7 @@ class Problem extends Model
      */
     public function getUserStatus($userId)
     {
-        return $this->userProblems()
-                    ->where('user_id', $userId)
-                    ->first();
+        $userProblemData = \DB::select('SELECT * FROM userproblems WHERE problem_id = ? AND user_id = ? LIMIT 1', [$this->problem_id, $userId]);
+        return !empty($userProblemData) ? \App\Models\UserProblem::hydrate($userProblemData)[0] : null;
     }
 }

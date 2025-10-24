@@ -70,13 +70,18 @@ class AccountController extends Controller
             'cf_handle' => 'required|string|max:255',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'cf_handle' => $validated['cf_handle'],
-            'role' => 'user',
+        // Insert user using raw SQL
+        $userId = \DB::insert('INSERT INTO users (name, email, password, cf_handle, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())', [
+            $validated['name'],
+            $validated['email'],
+            Hash::make($validated['password']),
+            $validated['cf_handle'],
+            'user',
         ]);
+        
+        // Get the last inserted user
+        $userData = \DB::select('SELECT * FROM users WHERE email = ? LIMIT 1', [$validated['email']]);
+        $user = User::hydrate($userData)[0];
 
         event(new Registered($user));
 
@@ -122,12 +127,17 @@ class AccountController extends Controller
             if ($response->successful() && $response->json()['status'] === 'OK') {
                 $userData = $response->json()['result'][0];
                 
-                // Update user with verified handle and CF data
-                $user->update([
-                    'handle_verified_at' => now(),
-                    'cf_max_rating' => $userData['maxRating'] ?? 0,
-                    'country' => $userData['country'] ?? null,
+                // Update user with verified handle and CF data using raw SQL
+                \DB::update('UPDATE users SET handle_verified_at = ?, cf_max_rating = ?, country = ?, updated_at = NOW() WHERE user_id = ?', [
+                    now(),
+                    $userData['maxRating'] ?? 0,
+                    $userData['country'] ?? null,
+                    $user->user_id
                 ]);
+                
+                // Refresh user instance
+                $userData = \DB::select('SELECT * FROM users WHERE user_id = ? LIMIT 1', [$user->user_id]);
+                $user = User::hydrate($userData)[0];
 
                 return redirect()->route('verification.notice')
                     ->with('success', 'Codeforces handle verified successfully! Please verify your email.');
@@ -213,9 +223,11 @@ class AccountController extends Controller
 
         // In local environment, generate the reset link directly
         if (config('app.env') === 'local') {
-            $user = \App\Models\User::where('email', $request->email)->first();
+            // Use raw SQL to find user
+            $userData = \DB::select('SELECT * FROM users WHERE email = ? LIMIT 1', [$request->email]);
             
-            if ($user) {
+            if (!empty($userData)) {
+                $user = User::hydrate($userData)[0];
                 $token = Password::createToken($user);
                 $resetUrl = route('password.reset', ['token' => $token, 'email' => $request->email]);
                 
@@ -321,7 +333,15 @@ class AccountController extends Controller
             $validated['profile_picture'] = $filename;
         }
 
-        $user->update($validated);
+        // Update profile using raw SQL
+        \DB::update('UPDATE users SET name = ?, bio = ?, country = ?, university = ?, profile_picture = COALESCE(?, profile_picture), updated_at = NOW() WHERE user_id = ?', [
+            $validated['name'],
+            $validated['bio'] ?? null,
+            $validated['country'] ?? null,
+            $validated['university'] ?? null,
+            $validated['profile_picture'] ?? null,
+            $user->user_id
+        ]);
 
         return redirect()->route('account.profile')
             ->with('success', 'Profile updated successfully!');
@@ -336,7 +356,8 @@ class AccountController extends Controller
             unlink(public_path('images/profile/' . $user->profile_picture));
         }
 
-        $user->update(['profile_picture' => null]);
+        // Update using raw SQL
+        \DB::update('UPDATE users SET profile_picture = NULL, updated_at = NOW() WHERE user_id = ?', [$user->user_id]);
 
         return back()->with('success', 'Profile picture deleted successfully!');
     }
@@ -363,17 +384,35 @@ class AccountController extends Controller
     public function adminDashboard()
     {
         // Fetch users sorted by role first (admin, moderator, user), then by rating descending
-        // Using raw SQL for custom role ordering
-        $users = User::orderByRaw("
-            CASE 
-                WHEN role = 'admin' THEN 1
-                WHEN role = 'moderator' THEN 2
-                WHEN role = 'user' THEN 3
-                ELSE 4
-            END
-        ")
-        ->orderBy('cf_max_rating', 'desc')
-        ->paginate(30);
+        // Using raw SQL for custom role ordering and pagination
+        $perPage = 30;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $users = \DB::select("
+            SELECT * FROM users
+            ORDER BY 
+                CASE 
+                    WHEN role = 'admin' THEN 1
+                    WHEN role = 'moderator' THEN 2
+                    WHEN role = 'user' THEN 3
+                    ELSE 4
+                END,
+                cf_max_rating DESC
+            LIMIT ? OFFSET ?
+        ", [$perPage, $offset]);
+        
+        $totalUsers = \DB::select('SELECT COUNT(*) as total FROM users')[0]->total;
+        $users = User::hydrate($users);
+        
+        // Create pagination manually
+        $users = new \Illuminate\Pagination\LengthAwarePaginator(
+            $users,
+            $totalUsers,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return view('account.adminDashboard', compact('users'));
     }
@@ -385,14 +424,16 @@ class AccountController extends Controller
             'role' => 'required|in:user,moderator,admin'
         ]);
 
-        $user->update([
-            'role' => strtolower($validated['role'])
+        // Update role using raw SQL
+        \DB::update('UPDATE users SET role = ?, updated_at = NOW() WHERE user_id = ?', [
+            strtolower($validated['role']),
+            $user->user_id
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Role updated successfully',
-            'role' => $user->role
+            'role' => strtolower($validated['role'])
         ]);
     }
 }

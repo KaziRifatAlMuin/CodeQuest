@@ -12,42 +12,80 @@ class ProblemController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all tags for filter options
-        $tags = \App\Models\Tag::orderBy('tag_name', 'asc')->get();
+        // Get all tags for filter options using raw SQL
+        $tagsData = \DB::select('SELECT * FROM tags ORDER BY tag_name ASC');
+        $tags = \App\Models\Tag::hydrate($tagsData);
 
-        // Start query
-        $problemsQuery = Problem::with('tags');
-
-        // Filter by tags
+        // Build SQL query with filters
         $selectedTags = $request->input('tags', []);
-        if (!empty($selectedTags)) {
-            $problemsQuery->whereHas('tags', function($query) use ($selectedTags) {
-                $query->whereIn('tags.tag_id', $selectedTags);
-            });
-        }
-
-        // Filter by rating range
         $minRating = $request->input('min_rating');
         $maxRating = $request->input('max_rating');
+        $showStarred = $request->input('starred', false);
         
+        $whereConditions = [];
+        $params = [];
+        
+        // Filter by tags
+        if (!empty($selectedTags)) {
+            $placeholders = implode(',', array_fill(0, count($selectedTags), '?'));
+            $whereConditions[] = "p.problem_id IN (SELECT problem_id FROM problemtags WHERE tag_id IN ($placeholders))";
+            $params = array_merge($params, $selectedTags);
+        }
+        
+        // Filter by rating range
         if ($minRating !== null && $minRating !== '') {
-            $problemsQuery->where('rating', '>=', $minRating);
+            $whereConditions[] = 'p.rating >= ?';
+            $params[] = $minRating;
         }
         
         if ($maxRating !== null && $maxRating !== '') {
-            $problemsQuery->where('rating', '<=', $maxRating);
+            $whereConditions[] = 'p.rating <= ?';
+            $params[] = $maxRating;
         }
-
-        // Filter by starred only (for current user)
-        $showStarred = $request->input('starred', false);
+        
+        // Filter by starred only
         if ($showStarred && auth()->check()) {
-            $problemsQuery->whereHas('userProblems', function($query) {
-                $query->where('user_id', auth()->id())
-                      ->where('is_starred', true);
-            });
+            $whereConditions[] = 'p.problem_id IN (SELECT problem_id FROM userproblems WHERE user_id = ? AND is_starred = 1)';
+            $params[] = auth()->id();
         }
-
-        $problems = $problemsQuery->orderBy('created_at', 'desc')->paginate(20);
+        
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        
+        // Get total count for pagination
+        $totalCount = \DB::select("SELECT COUNT(*) as total FROM problems p $whereClause", $params)[0]->total;
+        
+        // Get paginated results
+        $perPage = 20;
+        $page = $request->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $problemsData = \DB::select("
+            SELECT p.* FROM problems p
+            $whereClause
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?
+        ", array_merge($params, [$perPage, $offset]));
+        
+        $problems = Problem::hydrate($problemsData);
+        
+        // Load tags for each problem
+        foreach ($problems as $problem) {
+            $problemTags = \DB::select('
+                SELECT t.* FROM tags t
+                INNER JOIN problemtags pt ON t.tag_id = pt.tag_id
+                WHERE pt.problem_id = ?
+            ', [$problem->problem_id]);
+            $problem->setRelation('tags', \App\Models\Tag::hydrate($problemTags));
+        }
+        
+        // Create pagination manually
+        $problems = new \Illuminate\Pagination\LengthAwarePaginator(
+            $problems,
+            $totalCount,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('problem.index', compact('problems', 'tags', 'selectedTags', 'showStarred'));
     }
@@ -57,7 +95,8 @@ class ProblemController extends Controller
      */
     public function create()
     {
-        $tags = \App\Models\Tag::orderBy('tag_name', 'asc')->get();
+        $tagsData = \DB::select('SELECT * FROM tags ORDER BY tag_name ASC');
+        $tags = \App\Models\Tag::hydrate($tagsData);
         return view('problem.create', compact('tags'));
     }
 
@@ -74,20 +113,25 @@ class ProblemController extends Controller
             'tags.*' => 'exists:tags,tag_id',
         ]);
 
-        // Initialize dynamic fields to 0
-        $data['solved_count'] = 0;
-        $data['stars'] = 0;
-        $data['popularity'] = 0;
-
         // Extract tags before creating problem
         $tags = $data['tags'] ?? [];
-        unset($data['tags']);
 
-        $problem = Problem::create($data);
+        // Insert problem using raw SQL
+        \DB::insert('INSERT INTO problems (title, problem_link, rating, solved_count, stars, popularity, created_at, updated_at) VALUES (?, ?, ?, 0, 0, 0, NOW(), NOW())', [
+            $data['title'],
+            $data['problem_link'],
+            $data['rating']
+        ]);
+        
+        // Get the last inserted problem
+        $problemData = \DB::select('SELECT * FROM problems WHERE problem_link = ? ORDER BY problem_id DESC LIMIT 1', [$data['problem_link']]);
+        $problem = Problem::hydrate($problemData)[0];
 
         // Sync tags with the problem
         if (!empty($tags)) {
-            $problem->tags()->sync($tags);
+            foreach ($tags as $tagId) {
+                \DB::insert('INSERT INTO problemtags (problem_id, tag_id) VALUES (?, ?)', [$problem->problem_id, $tagId]);
+            }
         }
 
         return redirect()->route('problem.index')->with('success', 'Problem created successfully.');
@@ -98,7 +142,14 @@ class ProblemController extends Controller
      */
     public function show(Problem $problem)
     {
-        $problem->load('tags');
+        // Load tags for the problem
+        $problemTags = \DB::select('
+            SELECT t.* FROM tags t
+            INNER JOIN problemtags pt ON t.tag_id = pt.tag_id
+            WHERE pt.problem_id = ?
+        ', [$problem->problem_id]);
+        $problem->setRelation('tags', \App\Models\Tag::hydrate($problemTags));
+        
         return view('problem.show', compact('problem'));
     }
 
@@ -107,8 +158,17 @@ class ProblemController extends Controller
      */
     public function edit(Problem $problem)
     {
-        $tags = \App\Models\Tag::orderBy('tag_name', 'asc')->get();
-        $problem->load('tags');
+        $tagsData = \DB::select('SELECT * FROM tags ORDER BY tag_name ASC');
+        $tags = \App\Models\Tag::hydrate($tagsData);
+        
+        // Load tags for the problem
+        $problemTags = \DB::select('
+            SELECT t.* FROM tags t
+            INNER JOIN problemtags pt ON t.tag_id = pt.tag_id
+            WHERE pt.problem_id = ?
+        ', [$problem->problem_id]);
+        $problem->setRelation('tags', \App\Models\Tag::hydrate($problemTags));
+        
         return view('problem.edit', compact('problem', 'tags'));
     }
 
@@ -125,17 +185,22 @@ class ProblemController extends Controller
             'tags.*' => 'exists:tags,tag_id',
         ]);
 
-        // Don't allow manual update of solved_count, stars, or popularity
-        // These are updated automatically via UserProblem events
-
         // Extract tags before updating problem
         $tags = $data['tags'] ?? [];
-        unset($data['tags']);
 
-        $problem->update($data);
+        // Update problem using raw SQL
+        \DB::update('UPDATE problems SET title = ?, problem_link = ?, rating = ?, updated_at = NOW() WHERE problem_id = ?', [
+            $data['title'],
+            $data['problem_link'],
+            $data['rating'],
+            $problem->problem_id
+        ]);
 
-        // Sync tags with the problem
-        $problem->tags()->sync($tags);
+        // Sync tags - delete old ones and insert new ones
+        \DB::delete('DELETE FROM problemtags WHERE problem_id = ?', [$problem->problem_id]);
+        foreach ($tags as $tagId) {
+            \DB::insert('INSERT INTO problemtags (problem_id, tag_id) VALUES (?, ?)', [$problem->problem_id, $tagId]);
+        }
 
         return redirect()->route('problem.index')->with('success', 'Problem updated successfully.');
     }
@@ -145,7 +210,14 @@ class ProblemController extends Controller
      */
     public function destroy(Problem $problem)
     {
-        $problem->delete();
+        // Delete related records first
+        \DB::delete('DELETE FROM problemtags WHERE problem_id = ?', [$problem->problem_id]);
+        \DB::delete('DELETE FROM userproblems WHERE problem_id = ?', [$problem->problem_id]);
+        \DB::delete('DELETE FROM editorials WHERE problem_id = ?', [$problem->problem_id]);
+        
+        // Delete the problem
+        \DB::delete('DELETE FROM problems WHERE problem_id = ?', [$problem->problem_id]);
+        
         return redirect()->route('problem.index')->with('success', 'Problem deleted successfully.');
     }
 }

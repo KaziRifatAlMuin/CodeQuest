@@ -87,7 +87,7 @@ class UserProblem extends Model
     protected function updateUserSolvedCountOnCreate()
     {
         if ($this->status === 'solved' && $this->user) {
-            DB::table('users')->where('user_id', $this->user->user_id)->increment('solved_problems_count', 1);
+            \DB::update('UPDATE users SET solved_problems_count = solved_problems_count + 1 WHERE user_id = ?', [$this->user->user_id]);
             $this->updateUserAverageProblemRating();
         }
     }
@@ -111,16 +111,11 @@ class UserProblem extends Model
         // If changed from solved -> not solved => decrement
         if ($originalStatus === 'solved' && $currentStatus !== 'solved') {
             // Decrement but avoid negative counts
-            DB::table('users')
-                ->where('user_id', $this->user->user_id)
-                ->where('solved_problems_count', '>', 0)
-                ->decrement('solved_problems_count', 1);
+            \DB::update('UPDATE users SET solved_problems_count = GREATEST(solved_problems_count - 1, 0) WHERE user_id = ?', [$this->user->user_id]);
 
             // If the status changed from solved -> not solved, clear solved_at on this record
             if (!empty($this->userproblem_id)) {
-                DB::table('userproblems')
-                    ->where('userproblem_id', $this->userproblem_id)
-                    ->update(['solved_at' => null]);
+                \DB::update('UPDATE userproblems SET solved_at = NULL WHERE userproblem_id = ?', [$this->userproblem_id]);
             }
 
             $this->updateUserAverageProblemRating();
@@ -129,15 +124,12 @@ class UserProblem extends Model
 
         // If changed from not solved -> solved => increment
         if ($originalStatus !== 'solved' && $currentStatus === 'solved') {
-            DB::table('users')->where('user_id', $this->user->user_id)->increment('solved_problems_count', 1);
+            \DB::update('UPDATE users SET solved_problems_count = solved_problems_count + 1 WHERE user_id = ?', [$this->user->user_id]);
 
             // Ensure this record has a solved_at timestamp (in case it wasn't set)
             if (!empty($this->userproblem_id)) {
                 $now = now();
-                DB::table('userproblems')
-                    ->where('userproblem_id', $this->userproblem_id)
-                    ->whereNull('solved_at')
-                    ->update(['solved_at' => $now]);
+                \DB::update('UPDATE userproblems SET solved_at = ? WHERE userproblem_id = ? AND solved_at IS NULL', [$now, $this->userproblem_id]);
             }
 
             $this->updateUserAverageProblemRating();
@@ -152,10 +144,7 @@ class UserProblem extends Model
     {
         // Note: $this->status should still be available on delete
         if ($this->status === 'solved' && $this->user) {
-            DB::table('users')
-                ->where('user_id', $this->user->user_id)
-                ->where('solved_problems_count', '>', 0)
-                ->decrement('solved_problems_count', 1);
+            \DB::update('UPDATE users SET solved_problems_count = GREATEST(solved_problems_count - 1, 0) WHERE user_id = ?', [$this->user->user_id]);
             $this->updateUserAverageProblemRating();
         }
     }
@@ -172,15 +161,15 @@ class UserProblem extends Model
 
         $userId = $this->user->user_id;
 
-        $row = DB::table('userproblems')
-            ->join('problems', 'userproblems.problem_id', '=', 'problems.problem_id')
-            ->where('userproblems.user_id', $userId)
-            ->where('userproblems.status', 'solved')
-            ->selectRaw('COALESCE(SUM(problems.rating), 0) as total_rating, COUNT(*) as solved_count')
-            ->first();
+        $row = \DB::select('
+            SELECT COALESCE(SUM(problems.rating), 0) as total_rating, COUNT(*) as solved_count
+            FROM userproblems
+            INNER JOIN problems ON userproblems.problem_id = problems.problem_id
+            WHERE userproblems.user_id = ? AND userproblems.status = ?
+        ', [$userId, 'solved']);
 
-        $total = intval($row->total_rating ?? 0);
-        $count = intval($row->solved_count ?? 0);
+        $total = intval($row[0]->total_rating ?? 0);
+        $count = intval($row[0]->solved_count ?? 0);
 
         $avg = 0;
         if ($count > 0) {
@@ -188,6 +177,6 @@ class UserProblem extends Model
             $avg = intdiv($total, $count);
         }
 
-        DB::table('users')->where('user_id', $userId)->update(['average_problem_rating' => $avg]);
+        \DB::update('UPDATE users SET average_problem_rating = ? WHERE user_id = ?', [$avg, $userId]);
     }
 }

@@ -14,73 +14,104 @@ class TagController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all tags with their problem counts
-        $tags = Tag::withCount('problems')
-            ->orderBy('tag_name', 'asc')
-            ->get();
+        // Get all tags with their problem counts using raw SQL
+        $tagsData = \DB::select('
+            SELECT t.*, COUNT(pt.problem_id) as problems_count
+            FROM tags t
+            LEFT JOIN problemtags pt ON t.tag_id = pt.tag_id
+            GROUP BY t.tag_id, t.tag_name
+            ORDER BY t.tag_name ASC
+        ');
+        $tags = Tag::hydrate($tagsData);
 
         // Get tag statistics for pie chart (ranked by problem_count desc)
-        $tagStats = Tag::select('tags.tag_id', 'tags.tag_name', DB::raw('COUNT(problemtags.problem_id) as problem_count'))
-            ->leftJoin('problemtags', 'tags.tag_id', '=', 'problemtags.tag_id')
-            ->groupBy('tags.tag_id', 'tags.tag_name')
-            ->orderBy('problem_count', 'desc')
-            ->get();
+        $tagStats = \DB::select('
+            SELECT tags.tag_id, tags.tag_name, COUNT(problemtags.problem_id) as problem_count
+            FROM tags
+            LEFT JOIN problemtags ON tags.tag_id = problemtags.tag_id
+            GROUP BY tags.tag_id, tags.tag_name
+            ORDER BY problem_count DESC
+        ');
+        $tagStats = Tag::hydrate($tagStats);
 
         // Build chart colors using 5 groups cycling by rank
-        // Group 0: soft blues, Group 1: soft purples/pinks, Group 2: soft yellows, Group 3: soft greens, Group 4: soft lavenders
         $colorGroups = [
-            // Group 0: soft blues/teals (indices 0-9)
             ['#E8F6FF', '#DAF2FF', '#D1F0FF', '#C7EEFF', '#BDEBFF', '#DFF7F0', '#E6FBF5', '#F0FEF9', '#EAF7FF', '#E8F0FF'],
-            // Group 1: soft purples/pinks (indices 10-19)
             ['#F5E8FF', '#F0E1FF', '#EBD9FF', '#E6D1FF', '#F6EAF9', '#FFF0F6', '#FFEFF8', '#FCEFF5', '#F8E6FF', '#F3DFFF'],
-            // Group 2: soft yellows/amber (indices 20-29)
             ['#FFF9E6', '#FFF5D1', '#FFF0B8', '#FFF6DF', '#FFF7E6', '#FFFBE6', '#FFF6CC', '#FFF8D9', '#FFF3CC', '#FFF0E0'],
-            // Group 3: soft greens (indices 30-39)
             ['#E8FFF0', '#DFFFE6', '#D1FFEA', '#CCFFF0', '#E6FFF5', '#E8FFF7', '#F0FFF7', '#EAFEF5', '#E0FFF0', '#D8FFF0'],
-            // Group 4: soft lavenders/pastels (indices 40-49)
             ['#F0E8FF', '#EDE8FF', '#F5EAF7', '#EDEFFB', '#F3E8FF', '#F6F0FF', '#EEF0FF', '#F0F2FF', '#F7F0FF', '#F2EAF7'],
         ];
 
-        // Map each tag to a color based on its rank
-        // Rank 0,5,10,15... → blue group
-        // Rank 1,6,11,16... → purple group
-        // Rank 2,7,12,17... → yellow group
-        // Rank 3,8,13,18... → green group
-        // Rank 4,9,14,19... → lavender group
         $chartColors = [];
         foreach ($tagStats as $rank => $tag) {
-            $groupIndex = $rank % 5;  // Which color group (0-4)
-            $shadeIndex = (int) floor($rank / 5) % 10;  // Which shade within the group (0-9)
+            $groupIndex = $rank % 5;
+            $shadeIndex = (int) floor($rank / 5) % 10;
             $chartColors[] = $colorGroups[$groupIndex][$shadeIndex];
         }
 
         // Filter problems based on selected tags
         $selectedTags = $request->input('tags', []);
-        $filterMode = $request->input('mode', 'single'); // single or multiple
-        $filterLogic = $request->input('logic', 'OR'); // OR or AND
-        $showTags = $request->input('show_tags', 'yes'); // yes or no
+        $filterMode = $request->input('mode', 'single');
+        $filterLogic = $request->input('logic', 'OR');
+        $showTags = $request->input('show_tags', 'yes');
 
-        $problemsQuery = Problem::query();
+        $whereConditions = [];
+        $params = [];
 
         if (!empty($selectedTags)) {
             if ($filterMode === 'single' || $filterLogic === 'OR') {
-                // Single select or OR logic: problems having ANY of the selected tags
-                $problemsQuery->whereHas('tags', function($query) use ($selectedTags) {
-                    $query->whereIn('tags.tag_id', $selectedTags);
-                });
+                $placeholders = implode(',', array_fill(0, count($selectedTags), '?'));
+                $whereConditions[] = "p.problem_id IN (SELECT problem_id FROM problemtags WHERE tag_id IN ($placeholders))";
+                $params = array_merge($params, $selectedTags);
             } else {
-                // Multiple select with AND logic: problems having ALL selected tags
+                // AND logic: problems having ALL selected tags
                 foreach ($selectedTags as $tagId) {
-                    $problemsQuery->whereHas('tags', function($query) use ($tagId) {
-                        $query->where('tags.tag_id', $tagId);
-                    });
+                    $whereConditions[] = "p.problem_id IN (SELECT problem_id FROM problemtags WHERE tag_id = ?)";
+                    $params[] = $tagId;
                 }
             }
         }
 
-        $problems = $problemsQuery->with('tags')->orderBy('created_at', 'desc')->paginate(20);
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        
+        // Get total count for pagination
+        $totalCount = \DB::select("SELECT COUNT(*) as total FROM problems p $whereClause", $params)[0]->total;
+        
+        // Get paginated results
+        $perPage = 20;
+        $page = $request->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $problemsData = \DB::select("
+            SELECT p.* FROM problems p
+            $whereClause
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?
+        ", array_merge($params, [$perPage, $offset]));
+        
+        $problems = Problem::hydrate($problemsData);
+        
+        // Load tags for each problem
+        foreach ($problems as $problem) {
+            $problemTags = \DB::select('
+                SELECT t.* FROM tags t
+                INNER JOIN problemtags pt ON t.tag_id = pt.tag_id
+                WHERE pt.problem_id = ?
+            ', [$problem->problem_id]);
+            $problem->setRelation('tags', Tag::hydrate($problemTags));
+        }
+        
+        // Create pagination manually
+        $problems = new \Illuminate\Pagination\LengthAwarePaginator(
+            $problems,
+            $totalCount,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-    return view('tag.index', compact('tags', 'tagStats', 'problems', 'selectedTags', 'filterMode', 'filterLogic', 'showTags', 'chartColors'));
+        return view('tag.index', compact('tags', 'tagStats', 'problems', 'selectedTags', 'filterMode', 'filterLogic', 'showTags', 'chartColors'));
     }
 
     /**
@@ -88,8 +119,32 @@ class TagController extends Controller
      */
     public function adminIndex()
     {
-        // Only admins should reach here (route middleware enforces it)
-        $tags = Tag::withCount('problems')->orderByDesc('problems_count')->paginate(30);
+        // Get tags with problem counts using raw SQL
+        $perPage = 30;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $tagsData = \DB::select('
+            SELECT t.*, COUNT(pt.problem_id) as problems_count
+            FROM tags t
+            LEFT JOIN problemtags pt ON t.tag_id = pt.tag_id
+            GROUP BY t.tag_id, t.tag_name
+            ORDER BY problems_count DESC
+            LIMIT ? OFFSET ?
+        ', [$perPage, $offset]);
+        
+        $totalTags = \DB::select('SELECT COUNT(*) as total FROM tags')[0]->total;
+        $tags = Tag::hydrate($tagsData);
+        
+        // Create pagination manually
+        $tags = new \Illuminate\Pagination\LengthAwarePaginator(
+            $tags,
+            $totalTags,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
         return view('tag.admin_index', compact('tags'));
     }
 
@@ -121,7 +176,8 @@ class TagController extends Controller
             'tag_name' => 'required|string|max:255|unique:tags,tag_name',
         ]);
 
-        Tag::create($data);
+        // Insert tag using raw SQL
+        \DB::insert('INSERT INTO tags (tag_name) VALUES (?)', [$data['tag_name']]);
 
         return redirect()->route('tag.index')->with('success', 'Tag created successfully.');
     }
@@ -131,7 +187,46 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        $problems = $tag->problems()->with('tags')->paginate(20);
+        // Get problems for this tag with pagination
+        $perPage = 20;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $problemsData = \DB::select('
+            SELECT p.* FROM problems p
+            INNER JOIN problemtags pt ON p.problem_id = pt.problem_id
+            WHERE pt.tag_id = ?
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?
+        ', [$tag->tag_id, $perPage, $offset]);
+        
+        $totalProblems = \DB::select('
+            SELECT COUNT(*) as total FROM problems p
+            INNER JOIN problemtags pt ON p.problem_id = pt.problem_id
+            WHERE pt.tag_id = ?
+        ', [$tag->tag_id])[0]->total;
+        
+        $problems = Problem::hydrate($problemsData);
+        
+        // Load tags for each problem
+        foreach ($problems as $problem) {
+            $problemTags = \DB::select('
+                SELECT t.* FROM tags t
+                INNER JOIN problemtags pt ON t.tag_id = pt.tag_id
+                WHERE pt.problem_id = ?
+            ', [$problem->problem_id]);
+            $problem->setRelation('tags', Tag::hydrate($problemTags));
+        }
+        
+        // Create pagination manually
+        $problems = new \Illuminate\Pagination\LengthAwarePaginator(
+            $problems,
+            $totalProblems,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
         return view('tag.show', compact('tag', 'problems'));
     }
 
@@ -151,10 +246,11 @@ class TagController extends Controller
     public function update(Request $request, Tag $tag)
     {
         $data = $request->validate([
-            'tag_name' => 'required|string|max:255|unique:tags,tag_name,' . $tag->tag_id,
+            'tag_name' => 'required|string|max:255|unique:tags,tag_name,' . $tag->tag_id . ',tag_id',
         ]);
 
-        $tag->update($data);
+        // Update tag using raw SQL
+        \DB::update('UPDATE tags SET tag_name = ? WHERE tag_id = ?', [$data['tag_name'], $tag->tag_id]);
 
         return redirect()->route('tag.index')->with('success', 'Tag updated successfully.');
     }
@@ -165,7 +261,12 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        $tag->delete();
+        // Delete related problem tags first
+        \DB::delete('DELETE FROM problemtags WHERE tag_id = ?', [$tag->tag_id]);
+        
+        // Delete the tag
+        \DB::delete('DELETE FROM tags WHERE tag_id = ?', [$tag->tag_id]);
+        
         return redirect()->route('tag.index')->with('success', 'Tag deleted successfully.');
     }
 }

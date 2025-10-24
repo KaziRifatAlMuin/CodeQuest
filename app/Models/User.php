@@ -151,7 +151,8 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isFollowing($userId)
     {
-        return $this->following()->where('friends.friend_id', $userId)->exists();
+        $result = \DB::select('SELECT COUNT(*) as total FROM friends WHERE user_id = ? AND friend_id = ?', [$this->user_id, $userId]);
+        return $result[0]->total > 0;
     }
 
     /**
@@ -159,6 +160,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isFollowedBy($userId)
     {
-        return $this->followers()->where('friends.user_id', $userId)->exists();
+        $result = \DB::select('SELECT COUNT(*) as total FROM friends WHERE user_id = ? AND friend_id = ?', [$userId, $this->user_id]);
+        return $result[0]->total > 0;
     }
 }

@@ -13,7 +13,33 @@ class FriendController extends Controller
      */
     public function followers(User $user)
     {
-        $followers = $user->followers()->paginate(20);
+        // Get followers using raw SQL with pagination
+        $perPage = 20;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $followersData = \DB::select("
+            SELECT u.* FROM users u
+            INNER JOIN friends f ON u.user_id = f.user_id
+            WHERE f.friend_id = ?
+            LIMIT ? OFFSET ?
+        ", [$user->user_id, $perPage, $offset]);
+        
+        $totalFollowers = \DB::select('
+            SELECT COUNT(*) as total FROM friends
+            WHERE friend_id = ?
+        ', [$user->user_id])[0]->total;
+        
+        $followers = User::hydrate($followersData);
+        
+        // Create pagination manually
+        $followers = new \Illuminate\Pagination\LengthAwarePaginator(
+            $followers,
+            $totalFollowers,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
         
         return view('friend.followers', [
             'user' => $user,
@@ -26,7 +52,33 @@ class FriendController extends Controller
      */
     public function followings(User $user)
     {
-        $following = $user->following()->paginate(20);
+        // Get following using raw SQL with pagination
+        $perPage = 20;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $followingData = \DB::select("
+            SELECT u.* FROM users u
+            INNER JOIN friends f ON u.user_id = f.friend_id
+            WHERE f.user_id = ?
+            LIMIT ? OFFSET ?
+        ", [$user->user_id, $perPage, $offset]);
+        
+        $totalFollowing = \DB::select('
+            SELECT COUNT(*) as total FROM friends
+            WHERE user_id = ?
+        ', [$user->user_id])[0]->total;
+        
+        $following = User::hydrate($followingData);
+        
+        // Create pagination manually
+        $following = new \Illuminate\Pagination\LengthAwarePaginator(
+            $following,
+            $totalFollowing,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
         
         return view('friend.followings', [
             'user' => $user,
@@ -47,19 +99,23 @@ class FriendController extends Controller
         }
 
         // Check if already following
-        if ($authUser->isFollowing($user->user_id)) {
+        $existing = \DB::select('SELECT * FROM friends WHERE user_id = ? AND friend_id = ? LIMIT 1', [
+            $authUser->user_id,
+            $user->user_id
+        ]);
+        
+        if (!empty($existing)) {
             return back()->with('info', 'You are already following this user.');
         }
 
-        // Create follow relationship
-        Friend::create([
-            'user_id' => $authUser->user_id,
-            'friend_id' => $user->user_id,
-            'is_friend' => true,
+        // Create follow relationship using raw SQL
+        \DB::insert('INSERT INTO friends (user_id, friend_id, is_friend) VALUES (?, ?, 1)', [
+            $authUser->user_id,
+            $user->user_id
         ]);
 
         // Update follower count
-        $user->increment('followers_count');
+        \DB::update('UPDATE users SET followers_count = followers_count + 1 WHERE user_id = ?', [$user->user_id]);
 
         return back()->with('success', 'You are now following ' . $user->name . '.');
     }
@@ -71,13 +127,14 @@ class FriendController extends Controller
     {
         $authUser = auth()->user();
 
-        // Remove follow relationship
-        Friend::where('user_id', $authUser->user_id)
-               ->where('friend_id', $user->user_id)
-               ->delete();
+        // Remove follow relationship using raw SQL
+        \DB::delete('DELETE FROM friends WHERE user_id = ? AND friend_id = ?', [
+            $authUser->user_id,
+            $user->user_id
+        ]);
 
         // Update follower count
-        $user->decrement('followers_count');
+        \DB::update('UPDATE users SET followers_count = GREATEST(followers_count - 1, 0) WHERE user_id = ?', [$user->user_id]);
 
         return back()->with('success', 'You have unfollowed ' . $user->name . '.');
     }

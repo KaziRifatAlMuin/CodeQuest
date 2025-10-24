@@ -13,9 +13,47 @@ class EditorialController extends Controller
      */
     public function index()
     {
-        $editorials = Editorial::with(['problem', 'author'])
-            ->orderBy('updated_at', 'desc')
-            ->paginate(20);
+        // Get paginated editorials using raw SQL
+        $perPage = 20;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $editorialsData = \DB::select("
+            SELECT e.*, 
+                   p.title as problem_title, p.problem_link as problem_link,
+                   u.name as author_name, u.user_id as author_user_id
+            FROM editorials e
+            INNER JOIN problems p ON e.problem_id = p.problem_id
+            INNER JOIN users u ON e.author_id = u.user_id
+            ORDER BY e.updated_at DESC
+            LIMIT ? OFFSET ?
+        ", [$perPage, $offset]);
+        
+        $totalEditorials = \DB::select('SELECT COUNT(*) as total FROM editorials')[0]->total;
+        $editorials = Editorial::hydrate($editorialsData);
+        
+        // Manually set relationships
+        foreach ($editorials as $editorial) {
+            $problemData = \DB::select('SELECT * FROM problems WHERE problem_id = ? LIMIT 1', [$editorial->problem_id]);
+            $authorData = \DB::select('SELECT * FROM users WHERE user_id = ? LIMIT 1', [$editorial->author_id]);
+            
+            if (!empty($problemData)) {
+                $editorial->setRelation('problem', Problem::hydrate($problemData)[0]);
+            }
+            if (!empty($authorData)) {
+                $editorial->setRelation('author', \App\Models\User::hydrate($authorData)[0]);
+            }
+        }
+        
+        // Create pagination manually
+        $editorials = new \Illuminate\Pagination\LengthAwarePaginator(
+            $editorials,
+            $totalEditorials,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
         return view('editorial.index', compact('editorials'));
     }
 
@@ -28,7 +66,11 @@ class EditorialController extends Controller
         $problem = null;
         
         if ($problemId) {
-            $problem = Problem::findOrFail($problemId);
+            $problemData = \DB::select('SELECT * FROM problems WHERE problem_id = ? LIMIT 1', [$problemId]);
+            if (empty($problemData)) {
+                abort(404, 'Problem not found.');
+            }
+            $problem = Problem::hydrate($problemData)[0];
         }
         
         return view('editorial.create', compact('problem'));
@@ -47,14 +89,12 @@ class EditorialController extends Controller
                 'code' => 'nullable|string',
             ]);
             
-            // Create editorial
-            $editorial = Editorial::create([
-                'problem_id' => $validated['problem_id'],
-                'author_id' => auth()->user()->user_id,
-                'solution' => $validated['solution'],
-                'code' => $validated['code'] ?? '',
-                'upvotes' => 0,
-                'downvotes' => 0,
+            // Insert editorial using raw SQL
+            \DB::insert('INSERT INTO editorials (problem_id, author_id, solution, code, upvotes, downvotes, created_at, updated_at) VALUES (?, ?, ?, ?, 0, 0, NOW(), NOW())', [
+                $validated['problem_id'],
+                auth()->user()->user_id,
+                $validated['solution'],
+                $validated['code'] ?? ''
             ]);
             
             return redirect()->route('problem.show', $validated['problem_id'])
@@ -72,7 +112,17 @@ class EditorialController extends Controller
      */
     public function show(Editorial $editorial)
     {
-        $editorial->load(['problem', 'author']);
+        // Load problem and author relationships
+        $problemData = \DB::select('SELECT * FROM problems WHERE problem_id = ? LIMIT 1', [$editorial->problem_id]);
+        $authorData = \DB::select('SELECT * FROM users WHERE user_id = ? LIMIT 1', [$editorial->author_id]);
+        
+        if (!empty($problemData)) {
+            $editorial->setRelation('problem', Problem::hydrate($problemData)[0]);
+        }
+        if (!empty($authorData)) {
+            $editorial->setRelation('author', \App\Models\User::hydrate($authorData)[0]);
+        }
+        
         return view('editorial.show', compact('editorial'));
     }
 
@@ -81,7 +131,12 @@ class EditorialController extends Controller
      */
     public function edit(Editorial $editorial)
     {
-        $editorial->load('problem');
+        // Load problem relationship
+        $problemData = \DB::select('SELECT * FROM problems WHERE problem_id = ? LIMIT 1', [$editorial->problem_id]);
+        if (!empty($problemData)) {
+            $editorial->setRelation('problem', Problem::hydrate($problemData)[0]);
+        }
+        
         return view('editorial.edit', compact('editorial'));
     }
 
@@ -95,7 +150,12 @@ class EditorialController extends Controller
             'code' => 'required|string',
         ]);
         
-        $editorial->update($data);
+        // Update using raw SQL
+        \DB::update('UPDATE editorials SET solution = ?, code = ?, updated_at = NOW() WHERE editorial_id = ?', [
+            $data['solution'],
+            $data['code'],
+            $editorial->editorial_id
+        ]);
         
         return redirect()->route('editorial.show', $editorial->editorial_id)
             ->with('success', 'Editorial updated successfully.');
@@ -107,7 +167,9 @@ class EditorialController extends Controller
     public function destroy(Editorial $editorial)
     {
         $problemId = $editorial->problem_id;
-        $editorial->delete();
+        
+        // Delete using raw SQL
+        \DB::delete('DELETE FROM editorials WHERE editorial_id = ?', [$editorial->editorial_id]);
         
         return redirect()->route('problem.show', $problemId)
             ->with('success', 'Editorial deleted successfully.');
@@ -118,7 +180,8 @@ class EditorialController extends Controller
      */
     public function upvote(Editorial $editorial)
     {
-        $editorial->increment('upvotes');
+        // Increment upvotes using raw SQL
+        \DB::update('UPDATE editorials SET upvotes = upvotes + 1, updated_at = NOW() WHERE editorial_id = ?', [$editorial->editorial_id]);
         
         return back()->with('success', 'Editorial upvoted!');
     }
@@ -128,7 +191,8 @@ class EditorialController extends Controller
      */
     public function downvote(Editorial $editorial)
     {
-        $editorial->increment('downvotes');
+        // Increment downvotes using raw SQL
+        \DB::update('UPDATE editorials SET downvotes = downvotes + 1, updated_at = NOW() WHERE editorial_id = ?', [$editorial->editorial_id]);
         
         return back()->with('success', 'Editorial downvoted!');
     }

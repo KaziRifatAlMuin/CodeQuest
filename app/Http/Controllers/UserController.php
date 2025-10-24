@@ -25,20 +25,28 @@ class UserController extends Controller
 
         $orderBy = $allowedSorts[$sort] ?? $allowedSorts['created'];
 
-        // Eager-load or compute solved_problems_count if needed
-        $query = User::query();
-
-        // If sorting by solved, ensure the column exists or use withCount
-        if ($orderBy === 'solved_problems_count') {
-            // If the raw column exists, order by it; otherwise use a subquery count
-            if (!
-                in_array('solved_problems_count', (new User)->getFillable())
-            ) {
-                $query->withCount(['solvedProblems as solved_problems_count']);
-            }
-        }
-
-        $users = $query->orderBy($orderBy, $direction)->paginate(25)->appends(request()->query());
+        // Get paginated users using raw SQL
+        $perPage = 25;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $usersData = \DB::select("
+            SELECT * FROM users
+            ORDER BY $orderBy $direction
+            LIMIT ? OFFSET ?
+        ", [$perPage, $offset]);
+        
+        $totalUsers = \DB::select('SELECT COUNT(*) as total FROM users')[0]->total;
+        $users = User::hydrate($usersData);
+        
+        // Create pagination manually
+        $users = new \Illuminate\Pagination\LengthAwarePaginator(
+            $users,
+            $totalUsers,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return view('user.index', compact('users', 'sort', 'direction'));
     }
@@ -68,11 +76,19 @@ class UserController extends Controller
             'university' => 'nullable|string|max:255',
         ]);
 
-        // Hash the password
-        $data['password'] = bcrypt($data['password']);
-
-        // Create new user
-        User::create($data);
+        // Insert user using raw SQL
+        \DB::insert('INSERT INTO users (name, email, password, cf_handle, profile_picture, bio, country, university, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())', [
+            $data['name'],
+            $data['email'],
+            bcrypt($data['password']),
+            $data['cf_handle'],
+            $data['profile_picture'] ?? null,
+            $data['bio'] ?? null,
+            $data['country'] ?? null,
+            $data['university'] ?? null,
+            'user'
+        ]);
+        
         return redirect()->route('user.index')->with('success', 'User created successfully.');
     }
 
@@ -126,14 +142,37 @@ class UserController extends Controller
         }
 
         // Hash the password if provided
+        $password = null;
         if (!empty($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
-        } else {
-            unset($data['password']);
+            $password = bcrypt($data['password']);
         }
 
-        // Update user
-        $user->update($data);
+        // Update user using raw SQL
+        if ($password) {
+            \DB::update('UPDATE users SET name = ?, email = ?, password = ?, cf_handle = ?, profile_picture = COALESCE(?, profile_picture), bio = ?, country = ?, university = ?, updated_at = NOW() WHERE user_id = ?', [
+                $data['name'],
+                $data['email'],
+                $password,
+                $data['cf_handle'],
+                $data['profile_picture'] ?? null,
+                $data['bio'] ?? null,
+                $data['country'] ?? null,
+                $data['university'] ?? null,
+                $user->user_id
+            ]);
+        } else {
+            \DB::update('UPDATE users SET name = ?, email = ?, cf_handle = ?, profile_picture = COALESCE(?, profile_picture), bio = ?, country = ?, university = ?, updated_at = NOW() WHERE user_id = ?', [
+                $data['name'],
+                $data['email'],
+                $data['cf_handle'],
+                $data['profile_picture'] ?? null,
+                $data['bio'] ?? null,
+                $data['country'] ?? null,
+                $data['university'] ?? null,
+                $user->user_id
+            ]);
+        }
+        
         return redirect()->route('user.show', $user->user_id)->with('success', 'User updated successfully.');
     }
 
@@ -149,7 +188,14 @@ class UserController extends Controller
             unlink(public_path('images/profile/' . $user->profile_picture));
         }
 
-        $user->delete();
+        // Delete related records first
+        \DB::delete('DELETE FROM userproblems WHERE user_id = ?', [$user->user_id]);
+        \DB::delete('DELETE FROM editorials WHERE author_id = ?', [$user->user_id]);
+        \DB::delete('DELETE FROM friends WHERE user_id = ? OR friend_id = ?', [$user->user_id, $user->user_id]);
+        
+        // Delete the user
+        \DB::delete('DELETE FROM users WHERE user_id = ?', [$user->user_id]);
+        
         return redirect()->route('user.index')->with('success', 'User deleted successfully.');
     }
 
@@ -158,9 +204,28 @@ class UserController extends Controller
      */
     public function leaderboard()
     {
-        // Fetch users sorted by cf_max_rating (descending)
-        $users = User::orderBy('cf_max_rating', 'desc')
-            ->paginate(50);
+        // Fetch users sorted by cf_max_rating (descending) using raw SQL
+        $perPage = 50;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        
+        $usersData = \DB::select("
+            SELECT * FROM users
+            ORDER BY cf_max_rating DESC
+            LIMIT ? OFFSET ?
+        ", [$perPage, $offset]);
+        
+        $totalUsers = \DB::select('SELECT COUNT(*) as total FROM users')[0]->total;
+        $users = User::hydrate($usersData);
+        
+        // Create pagination manually
+        $users = new \Illuminate\Pagination\LengthAwarePaginator(
+            $users,
+            $totalUsers,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
         
         return view('user.leaderboard', compact('users'));
     }
