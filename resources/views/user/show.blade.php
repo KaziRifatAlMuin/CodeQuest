@@ -107,7 +107,7 @@
                     <div class="card h-100 shadow-sm" style="border-top: 4px solid #212529;">
                         <div class="card-body text-center">
                             <i class="fas fa-star" style="font-size: 2.5rem; color: #212529; margin-bottom: 10px;"></i>
-                            <h2 class="mb-0" style="color: #212529; font-weight: 700;">{{ $user->average_problem_rating ?? 0 }}</h2>
+                            <h2 class="mb-0" style="color: #212529; font-weight: 700;">{{ number_format($user->average_problem_rating ?? 0, 1) }}</h2>
                             <small class="text-muted">Avg Problem Rating</small>
                         </div>
                     </div>
@@ -224,10 +224,22 @@
 
     <!-- Problem History Section -->
     @php
-        $userProblems = $user->userProblems()->with('problem.tags')->orderBy('solved_at', 'desc')->get();
-        $solvedProblems = $userProblems->where('status', 'solved');
-        $tryingProblems = $userProblems->where('status', 'trying');
-        $starredProblems = $userProblems->where('is_starred', true);
+        // Get all user problems with pagination (10 per page)
+        $userProblemsQuery = $user->userProblems()->with('problem.tags');
+        $allUserProblems = $userProblemsQuery->get();
+        
+        // Sort by last modified (updated_at desc)
+        $sortedProblems = $allUserProblems->sortByDesc('updated_at');
+        
+        // Manual pagination (10 per page)
+        $perPage = 10;
+        $currentPage = request('page', 1);
+        $total = $sortedProblems->count();
+        $userProblems = $sortedProblems->forPage($currentPage, $perPage);
+        
+        $solvedProblems = $allUserProblems->where('status', 'solved');
+        $tryingProblems = $allUserProblems->where('status', 'trying');
+        $starredProblems = $allUserProblems->where('is_starred', true);
     @endphp
 
     @if($userProblems->count() > 0)
@@ -237,6 +249,7 @@
                     <div class="card-header" style="background: {{ $themeBg }}; border-bottom: 2px solid {{ $themeColor }};">
                         <h4 class="mb-0" style="color: {{ $themeColor }};">
                             <i class="fas fa-history"></i> Problem History
+                            <small class="text-muted ms-2">({{ $total }} total problems)</small>
                         </h4>
                     </div>
                     <div class="card-body">
@@ -282,7 +295,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($userProblems->take(20) as $userProblem)
+                                    @foreach($userProblems as $userProblem)
                                         @php
                                             $problem = $userProblem->problem;
                                             $problemRating = (int) ($problem->rating ?? 0);
@@ -330,7 +343,7 @@
                                             </td>
                                             <td>
                                                 @if($userProblem->submission_link)
-                                                    <a href="{{ $userProblem->submission_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <a href="{{ $userProblem->submission_link }}" target="_blank" class="btn btn-sm btn-outline-primary" title="View Submission">
                                                         <i class="fas fa-external-link-alt"></i>
                                                     </a>
                                                 @else
@@ -343,10 +356,46 @@
                             </table>
                         </div>
 
-                        @if($userProblems->count() > 20)
-                            <p class="text-muted text-center mt-3">
-                                <em>Showing 20 most recent problems</em>
-                            </p>
+                        <!-- Pagination -->
+                        @if($total > $perPage)
+                            <nav aria-label="Problem history pagination" class="mt-3">
+                                <ul class="pagination justify-content-center">
+                                    <!-- Previous Page -->
+                                    @if($currentPage > 1)
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ $currentPage - 1 }}">Previous</a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Previous</span>
+                                        </li>
+                                    @endif
+                                    
+                                    <!-- Page Numbers -->
+                                    @php
+                                        $totalPages = ceil($total / $perPage);
+                                        $startPage = max(1, $currentPage - 2);
+                                        $endPage = min($totalPages, $currentPage + 2);
+                                    @endphp
+                                    
+                                    @for($i = $startPage; $i <= $endPage; $i++)
+                                        <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
+                                            <a class="page-link" href="?page={{ $i }}">{{ $i }}</a>
+                                        </li>
+                                    @endfor
+                                    
+                                    <!-- Next Page -->
+                                    @if($currentPage < $totalPages)
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ $currentPage + 1 }}">Next</a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
                         @endif
                     </div>
                 </div>

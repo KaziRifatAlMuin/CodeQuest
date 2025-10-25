@@ -10,7 +10,7 @@ class UserProblem extends Model
 {
     protected $table = 'userproblems';
     protected $primaryKey = 'userproblem_id';
-    public $timestamps = false; // Table doesn't have created_at/updated_at columns
+    public $timestamps = true; // Enable timestamps
     use HasFactory;
     
     protected $fillable = [
@@ -82,25 +82,20 @@ class UserProblem extends Model
     }
 
     /**
-     * Increment user's solved_problems_count when a new solved record is created
+     * Update user's solved_problems_count when a new solved record is created
      */
     protected function updateUserSolvedCountOnCreate()
     {
-        if ($this->status === 'solved' && $this->user) {
-            \DB::update('UPDATE users SET solved_problems_count = solved_problems_count + 1 WHERE user_id = ?', [$this->user->user_id]);
-            $this->updateUserAverageProblemRating();
+        if ($this->status === 'solved') {
+            $this->recalculateUserStats();
         }
     }
 
     /**
-     * Adjust user's solved_problems_count when a record's status is updated
+     * Recalculate and update user's solved_problems_count and average_problem_rating
      */
     protected function updateUserSolvedCountOnUpdate()
     {
-        if (!$this->user) {
-            return;
-        }
-
         $originalStatus = $this->getOriginal('status');
         $currentStatus = $this->status;
 
@@ -108,75 +103,70 @@ class UserProblem extends Model
             return; // nothing changed
         }
 
-        // If changed from solved -> not solved => decrement
-        if ($originalStatus === 'solved' && $currentStatus !== 'solved') {
-            // Decrement but avoid negative counts
-            \DB::update('UPDATE users SET solved_problems_count = GREATEST(solved_problems_count - 1, 0) WHERE user_id = ?', [$this->user->user_id]);
-
-            // If the status changed from solved -> not solved, clear solved_at on this record
-            if (!empty($this->userproblem_id)) {
-                \DB::update('UPDATE userproblems SET solved_at = NULL WHERE userproblem_id = ?', [$this->userproblem_id]);
-            }
-
-            $this->updateUserAverageProblemRating();
-            return;
-        }
-
-        // If changed from not solved -> solved => increment
-        if ($originalStatus !== 'solved' && $currentStatus === 'solved') {
-            \DB::update('UPDATE users SET solved_problems_count = solved_problems_count + 1 WHERE user_id = ?', [$this->user->user_id]);
-
-            // Ensure this record has a solved_at timestamp (in case it wasn't set)
-            if (!empty($this->userproblem_id)) {
-                $now = now();
-                \DB::update('UPDATE userproblems SET solved_at = ? WHERE userproblem_id = ? AND solved_at IS NULL', [$now, $this->userproblem_id]);
-            }
-
-            $this->updateUserAverageProblemRating();
-            return;
-        }
-    }
-
-    /**
-     * Adjust user's solved_problems_count when a solved record is deleted
-     */
-    protected function updateUserSolvedCountOnDelete()
-    {
-        // Note: $this->status should still be available on delete
-        if ($this->status === 'solved' && $this->user) {
-            \DB::update('UPDATE users SET solved_problems_count = GREATEST(solved_problems_count - 1, 0) WHERE user_id = ?', [$this->user->user_id]);
-            $this->updateUserAverageProblemRating();
-        }
-    }
-
-    /**
-     * Recalculate and persist the user's average_problem_rating (integer)
-     * Calculation: integer(sum(problem.rating for all solved problems) / solved_count)
-     */
-    protected function updateUserAverageProblemRating()
-    {
-        if (!$this->user) {
-            return;
-        }
-
-        $userId = $this->user->user_id;
+        // Recalculate from scratch to ensure accuracy
+        $userId = $this->user_id;
 
         $row = \DB::select('
-            SELECT COALESCE(SUM(problems.rating), 0) as total_rating, COUNT(*) as solved_count
+            SELECT COUNT(*) as solved_count, COALESCE(SUM(problems.rating), 0) as total_rating
             FROM userproblems
             INNER JOIN problems ON userproblems.problem_id = problems.problem_id
             WHERE userproblems.user_id = ? AND userproblems.status = ?
         ', [$userId, 'solved']);
 
-        $total = intval($row[0]->total_rating ?? 0);
-        $count = intval($row[0]->solved_count ?? 0);
+        $solvedCount = intval($row[0]->solved_count ?? 0);
+        $totalRating = intval($row[0]->total_rating ?? 0);
+        $avgRating = $solvedCount > 0 ? ($totalRating / $solvedCount) : 0;
 
-        $avg = 0;
-        if ($count > 0) {
-            // integer result as requested
-            $avg = intdiv($total, $count);
+        \DB::update('UPDATE users SET solved_problems_count = ?, average_problem_rating = ? WHERE user_id = ?', [
+            $solvedCount, $avgRating, $userId
+        ]);
+
+        // Handle solved_at timestamp
+        if ($originalStatus === 'solved' && $currentStatus !== 'solved') {
+            // If changed from solved -> not solved, clear solved_at
+            if (!empty($this->userproblem_id)) {
+                \DB::update('UPDATE userproblems SET solved_at = NULL WHERE userproblem_id = ?', [$this->userproblem_id]);
+            }
+        } elseif ($originalStatus !== 'solved' && $currentStatus === 'solved') {
+            // If changed from not solved -> solved, set solved_at
+            if (!empty($this->userproblem_id)) {
+                $now = now();
+                \DB::update('UPDATE userproblems SET solved_at = ? WHERE userproblem_id = ? AND solved_at IS NULL', [$now, $this->userproblem_id]);
+            }
         }
+    }
 
-        \DB::update('UPDATE users SET average_problem_rating = ? WHERE user_id = ?', [$avg, $userId]);
+    /**
+     * Update user's solved_problems_count when a solved record is deleted
+     */
+    protected function updateUserSolvedCountOnDelete()
+    {
+        // Note: $this->status should still be available on delete
+        if ($this->status === 'solved') {
+            $this->recalculateUserStats();
+        }
+    }
+
+    /**
+     * Recalculate and persist the user's solved_problems_count and average_problem_rating
+     */
+    protected function recalculateUserStats()
+    {
+        $userId = $this->user_id;
+
+        $row = \DB::select('
+            SELECT COUNT(*) as solved_count, COALESCE(SUM(problems.rating), 0) as total_rating
+            FROM userproblems
+            INNER JOIN problems ON userproblems.problem_id = problems.problem_id
+            WHERE userproblems.user_id = ? AND userproblems.status = ?
+        ', [$userId, 'solved']);
+
+        $solvedCount = intval($row[0]->solved_count ?? 0);
+        $totalRating = intval($row[0]->total_rating ?? 0);
+        $avgRating = $solvedCount > 0 ? ($totalRating / $solvedCount) : 0;
+
+        \DB::update('UPDATE users SET solved_problems_count = ?, average_problem_rating = ? WHERE user_id = ?', [
+            $solvedCount, $avgRating, $userId
+        ]);
     }
 }

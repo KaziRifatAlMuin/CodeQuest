@@ -183,17 +183,29 @@
 
                 <!-- Problem History Section -->
                 @php
-                    $userProblems = $user->userProblems()->with('problem.tags')->orderBy('solved_at', 'desc')->take(10)->get();
-                    $solvedProblems = $user->userProblems()->where('status', 'solved')->count();
-                    $tryingProblems = $user->userProblems()->where('status', 'trying')->count();
-                    $starredProblems = $user->userProblems()->where('is_starred', true)->count();
+                    // Get all user problems with pagination (10 per page)
+                    $userProblemsQuery = $user->userProblems()->with('problem.tags');
+                    $allUserProblems = $userProblemsQuery->get();
+                    
+                    // Sort by last modified (updated_at desc)
+                    $sortedProblems = $allUserProblems->sortByDesc('updated_at');
+                    
+                    // Manual pagination (10 per page)
+                    $perPage = 10;
+                    $currentPage = request('page', 1);
+                    $total = $sortedProblems->count();
+                    $userProblems = $sortedProblems->forPage($currentPage, $perPage);
+                    
+                    $solvedProblems = $allUserProblems->where('status', 'solved')->count();
+                    $tryingProblems = $allUserProblems->where('status', 'trying')->count();
+                    $starredProblems = $allUserProblems->where('is_starred', true)->count();
                 @endphp
                 
                 @if($userProblems->count() > 0)
                     <div class="card border mb-4">
                         <div class="card-header bg-info text-white">
                             <i class="fas fa-history"></i> Problem History
-                            <span class="badge bg-light text-dark ms-2">{{ $userProblems->count() }} recent</span>
+                            <span class="badge bg-light text-dark ms-2">{{ $total }} total</span>
                         </div>
                         <div class="card-body">
                             <!-- Stats Overview -->
@@ -233,7 +245,7 @@
                                             <th>Rating</th>
                                             <th>Status</th>
                                             <th>Solved Date</th>
-                                            <th>Actions</th>
+                                            <th>Notes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -270,15 +282,66 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <a href="{{ route('problem.show', $problem) }}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    <div class="d-flex align-items-center">
+                                                        @if($userProblem->submission_link)
+                                                            <a href="{{ $userProblem->submission_link }}" target="_blank" class="btn btn-sm btn-outline-primary me-2" title="View Submission">
+                                                                <i class="fas fa-external-link-alt"></i>
+                                                            </a>
+                                                        @endif
+                                                        @if($userProblem->notes)
+                                                            <small class="text-muted">{{ Str::limit($userProblem->notes, 30) }}</small>
+                                                        @else
+                                                            <small class="text-muted">-</small>
+                                                        @endif
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
+                            
+                            <!-- Pagination -->
+                            @if($total > $perPage)
+                                <nav aria-label="Problem history pagination" class="mt-3">
+                                    <ul class="pagination justify-content-center">
+                                        <!-- Previous Page -->
+                                        @if($currentPage > 1)
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ $currentPage - 1 }}">Previous</a>
+                                            </li>
+                                        @else
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Previous</span>
+                                            </li>
+                                        @endif
+                                        
+                                        <!-- Page Numbers -->
+                                        @php
+                                            $totalPages = ceil($total / $perPage);
+                                            $startPage = max(1, $currentPage - 2);
+                                            $endPage = min($totalPages, $currentPage + 2);
+                                        @endphp
+                                        
+                                        @for($i = $startPage; $i <= $endPage; $i++)
+                                            <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
+                                                <a class="page-link" href="?page={{ $i }}">{{ $i }}</a>
+                                            </li>
+                                        @endfor
+                                        
+                                        <!-- Next Page -->
+                                        @if($currentPage < $totalPages)
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ $currentPage + 1 }}">Next</a>
+                                            </li>
+                                        @else
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Next</span>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </nav>
+                            @endif
                         </div>
                     </div>
                 @endif

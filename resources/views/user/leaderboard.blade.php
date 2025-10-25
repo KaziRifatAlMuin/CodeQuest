@@ -103,7 +103,7 @@
                     </td>
                     <td class="text-center" style="width: 13%;">
                         <span style="font-size: 0.8rem; padding: 0.5rem 0.8rem;">
-                            {{ number_format($user->average_problem_rating ?? 0, 0) }}
+                            {{ number_format($user->average_problem_rating ?? 0, 1) }}
                         </span>
                     </td>
                     

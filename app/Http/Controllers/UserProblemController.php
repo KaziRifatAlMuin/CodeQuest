@@ -23,31 +23,17 @@ class UserProblemController extends Controller
         \DB::beginTransaction();
         
         try {
-            // Check if record exists
-            $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
-                $request->user_id,
-                $problem->problem_id
+            // Find or create UserProblem record using Eloquent to trigger model events
+            $userProblem = UserProblem::firstOrNew([
+                'user_id' => $request->user_id,
+                'problem_id' => $problem->problem_id
             ]);
 
-            if (!empty($existing)) {
-                // Update existing record
-                \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ? WHERE user_id = ? AND problem_id = ?', [
-                    'solved',
-                    $request->submission_link,
-                    $request->notes,
-                    $request->user_id,
-                    $problem->problem_id
-                ]);
-            } else {
-                // Insert new record
-                    \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NOW(), ?, ?, 0)', [
-                    $request->user_id,
-                    $problem->problem_id,
-                    'solved',
-                    $request->submission_link,
-                    $request->notes
-                ]);
-            }
+            $userProblem->status = 'solved';
+            $userProblem->solved_at = now();
+            $userProblem->submission_link = $request->submission_link;
+            $userProblem->notes = $request->notes;
+            $userProblem->save();
             
             // Update problem statistics using stored procedure
             try {
@@ -55,16 +41,6 @@ class UserProblemController extends Controller
             } catch (\Exception $e) {
                 // Fallback: manually update if procedure not available
                 $problem->updateDynamicFields();
-            }
-            
-            // Update user statistics using stored procedure
-            try {
-                \DB::statement('CALL update_user_statistics(?)', [$request->user_id]);
-            } catch (\Exception $e) {
-                // Fallback: manual update
-                \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
-                    $request->user_id, 'solved', $request->user_id
-                ]);
             }
 
             // Commit transaction if all successful
@@ -147,59 +123,26 @@ class UserProblemController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $solvedAt = $request->status === 'solved' ? 'NOW()' : 'NULL';
-
-        // Check if record exists
-        $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
-            $request->user_id,
-            $problem->problem_id
+        // Use Eloquent to trigger model events
+        $userProblem = UserProblem::firstOrNew([
+            'user_id' => $request->user_id,
+            'problem_id' => $problem->problem_id
         ]);
 
-        if (!empty($existing)) {
-            // Update existing record
-            if ($request->status === 'solved') {
-                \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ? WHERE user_id = ? AND problem_id = ?', [
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes,
-                    $request->user_id,
-                    $problem->problem_id
-                ]);
-            } else {
-                \DB::update('UPDATE userproblems SET status = ?, solved_at = NULL, submission_link = ?, notes = ? WHERE user_id = ? AND problem_id = ?', [
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes,
-                    $request->user_id,
-                    $problem->problem_id
-                ]);
-            }
+        $userProblem->status = $request->status;
+        $userProblem->submission_link = $request->submission_link;
+        $userProblem->notes = $request->notes;
+        
+        if ($request->status === 'solved') {
+            $userProblem->solved_at = now();
         } else {
-            // Insert new record
-            if ($request->status === 'solved') {
-                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NOW(), ?, ?, 0)', [
-                    $request->user_id,
-                    $problem->problem_id,
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes
-                ]);
-            } else {
-                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NULL, ?, ?, 0)', [
-                    $request->user_id,
-                    $problem->problem_id,
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes
-                ]);
-            }
+            $userProblem->solved_at = null;
         }
         
-        // Manually update problem statistics and user counts
+        $userProblem->save();
+        
+        // Manually update problem statistics
         $problem->updateDynamicFields();
-            \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
-                $request->user_id, 'solved', $request->user_id
-            ]);
 
         return redirect()->back()->with('success', 'Status updated successfully!');
     }
@@ -248,63 +191,27 @@ class UserProblemController extends Controller
             'is_starred' => 'nullable|boolean',
         ]);
 
-        $isStarred = $request->has('is_starred') ? 1 : 0;
-
-        // Check if record exists
-        $existing = \DB::select('SELECT * FROM userproblems WHERE user_id = ? AND problem_id = ? LIMIT 1', [
-            $user,
-            $problem->problem_id
+        // Use Eloquent to trigger model events
+        $userProblem = UserProblem::firstOrNew([
+            'user_id' => $user,
+            'problem_id' => $problem->problem_id
         ]);
 
-        if (!empty($existing)) {
-            // Update existing record
-            if ($request->status === 'solved') {
-                \DB::update('UPDATE userproblems SET status = ?, solved_at = NOW(), submission_link = ?, notes = ?, is_starred = ? WHERE user_id = ? AND problem_id = ?', [
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes,
-                    $isStarred,
-                    $user,
-                    $problem->problem_id
-                ]);
-            } else {
-                \DB::update('UPDATE userproblems SET status = ?, solved_at = NULL, submission_link = ?, notes = ?, is_starred = ? WHERE user_id = ? AND problem_id = ?', [
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes,
-                    $isStarred,
-                    $user,
-                    $problem->problem_id
-                ]);
-            }
+        $userProblem->status = $request->status;
+        $userProblem->notes = $request->notes;
+        $userProblem->submission_link = $request->submission_link;
+        $userProblem->is_starred = $request->has('is_starred');
+        
+        if ($request->status === 'solved') {
+            $userProblem->solved_at = now();
         } else {
-            // Insert new record
-            if ($request->status === 'solved') {
-                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NOW(), ?, ?, ?)', [
-                    $user,
-                    $problem->problem_id,
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes,
-                    $isStarred
-                ]);
-            } else {
-                \DB::insert('INSERT INTO userproblems (user_id, problem_id, status, solved_at, submission_link, notes, is_starred) VALUES (?, ?, ?, NULL, ?, ?, ?)', [
-                    $user,
-                    $problem->problem_id,
-                    $request->status,
-                    $request->submission_link,
-                    $request->notes,
-                    $isStarred
-                ]);
-            }
+            $userProblem->solved_at = null;
         }
         
-        // Manually update problem statistics and user counts
+        $userProblem->save();
+        
+        // Manually update problem statistics
         $problem->updateDynamicFields();
-        \DB::update('UPDATE users SET solved_problems_count = (SELECT COUNT(*) FROM userproblems WHERE user_id = ? AND status = ?) WHERE user_id = ?', [
-            $user, 'solved', $user
-        ]);
 
         return redirect()->route('problem.show', $problem)->with('success', 'Your problem status has been updated!');
     }
