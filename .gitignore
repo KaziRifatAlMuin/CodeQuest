@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Ignore compiled Blade views (environment-specific)
+/storage/framework/views/*
