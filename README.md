@@ -16,7 +16,7 @@ Highlights
 Table of Contents
 - Quick start (Windows/XAMPP)
 - Features overview
-- Screenshot gallery (SS01–SS20)
+- Screenshot gallery
 - Project structure & important files
 - Local development and deployment notes
 - Contributing, license & contact
@@ -62,69 +62,50 @@ Features overview
 - Admin: Dashboard with platform KPIs, user management and tag moderation
 - SQL Quest: A guided, safe read-only SQL playground for analytics and exports
 
-Screenshot gallery (SS01–SS20)
 
-All screenshots referenced below live in `docs/screenshots/` (SS01..SS20). When you publish this repo, include the `docs/screenshots/` folder so images render on GitHub.
+# Screenshots Gallery (SS01–SS20)
 
-- SS01 — Problems list (filter, search, pagination)
-	![SS01 - Problems list](docs/screenshots/1.png)
+All screenshots referenced below live in `docs/screenshots/` (SS01..SS20). Include the `docs/screenshots/` folder when publishing so images render on GitHub.
 
-- SS02 — Problems list (alternate view / compact)
-	![SS02 - Problems compact](docs/screenshots/2.png)
+  ![SS01 - Home](docs/screenshots/1.png)
 
-- SS03 — Tags panel and multi-filter UI
-	![SS03 - Tags panel](docs/screenshots/3.png)
+  ![SS02 - Leaderboard](docs/screenshots/2.png)
 
-- SS04 — Users listing & friends/follow UX
-	![SS04 - Users & Friends](docs/screenshots/4.png)
+  ![SS03 - Problems list](docs/screenshots/3.png)
 
-- SS05 — Editorials listing / editorial card
-	![SS05 - Editorials listing](docs/screenshots/5.png)
+  ![SS04 - Users listing](docs/screenshots/4.png)
 
-- SS06 — Tags cloud / trending tags
-	![SS06 - Tags cloud](docs/screenshots/6.png)
+  ![SS05 - Editorials listing](docs/screenshots/5.png)
 
-- SS07 — Tags list page (tag detail)
-	![SS07 - Tag detail](docs/screenshots/7.png)
+  ![SS06 - Tags (1)](docs/screenshots/6.png)
 
-- SS08 — Problem detail (statement, tags, interactions)
-	![SS08 - Problem detail](docs/screenshots/8.png)
+  ![SS07 - Tags (2)](docs/screenshots/7.png)
 
-- SS09 — Search results and pagination
-	![SS09 - Search results](docs/screenshots/9.png)
+  ![SS08 - Problem detail](docs/screenshots/8.png)
 
-- SS10 — Profile (public view) — overview
-	![SS10 - Profile public](docs/screenshots/10.png)
+  ![SS09 - Search & Pagination](docs/screenshots/9.png)
 
-- SS11 — Statistics and compact admin tiles (example)
-	![SS11 - Statistics tiles](docs/screenshots/11.png)
+  ![SS10 - Profile show](docs/screenshots/10.png)
 
-- SS12 — Leaderboard / top users
-	![SS12 - Leaderboard](docs/screenshots/12.png)
+  ![SS11 - Statistics tiles](docs/screenshots/11.png)
 
-- SS13 — Quest (SQL playground) — example query UI
-	![SS13 - Quest 1](docs/screenshots/13.png)
+  ![SS12 - Tag master](docs/screenshots/12.png)
 
-- SS14 — Quest (SQL playground) — results preview & export
-	![SS14 - Quest 2](docs/screenshots/14.png)
+  ![SS13 - Quest 1](docs/screenshots/13.png)
 
-- SS15 — Quest (SQL playground) — column selection and joins helper
-	![SS15 - Quest 3](docs/screenshots/15.png)
+  ![SS14 - Quest 2](docs/screenshots/14.png)
 
-- SS16 — Editorial detail view (full editorial with code blocks)
-	![SS16 - Editorial detail](docs/screenshots/16.png)
+  ![SS15 - Quest 3](docs/screenshots/15.png)
 
-- SS17 — Admin Dashboard — overview & KPIs (1)
-	![SS17 - Admin dashboard 1](docs/screenshots/17.png)
+  ![SS16 - Editorial detail](docs/screenshots/16.png)
 
-- SS18 — Admin Dashboard — moderation lists & charts (2)
-	![SS18 - Admin dashboard 2](docs/screenshots/18.png)
+  ![SS17 - Admin dashboard 1](docs/screenshots/17.png)
 
-- SS19 — Profile (own account) — Problems tab and quick actions (1)
-	![SS19 - Profile own 1](docs/screenshots/19.png)
+  ![SS18 - Admin dashboard 2](docs/screenshots/18.png)
 
-- SS20 — Profile (own account) — Settings & editorials tab (2)
-	![SS20 - Profile own 2](docs/screenshots/20.png)
+  ![SS19 - Profile own 1](docs/screenshots/19.png)
+
+  ![SS20 - Profile own 2](docs/screenshots/20.png)
 
 Project structure & important files
 - `app/Models/` — Eloquent models (User, Problem, Editorial, UserProblem, Tag, Friend)
@@ -153,23 +134,6 @@ License & contact
 
 Acknowledgements
 - Built with Laravel and contributions from small helpers and libraries listed in `composer.json` and `package.json`.
-
----
-
-If you'd like, I can also:
-- produce a `README_publish.md` with a shorter marketing blurb and badges for a public project listing, or
-- generate a small CONTRIBUTING.md and a quick script to export the `docs/screenshots/` folder into a release zip.
-
-- Return paginated problems, user stats, and search results.
-
-**Where to edit**
-- Controllers: any controller methods that return JSON (look for `return response()->json(...)` or API-specific controllers)
-- Routes: `routes/web.php` may include some API-like routes; check `routes/api.php` if present.
-
-**Notes**
-- Ensure API endpoints are properly rate-limited and authenticated where needed. If transforming data shapes, prefer Resource classes (Laravel API Resource) for consistent outputs.
-
----
 
 ### Developer Notes & Quick Links
 
