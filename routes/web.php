@@ -120,6 +120,7 @@ Route::middleware(['auth','setUserTimezone'])->group(function () {
         
         // ---- SQL Quest Routes ----
         Route::get('/quest', [QuestController::class, 'index'])->name('quest.index');
+        Route::post('/quest/get-columns', [QuestController::class, 'getColumnsForTables'])->name('quest.getColumns');
         Route::post('/quest/execute', [QuestController::class, 'executeQuery'])->name('quest.execute');
         
         // ---- Admin Routes ----
