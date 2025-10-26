@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Add global web middleware
+        $middleware->web(append: [
+            \App\Http\Middleware\LogQueries::class,
+        ]);
+        
         // Dedicated middleware alias list (framework + app)
         // Add framework/common middleware first, then app-specific aliases below.
         $middleware->alias([

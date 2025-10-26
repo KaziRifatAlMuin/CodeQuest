@@ -875,6 +875,178 @@
             box-shadow: 0 4px 12px var(--shadow-hover);
         }
 
+        /* View SQL Queries Button */
+        .view-queries-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: auto;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .view-queries-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+        }
+
+        /* SQL Query Modal Styles */
+        .query-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .query-modal.show {
+            display: flex;
+        }
+
+        .query-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .query-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .query-modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .query-modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .query-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .query-modal-body {
+            padding: 25px;
+        }
+
+        .query-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .query-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(3px);
+        }
+
+        .query-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .query-description {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .query-sql {
+            background: #1f2937;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 8px;
+        }
+
+        .query-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .query-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .query-count-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 7px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        /* Smaller icon inside the view queries button and smaller count badges */
+        .view-queries-btn i {
+            font-size: 0.95rem; /* smaller database icon */
+        }
+
+        .view-queries-btn .query-count-badge {
+            padding: 2px 6px;
+            font-size: 0.65rem;
+            border-radius: 9px;
+            margin-left: 6px;
+        }
+
+        /* Execution count badge next to each query (smaller) */
+        .exec-badge {
+            padding: 2px 6px !important;
+            font-size: 0.72rem !important;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
@@ -1482,6 +1654,77 @@
         <i class="fas fa-arrow-up"></i>
     </div>
 
+    <!-- View SQL Queries Button -->
+    <button class="view-queries-btn" id="viewQueriesBtn">
+        <i class="fas fa-database"></i>
+        <span></span>
+        @if(isset($queries) && count($queries) > 0)
+            <span class="query-count-badge">{{ count($queries) }}</span>
+        @endif
+    </button>
+
+    <!-- SQL Queries Modal -->
+    <div class="query-modal" id="queryModal">
+        <div class="query-modal-content">
+            <div class="query-modal-header">
+                <h3>
+                    <i class="fas fa-database"></i> SQL Queries Executed on This Page
+                    @if(isset($queries) && count($queries) > 0)
+                        <span class="query-count-badge">{{ count($queries) }}</span>
+                    @endif
+                </h3>
+                <button class="query-modal-close" id="closeQueryModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="query-modal-body">
+                @if(isset($queries) && count($queries) > 0)
+                    @foreach($queries as $index => $query)
+                        <div class="query-item">
+                            <div class="query-description">
+                                <i class="fas fa-comment-alt"></i> {{ $query['description'] }}
+                                @if($query['count'] > 1)
+                                    <span class="badge badge-warning exec-badge">
+                                        <i class="fas fa-redo"></i> Executed {{ $query['count'] }}x
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="query-sql">{{ $query['sql'] }}</div>
+                            <div class="query-meta">
+                                @if($query['count'] > 1)
+                                    <span>
+                                        <i class="fas fa-clock"></i>
+                                        <strong>Avg Time:</strong> {{ number_format($query['avg_time'], 2) }} ms
+                                    </span>
+                                    <span>
+                                        <i class="fas fa-hourglass-half"></i>
+                                        <strong>Total Time:</strong> {{ number_format($query['total_time'], 2) }} ms
+                                    </span>
+                                @else
+                                    <span>
+                                        <i class="fas fa-clock"></i>
+                                        <strong>Time:</strong> {{ number_format($query['time'], 2) }} ms
+                                    </span>
+                                @endif
+                                @if(!empty($query['bindings']))
+                                    <span>
+                                        <i class="fas fa-link"></i>
+                                        <strong>Bindings:</strong> {{ json_encode($query['bindings']) }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No SQL queries were executed on this page.
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -1533,6 +1776,35 @@
                 behavior: 'smooth'
             });
         });
+
+        // SQL Queries Modal
+        const viewQueriesBtn = document.getElementById('viewQueriesBtn');
+        const queryModal = document.getElementById('queryModal');
+        const closeQueryModal = document.getElementById('closeQueryModal');
+
+        if (viewQueriesBtn) {
+            viewQueriesBtn.addEventListener('click', function() {
+                queryModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (closeQueryModal) {
+            closeQueryModal.addEventListener('click', function() {
+                queryModal.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        }
+
+        if (queryModal) {
+            queryModal.addEventListener('click', function(e) {
+                // Close modal when clicking outside the content
+                if (e.target === queryModal) {
+                    queryModal.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
     </script>
 </body>
 </html>
