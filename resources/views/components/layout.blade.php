@@ -1523,9 +1523,9 @@
                                 <i class="fas fa-code text-warning"></i> SQL Quest
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ route('advanced.statistics') }}">
+                            <!-- <a class="dropdown-item" href="{{ route('advanced.statistics') }}">
                                 <i class="fas fa-chart-pie text-primary"></i> Statistics
-                            </a>
+                            </a> -->
                             <a class="dropdown-item" href="{{ route('advanced.analytics') }}">
                                 <i class="fas fa-chart-line text-success"></i> Analytics
                             </a>
